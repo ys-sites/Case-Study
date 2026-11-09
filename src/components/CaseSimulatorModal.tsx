@@ -1078,91 +1078,125 @@ export const CaseSimulatorModal: React.FC<CaseSimulatorModalProps> = ({
 
           {activeTab === 'video' && (
             <div className="space-y-6 max-w-4xl mx-auto">
-              <div className="p-4 rounded-xl bg-amber-500/10 border border-amber-500/20">
-                <h3 className="font-bold text-sm text-stone-900 dark:text-stone-100">
-                  2-Minute Demonstration Video & Deliverables Package
+              <div className="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/20">
+                <h3 className="font-bold text-sm text-stone-900 dark:text-stone-100 flex items-center gap-2">
+                  <Video className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+                  Project ReFlow Video Production & Deliverables Suite
                 </h3>
                 <p className="text-xs text-stone-600 dark:text-stone-300 mt-1">
-                  Rendered MP4 (1080p), 12-slide executive presentation, and 2 verified PDF reports.
+                  1080p Full HD video explainers produced with <code>001 Main/motion-video-director</code>, synchronized neural voiceovers, and procedural soundscapes.
                 </p>
               </div>
 
               {/* Video Player Card */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="p-4 rounded-2xl border border-stone-200 dark:border-stone-800 bg-stone-950 text-white flex flex-col items-center justify-center min-h-[200px]">
-                  <Video className="w-10 h-10 text-cyan-400 mb-2 animate-pulse" />
-                  <h4 className="text-sm font-bold text-center">System Architecture Explainer (112s)</h4>
-                  <p className="text-[11px] text-stone-400 mt-1 text-center">
-                    Finished Resources/09_Video/System_Architecture_Explainer.mp4<br/>
-                    1080p | Neural Voiceover + Procedural Ambience
-                  </p>
+                <div className="p-5 rounded-2xl border border-emerald-500/40 bg-stone-950 text-white flex flex-col justify-between min-h-[220px]">
+                  <div>
+                    <div className="flex items-center justify-between mb-3">
+                      <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
+                        OFFICIAL CASE EXPLAINER (5M 15S)
+                      </span>
+                      <span className="text-[10px] text-stone-400 font-mono">1080p | 30 FPS</span>
+                    </div>
+                    <h4 className="text-sm font-bold text-white mb-1">Project ReFlow Master Solution Explainer</h4>
+                    <p className="text-[11px] text-stone-400 leading-relaxed mb-3">
+                      Complete 6-scene walkthrough explaining NorthStar Retail Group's baseline, MECE diagnosis, 7-portfolio matrix, 3-year DCF schedule, ESG decarbonization, and judge defense.
+                    </p>
+                  </div>
+                  <a
+                    href="./cases/Project_ReFlow/Project_ReFlow_Explainer_Video.mp4"
+                    download="Project_ReFlow_Explainer_Video.mp4"
+                    className="w-full py-2 px-3 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-stone-950 font-bold text-xs transition flex items-center justify-center gap-2 shadow-sm"
+                  >
+                    <Download className="w-3.5 h-3.5" />
+                    Download Case Video (7.5 MB MP4)
+                  </a>
                 </div>
-                <div className="p-4 rounded-2xl border border-stone-200 dark:border-stone-800 bg-stone-950 text-white flex flex-col items-center justify-center min-h-[200px]">
-                  <Video className="w-10 h-10 text-amber-500 mb-2 animate-pulse" />
-                  <h4 className="text-sm font-bold text-center">Case Solution Demo Video (120s)</h4>
-                  <p className="text-[11px] text-stone-400 mt-1 text-center">
-                    Finished Resources/09_Video/Final_Demo_120s.mp4<br/>
-                    1080p | Synchronized Storyboard & Subtitles (.srt)
-                  </p>
+
+                <div className="p-5 rounded-2xl border border-stone-800 bg-stone-950 text-white flex flex-col justify-between min-h-[220px]">
+                  <div>
+                    <div className="flex items-center justify-between mb-3">
+                      <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-cyan-500/20 text-cyan-400 border border-cyan-500/30">
+                        ARCHITECTURE GUIDE (112S)
+                      </span>
+                      <span className="text-[10px] text-stone-400 font-mono">1080p | 30 FPS</span>
+                    </div>
+                    <h4 className="text-sm font-bold text-white mb-1">System Architecture Machine Explainer</h4>
+                    <p className="text-[11px] text-stone-400 leading-relaxed mb-3">
+                      Overview of the 5-chamber case competition engine, Graphify knowledge traversal across 132+ benchmarks, and the 14-agent DAG pipeline.
+                    </p>
+                  </div>
+                  <a
+                    href="./Finished Resources/09_Video/System_Architecture_Explainer.mp4"
+                    download="System_Architecture_Explainer.mp4"
+                    className="w-full py-2 px-3 rounded-xl bg-stone-800 hover:bg-stone-700 text-white font-medium text-xs border border-stone-700 transition flex items-center justify-center gap-2"
+                  >
+                    <Download className="w-3.5 h-3.5" />
+                    Download System Video (2.2 MB MP4)
+                  </a>
                 </div>
               </div>
 
               {/* Direct Deliverable Files */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                <div className="p-3.5 rounded-xl border border-cyan-500/30 bg-cyan-500/5 dark:bg-cyan-950/20 flex items-center justify-between text-xs">
+                <a
+                  href="./cases/Project_ReFlow/Project_ReFlow_Master_Strategy_Blueprint.pdf"
+                  download="Project_ReFlow_Master_Strategy_Blueprint.pdf"
+                  className="p-3.5 rounded-xl border border-emerald-500/30 bg-emerald-500/5 hover:bg-emerald-500/10 transition flex items-center justify-between text-xs"
+                >
                   <div className="flex items-center gap-2.5">
-                    <FileText className="w-4 h-4 text-cyan-500" />
+                    <FileText className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
                     <div>
-                      <div className="font-semibold text-stone-900 dark:text-stone-100">System_Pipeline_Guide.pdf</div>
-                      <div className="text-[11px] text-stone-400">docs/CASE_COMPETITION_SYSTEM_PIPELINE_GUIDE.pdf</div>
+                      <div className="font-semibold text-stone-900 dark:text-stone-100">Project_ReFlow_Master_Strategy_Blueprint.pdf</div>
+                      <div className="text-[11px] text-stone-400">cases/Project_ReFlow (4-Page Pinterest Layout)</div>
                     </div>
                   </div>
-                  <span className="font-mono text-cyan-600 dark:text-cyan-400 font-bold">6 Pages Ready</span>
-                </div>
+                  <span className="font-mono text-emerald-600 font-bold">PDF Ready</span>
+                </a>
 
-                <div className="p-3.5 rounded-xl border border-stone-200 dark:border-stone-800 bg-stone-50 dark:bg-stone-900 flex items-center justify-between text-xs">
+                <a
+                  href="./cases/Project_ReFlow/Project_ReFlow_Presentation_Deck.pdf"
+                  download="Project_ReFlow_Presentation_Deck.pdf"
+                  className="p-3.5 rounded-xl border border-emerald-500/30 bg-emerald-500/5 hover:bg-emerald-500/10 transition flex items-center justify-between text-xs"
+                >
                   <div className="flex items-center gap-2.5">
-                    <FileText className="w-4 h-4 text-rose-500" />
+                    <PresentationIcon className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
                     <div>
-                      <div className="font-semibold text-stone-900 dark:text-stone-100">Strategic_Blueprint.pdf</div>
-                      <div className="text-[11px] text-stone-400">Finished Resources/06_PDF_Deliverables</div>
+                      <div className="font-semibold text-stone-900 dark:text-stone-100">Project_ReFlow_Presentation_Deck.pdf</div>
+                      <div className="text-[11px] text-stone-400">cases/Project_ReFlow (12 Widescreen Slides)</div>
                     </div>
                   </div>
-                  <span className="font-mono text-emerald-600 font-bold">Ready</span>
-                </div>
+                  <span className="font-mono text-emerald-600 font-bold">12 Slides</span>
+                </a>
 
-                <div className="p-3.5 rounded-xl border border-stone-200 dark:border-stone-800 bg-stone-50 dark:bg-stone-900 flex items-center justify-between text-xs">
+                <a
+                  href="./cases/Project_ReFlow/Project_ReFlow_Financial_Model.xlsx"
+                  download="Project_ReFlow_Financial_Model.xlsx"
+                  className="p-3.5 rounded-xl border border-stone-200 dark:border-stone-800 bg-stone-50 dark:bg-stone-900 hover:border-emerald-500/40 transition flex items-center justify-between text-xs"
+                >
                   <div className="flex items-center gap-2.5">
-                    <FileText className="w-4 h-4 text-rose-500" />
+                    <Calculator className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
                     <div>
-                      <div className="font-semibold text-stone-900 dark:text-stone-100">Final_Case_Solution.pdf</div>
-                      <div className="text-[11px] text-stone-400">Finished Resources/06_PDF_Deliverables</div>
+                      <div className="font-semibold text-stone-900 dark:text-stone-100">Project_ReFlow_Financial_Model.xlsx</div>
+                      <div className="text-[11px] text-stone-400">Multi-Tab Proforma Excel Engine</div>
                     </div>
                   </div>
-                  <span className="font-mono text-emerald-600 font-bold">Ready</span>
-                </div>
+                  <span className="font-mono text-emerald-600 font-bold">Excel Model</span>
+                </a>
 
-                <div className="p-3.5 rounded-xl border border-stone-200 dark:border-stone-800 bg-stone-50 dark:bg-stone-900 flex items-center justify-between text-xs">
+                <a
+                  href="./cases/Project_ReFlow/video/plan/beats.json"
+                  className="p-3.5 rounded-xl border border-stone-200 dark:border-stone-800 bg-stone-50 dark:bg-stone-900 hover:border-emerald-500/40 transition flex items-center justify-between text-xs"
+                >
                   <div className="flex items-center gap-2.5">
-                    <PresentationIcon className="w-4 h-4 text-amber-500" />
+                    <Workflow className="w-4 h-4 text-cyan-600 dark:text-cyan-400" />
                     <div>
-                      <div className="font-semibold text-stone-900 dark:text-stone-100">Final_Presentation.pptx</div>
-                      <div className="text-[11px] text-stone-400">12 Slides | Finished Resources/07_PowerPoint</div>
+                      <div className="font-semibold text-stone-900 dark:text-stone-100">beats.json (Timing Cues)</div>
+                      <div className="text-[11px] text-stone-400">cases/Project_ReFlow/video/plan</div>
                     </div>
                   </div>
-                  <span className="font-mono text-emerald-600 font-bold">Ready</span>
-                </div>
-
-                <div className="p-3.5 rounded-xl border border-stone-200 dark:border-stone-800 bg-stone-50 dark:bg-stone-900 flex items-center justify-between text-xs">
-                  <div className="flex items-center gap-2.5">
-                    <Calculator className="w-4 h-4 text-emerald-500" />
-                    <div>
-                      <div className="font-semibold text-stone-900 dark:text-stone-100">financial_model.xlsx</div>
-                      <div className="text-[11px] text-stone-400">Finished Resources/05_Financial_Models</div>
-                    </div>
-                  </div>
-                  <span className="font-mono text-emerald-600 font-bold">Ready</span>
-                </div>
+                  <span className="font-mono text-cyan-600 font-bold">6 Beats Synced</span>
+                </a>
               </div>
             </div>
           )}

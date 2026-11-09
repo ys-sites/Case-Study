@@ -11,8 +11,10 @@
   *12 widescreen (16:9) boardroom slides with agency-grade visual hierarchy, metric badges, and pre-calculated judge defense.*
 * **Financial Model (Excel Workbook)**: [`Project_ReFlow_Financial_Model.xlsx`](./Project_ReFlow_Financial_Model.xlsx)  
   *Multi-tab workbook containing the master portfolio valuation matrix and year-by-year cash flow discounting.*
+* **Master Explainer Video (1080p MP4)**: [`Project_ReFlow_Explainer_Video.mp4`](./Project_ReFlow_Explainer_Video.mp4)  
+  *5-minute 15-second cinematic 1080p explainer video created via `001 Main/motion-video-director`. Features synchronized neural narration, custom procedural corporate ambient soundscape, and 6 full scenes covering the enterprise baseline, MECE diagnosis, 7-portfolio matrix, 3-year DCF schedule, ESG decarbonization, 3-horizon roadmap, and judge Q&A defense. Tracking files located in [`video/`](./video/).*
 
-### Page Previews
+### Page & Video Previews
 * Page 1 (Editorial Cover & Executive Dashboard): [`blueprint_page_1.png`](./blueprint_page_1.png)
 * Page 2 (MECE Diagnosis & 7-Portfolio Decision Matrix): [`blueprint_page_2.png`](./blueprint_page_2.png)
 * Page 3 (Proforma Cash Flows & 3-Scenario Sensitivity): [`blueprint_page_3.png`](./blueprint_page_3.png)
