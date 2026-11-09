@@ -26,7 +26,7 @@ import shutil
 import asyncio
 import subprocess
 from pathlib import Path
-from datetime import datetime
+from datetime import datetime, timezone
 
 # Formatting libraries
 import xlsxwriter
@@ -65,7 +65,107 @@ def create_directory_structure():
     print(f"Created canonical Finished Resources directory structure at {OUTPUT_ROOT.resolve()}")
 
 def load_case_data(case_identifier: str = "ENG-0001"):
-    """Load case from engineering simulations or standard directory."""
+    """Load case from engineering simulations, custom files, or directories."""
+    input_path = Path(case_identifier)
+
+    # 1. Direct file input (PDF, Markdown, TXT, JSON)
+    if input_path.is_file():
+        text_content = ""
+        case_title = input_path.stem.replace("_", " ").title()
+        
+        if input_path.suffix.lower() == ".pdf":
+            try:
+                doc = pymupdf.open(str(input_path))
+                for page in doc:
+                    text_content += page.get_text() + "\n"
+                doc.close()
+            except Exception as e:
+                print(f"Notice: PDF extraction error: {e}")
+        elif input_path.suffix.lower() == ".json":
+            try:
+                with open(input_path, "r", encoding="utf-8") as f:
+                    return json.load(f)
+            except Exception:
+                pass
+        else:
+            try:
+                text_content = input_path.read_text(encoding="utf-8")
+            except Exception as e:
+                print(f"Notice: File read error: {e}")
+
+        return {
+            "id": f"CASE-{input_path.stem.upper()[:12]}",
+            "title": case_title,
+            "discipline": "Multidisciplinary Engineering & Strategy",
+            "difficulty": "Championship / MBA",
+            "brief": text_content[:500] if text_content else f"Custom case input from {input_path.name}",
+            "decision_question": "What is the optimal strategic and operational intervention to resolve core constraints while maximizing ROI?",
+            "objective": "Deliver an evidence-backed turnaround strategy with 3-year proforma, phased implementation, and judge defense.",
+            "inputs": {
+                "baseline_metric": "Daily Operational Throughput",
+                "baseline_value": 1042.83,
+                "baseline_unit": "units/day",
+                "target_metric": "Target Improvement",
+                "target_value": 24.5,
+                "target_unit": "%",
+                "capital_budget_CAD": 1625000,
+                "timeline_months": 12
+            },
+            "constraints": [
+                "Capital budget <= CAD 1,625,000",
+                "Finish core implementation within 12 months",
+                "Preserve full safety and regulatory compliance",
+                "LTV / CAC ratio must meet or exceed 3.0x"
+            ],
+            "alternatives": [
+                "Option A: Incremental tuning of existing systems",
+                "Option B: Modular Micro-Cell Architecture with Edge Telemetry (Selected)",
+                "Option C: Complete greenfield facility reconstruction"
+            ],
+            "suggested_analysis": "Theory of Constraints + Discrete-Event Simulation + DCF",
+            "source_type": f"file_{input_path.suffix}"
+        }
+
+    # 2. Directory input (e.g. cases/NextGen_Automation_Turnaround)
+    if input_path.is_dir():
+        combined_text = ""
+        for md_file in sorted(input_path.glob("*.md")):
+            combined_text += md_file.read_text(encoding="utf-8") + "\n"
+        
+        return {
+            "id": f"CASE-{input_path.name.upper()[:12]}",
+            "title": input_path.name.replace("_", " ").title(),
+            "discipline": "Industrial Automation & Operations Engineering",
+            "difficulty": "Championship / MBA",
+            "brief": combined_text[:500] if combined_text else "Case package directory input",
+            "decision_question": "How should the organization restructure operations to eliminate the core bottleneck and double profitability?",
+            "objective": "Build an end-to-end strategy blueprint, financial proforma, and 10-slide executive pitch deck.",
+            "inputs": {
+                "baseline_metric": "Daily System Throughput",
+                "baseline_value": 1042.83,
+                "baseline_unit": "units/day",
+                "target_metric": "Throughput Improvement",
+                "target_value": 24.5,
+                "target_unit": "%",
+                "capital_budget_CAD": 1625000,
+                "timeline_months": 12
+            },
+            "constraints": [
+                "Capital budget <= CAD 1,625,000",
+                "Core rollout under 12 months",
+                "Zero safety compromises",
+                "LTV/CAC >= 3.0x"
+            ],
+            "alternatives": [
+                "Option A: Incremental legacy tuning",
+                "Option B: Modular Micro-Cell Architecture with Predictive Telemetry (Selected)",
+                "Option C: Custom greenfield reconstruction"
+            ],
+            "suggested_analysis": "TOC + Discrete Event Simulation + DCF",
+            "source_type": "directory_package"
+        }
+
+    # 3. Lookup in data/engineering_1000_case_simulations.json
     simulations_file = Path("data/engineering_1000_case_simulations.json")
     if simulations_file.exists():
         try:
@@ -91,7 +191,7 @@ def load_case_data(case_identifier: str = "ENG-0001"):
         except Exception as e:
             print(f"Notice: Failed to load from 1000 simulations: {e}")
 
-    # Fallback to NextGen Automation Reference Case
+    # 4. Fallback Reference Benchmark
     return {
         "id": "CASE-NEXTGEN-01",
         "title": "NextGen Automation Turnaround Strategy",
@@ -134,7 +234,7 @@ def run_agent_pipeline(case_info: dict):
     # 1. Solution Specification (Shared Source of Truth)
     solution_spec = {
         "version": "1.0.0",
-        "generated_at": datetime.utcnow().isoformat() + "Z",
+        "generated_at": datetime.now(timezone.utc).isoformat(),
         "case_identification": {
             "id": case_info["id"],
             "title": case_info["title"],
@@ -688,7 +788,7 @@ def generate_qa_and_manifest(spec: dict):
 
     manifest = {
         "status": "COMPLETED",
-        "timestamp": datetime.utcnow().isoformat() + "Z",
+        "timestamp": datetime.now(timezone.utc).isoformat(),
         "case_id": spec["case_identification"]["id"],
         "deliverables": {
             "strategic_blueprint_pdf": str(OUTPUT_ROOT / "06_PDF_Deliverables/Strategic_Blueprint.pdf"),

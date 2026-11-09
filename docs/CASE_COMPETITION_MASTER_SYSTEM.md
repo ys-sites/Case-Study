@@ -171,13 +171,19 @@ The web application is built on:
 
 ## 9. WORKSPACE ARCHITECTURE & ENVIRONMENT TOOLING
 
-- `src/`: React frontend application.
-- `scripts/case_orchestrator.py`: Autonomous 14-agent execution engine.
-- `data/`: 1,000 engineering simulations (`engineering_1000_case_simulations.json`) and 132+ global competitions (`global_case_competitions_research.csv`).
+- `src/`: React frontend application with interactive `CaseSimulatorModal` and `GlobalCompetitionsModal`.
+- `scripts/case_orchestrator.py`: Autonomous 14-agent execution engine capable of dynamically ingesting any case ID (`ENG-0001` through `ENG-1000`), PDF, Markdown, TXT, JSON, or directory package.
+- `data/`: 
+  - `case-competition-master-prompt.pdf`: 21-page master Industrial Engineering & operations coaching guide.
+  - `engineering_1000_case_simulations.json`: 1,000 structured engineering case challenges with baseline metrics and constraints.
+  - `engineering_100000_preview.csv`: 100,000 parameterized simulation scenarios with 3-option financial comparisons and shock tests.
+  - `global_case_competitions_research.csv`: 132 verified international case competitions and solution models.
+  - `engineering_case_simulator_master_prompt.txt`: Interactive roleplay and facilitation protocol.
 - `Finished Resources/`: Generated case competition deliverables (PDFs, PPTX, XLSX, MP4, Markdown).
 - `docs/`: Master documentation and archive.
 - `001 Main/`: Cloned reference library (SkillSpector, Graphify, ECC, bla, reverse-api-engineer, rune, project-nomad). Ignored in Git.
-- `.agents/skills/`: Verified autonomous agent skills (`security-audit`, `motionmaxxing`, `scroll-film-studio`, etc.).
+- `.agents/skills/`: 17 verified autonomous agent skills (`security-audit`, `motionmaxxing`, `scroll-film-studio`, `lesson-workflow`, etc.).
+- `.claude/skills/`: `graphify` knowledge graph traversal engine.
 
 ---
 
@@ -197,3 +203,4 @@ All installed agent skills undergo automated security auditing:
 
 1. **Strict Anonymity**: Under no circumstances should any personal name or machine-specific local drive paths (`/path/to/...`, `file:///...`) appear in ANY generated case brief, Markdown strategy guide, review sheet, PDF, HTML, or website file. Use generic designations only (`Strategy Consulting Hub`, `Executive Case Simulation Team`).
 2. **Mandatory Automatic Git Push**: On every turn where changes are made, proactively stage (`git add .`), commit with a descriptive message, and push directly to `origin/main` (`https://github.com/ys-sites/Case-Study.git`).
+
