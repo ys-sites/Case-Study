@@ -1,6 +1,6 @@
 {
   "version": "2.0.0",
-  "generated_at": "2026-11-09T14:21:45+00:00",
+  "generated_at": "2026-11-09T15:04:42+00:00",
   "case_identification": {
     "id": "PORTFLOW",
     "title": "PortFlow Container Terminal: Yard and Gate Flow",
@@ -343,35 +343,54 @@
       "likelihood": "Medium",
       "impact": "High",
       "mitigation": "Slot rules co-designed with trucking firms, grace windows, priority lanes for on-time trucks, a walk-in lane kept during transition",
-      "trigger": "Slot adherence < 75% for 2 weeks"
+      "trigger": "Slot adherence < 75% for 2 weeks",
+      "owner": "Gate and Landside Manager",
+      "funding": "Appointment system $2.2M (co-design included)"
     },
     {
       "risk": "Dwell does not fall enough",
       "likelihood": "Medium",
       "impact": "High",
       "mitigation": "Free-time tariff, release alerts, empties evacuation agreements; parcel design kept ready as phase 2",
-      "trigger": "Dwell > 5.3 days at month 9"
+      "trigger": "Dwell > 5.3 days at month 9",
+      "owner": "Commercial Director",
+      "funding": "Tariff design $0.2M; parcel design held in contingency"
     },
     {
       "risk": "Cutover disrupts live operations",
       "likelihood": "Medium",
       "impact": "High",
       "mitigation": "Lane-by-lane and block-by-block rollout, parallel running, go-lives outside vessel peaks, rollback plan",
-      "trigger": "Gate throughput below baseline for 2 shifts"
+      "trigger": "Gate throughput below baseline for 2 shifts",
+      "owner": "Operations Manager",
+      "funding": "Contingency $0.8M"
     },
     {
       "risk": "Staff resistance and role concerns",
       "likelihood": "Medium",
       "impact": "Medium",
       "mitigation": "Staff involved before tools arrive, paid training, no layoffs from this program, redeployment into the planning cell",
-      "trigger": "Training completion < 90% or AI advice acceptance < 50%"
+      "trigger": "Training completion < 90% or AI advice acceptance < 50%",
+      "owner": "HR Director with the Employee Representative",
+      "funding": "Change and training $0.7M + $0.15M/yr"
     },
     {
       "risk": "AI advice wrong or data quality poor",
       "likelihood": "Low",
       "impact": "High",
       "mitigation": "Advisory only, 6 weeks in shadow mode, hard safety rules locked, weekly model review",
-      "trigger": "Override rate > 30% or any near-miss linked to a recommendation"
+      "trigger": "Override rate > 30% or any near-miss linked to a recommendation",
+      "owner": "Yard Planning Manager",
+      "funding": "Positioning and AI $2.9M, shadow mode included"
+    },
+    {
+      "risk": "Savings fall short (customs-driven penalties)",
+      "likelihood": "Medium",
+      "impact": "Medium",
+      "mitigation": "Holds flagged early in the portal; savings tracked monthly by owner; plan still pays back at $3.1M/yr",
+      "trigger": "Penalties down < 25% by month 12",
+      "owner": "Finance Director",
+      "funding": "No extra spend; break-even $3.1M/yr"
     }
   ],
   "red_team_defense": [
@@ -407,49 +426,56 @@
         "purpose": "Spread arrivals into booked slots, only for released and ready containers; faster gate transactions.",
         "capex": 2200000,
         "annual_opex": 300000,
-        "owner": "Gate and Landside Manager"
+        "owner": "Gate and Landside Manager",
+        "pillar": 1
       },
       {
         "initiative": "Release and ETA visibility portal",
         "purpose": "One shared status for lines, truckers, rail and customers, with customs-hold flags and a named escalation contact.",
         "capex": 1400000,
         "annual_opex": 250000,
-        "owner": "Commercial Director"
+        "owner": "Commercial Director",
+        "pillar": 0
       },
       {
         "initiative": "Slot-level positioning and AI-assisted stacking",
         "purpose": "RTG position sensors plus a planning upgrade so boxes due out first sit on top; planners approve each recommendation.",
         "capex": 2900000,
         "annual_opex": 400000,
-        "owner": "Yard Planning Manager"
+        "owner": "Yard Planning Manager",
+        "pillar": 2
       },
       {
         "initiative": "Integrated operations planning cell",
         "purpose": "One shared plan across vessel, yard, gate and rail teams, so a schedule change is re-planned once, not in several systems.",
         "capex": 800000,
         "annual_opex": 200000,
-        "owner": "Operations Manager"
+        "owner": "Operations Manager",
+        "pillar": 2
       },
       {
         "initiative": "Dwell-time rules: free-time tariff and empties evacuation",
         "purpose": "Storage charges after free days, early-pickup incentives and agreements with lines to remove empties.",
         "capex": 200000,
         "annual_opex": 0,
-        "owner": "Commercial Director"
+        "owner": "Commercial Director",
+        "pillar": 1
       },
       {
         "initiative": "Change management and paid training",
         "purpose": "Co-design workshops, super-users per shift and training in paid working time.",
         "capex": 700000,
         "annual_opex": 150000,
-        "owner": "HR Director with the Employee Representative"
+        "owner": "HR Director with the Employee Representative",
+        "pillar": -1
       },
       {
         "initiative": "Contingency (about 10%)",
         "purpose": "Released at the phase-3 gate if unused.",
         "capex": 800000,
         "annual_opex": 0,
-        "owner": "Finance Director"
+        "owner": "Finance Director",
+        "pillar": -1
       }
     ],
     "analysis_sections": [
@@ -546,6 +572,486 @@
             "AI & Automation"
           ],
           "table": "horizons"
+        }
+      ]
+    },
+    "problem_statement": "PortFlow's current operating model is struggling to accommodate growing container volumes, resulting in excessive yard congestion, inefficient container movement and delayed truck processing.",
+    "kpi_bars": [
+      {
+        "label": "Year-5 yard utilization",
+        "unit": "%",
+        "before": 105.6,
+        "after": 82.7,
+        "target": 85,
+        "note": "88% today"
+      },
+      {
+        "label": "Average yard dwell",
+        "unit": "days",
+        "before": 6.0,
+        "after": 4.7,
+        "target": 4.83,
+        "note": "threshold for 85%"
+      },
+      {
+        "label": "Truck queue time",
+        "unit": "min",
+        "before": 40,
+        "after": 14,
+        "target": null,
+        "note": "appointments spread arrivals"
+      },
+      {
+        "label": "Time inside terminal",
+        "unit": "min",
+        "before": 32,
+        "after": 26,
+        "target": null,
+        "note": "fewer rehandles, pre-staged boxes"
+      },
+      {
+        "label": "Total truck turn",
+        "unit": "min",
+        "before": 72,
+        "after": 40,
+        "target": 45,
+        "note": "objective < 45"
+      },
+      {
+        "label": "Overtime",
+        "unit": "$M/yr",
+        "before": 6.0,
+        "after": 3.6,
+        "target": null,
+        "note": "owner: Operations Manager"
+      },
+      {
+        "label": "Delay & service penalties",
+        "unit": "$M/yr",
+        "before": 8.0,
+        "after": 4.0,
+        "target": null,
+        "note": "owner: Commercial Director"
+      }
+    ],
+    "gantt": {
+      "months": 12,
+      "phases": [
+        {
+          "name": "Phase 1 \u00b7 Co-design & pilot",
+          "start": 1,
+          "end": 3
+        },
+        {
+          "name": "Phase 2 \u00b7 Scale without stopping operations",
+          "start": 4,
+          "end": 9
+        },
+        {
+          "name": "Phase 3 \u00b7 Stabilise & hand over",
+          "start": 10,
+          "end": 12
+        }
+      ],
+      "rows": [
+        {
+          "stream": "Gate & appointments",
+          "task": "Co-design slot rules with trucking firms",
+          "start": 1,
+          "end": 2,
+          "kind": "plan"
+        },
+        {
+          "stream": "Gate & appointments",
+          "task": "Pilot on 2 import lanes (walk-in lane kept)",
+          "start": 2,
+          "end": 3,
+          "kind": "pilot"
+        },
+        {
+          "stream": "Gate & appointments",
+          "task": "Roll out lane by lane; add evening slots",
+          "start": 4,
+          "end": 7,
+          "kind": "rollout"
+        },
+        {
+          "stream": "Gate & appointments",
+          "task": "All trucks on appointments; OCR pre-advice",
+          "start": 8,
+          "end": 12,
+          "kind": "live"
+        },
+        {
+          "stream": "Release & ETA portal",
+          "task": "Portal MVP: release and hold status",
+          "start": 1,
+          "end": 3,
+          "kind": "build"
+        },
+        {
+          "stream": "Release & ETA portal",
+          "task": "Container data clean-up and integration tests",
+          "start": 2,
+          "end": 3,
+          "kind": "build"
+        },
+        {
+          "stream": "Release & ETA portal",
+          "task": "Alerts and escalation contacts live",
+          "start": 3,
+          "end": 4,
+          "kind": "rollout"
+        },
+        {
+          "stream": "Release & ETA portal",
+          "task": "Onboard truckers, rail and customers; comms plan",
+          "start": 3,
+          "end": 6,
+          "kind": "rollout"
+        },
+        {
+          "stream": "Release & ETA portal",
+          "task": "Line, rail and customer integrations",
+          "start": 4,
+          "end": 8,
+          "kind": "build"
+        },
+        {
+          "stream": "Yard positioning & AI",
+          "task": "RTG position sensors, 2 cranes per fortnight off-peak",
+          "start": 3,
+          "end": 7,
+          "kind": "build"
+        },
+        {
+          "stream": "Yard positioning & AI",
+          "task": "Encode hard safety rules; test on history data",
+          "start": 5,
+          "end": 6,
+          "kind": "build"
+        },
+        {
+          "stream": "Yard positioning & AI",
+          "task": "AI stacking in shadow mode (6 weeks)",
+          "start": 7,
+          "end": 8,
+          "kind": "pilot"
+        },
+        {
+          "stream": "Yard positioning & AI",
+          "task": "AI advice live block by block; planner approves",
+          "start": 9,
+          "end": 12,
+          "kind": "live"
+        },
+        {
+          "stream": "Planning cell",
+          "task": "Set up one shared plan across teams",
+          "start": 2,
+          "end": 4,
+          "kind": "build"
+        },
+        {
+          "stream": "Planning cell",
+          "task": "Daily huddle; single re-plan on schedule changes",
+          "start": 5,
+          "end": 12,
+          "kind": "live"
+        },
+        {
+          "stream": "Dwell rules",
+          "task": "Tariff design; 90-day notice to customers",
+          "start": 5,
+          "end": 7,
+          "kind": "plan"
+        },
+        {
+          "stream": "Dwell rules",
+          "task": "Free-time tariff and empties agreements live",
+          "start": 10,
+          "end": 12,
+          "kind": "live"
+        },
+        {
+          "stream": "People & change",
+          "task": "Staff co-design workshops",
+          "start": 1,
+          "end": 3,
+          "kind": "plan"
+        },
+        {
+          "stream": "People & change",
+          "task": "Paid training; super-users on every shift",
+          "start": 3,
+          "end": 11,
+          "kind": "rollout"
+        },
+        {
+          "stream": "People & change",
+          "task": "Roles move into planning and exception work",
+          "start": 6,
+          "end": 10,
+          "kind": "rollout"
+        },
+        {
+          "stream": "Safety & governance",
+          "task": "Safety review before every go-live",
+          "start": 2,
+          "end": 12,
+          "kind": "plan"
+        },
+        {
+          "stream": "Safety & governance",
+          "task": "Monthly steering; savings tracked by owner",
+          "start": 1,
+          "end": 12,
+          "kind": "live"
+        }
+      ],
+      "milestones": [
+        {
+          "month": 3,
+          "label": "Gate 1: pilot lanes >= 80% slot adherence"
+        },
+        {
+          "month": 9,
+          "label": "Gate 2: dwell <= 5.3 days; AI accepted >= 70%"
+        },
+        {
+          "month": 12,
+          "label": "Gate 3: savings confirmed by owners"
+        }
+      ],
+      "continuity": [
+        "Lane by lane and block by block: never more than 2 gate lanes or 1 yard block changing at once",
+        "Go-lives scheduled outside vessel peak windows; sensors fitted on off-peak shifts",
+        "Parallel running: old rules stay available until the new process passes its gate",
+        "Rollback plan: if gate throughput drops below baseline for 2 shifts, revert that lane"
+      ],
+      "streams": {
+        "Gate & appointments": {
+          "owner": "Gate & Landside Mgr",
+          "budget": 2200000
+        },
+        "Release & ETA portal": {
+          "owner": "Commercial Director",
+          "budget": 1400000
+        },
+        "Yard positioning & AI": {
+          "owner": "Yard Planning Mgr",
+          "budget": 2900000
+        },
+        "Planning cell": {
+          "owner": "Operations Manager",
+          "budget": 800000
+        },
+        "Dwell rules": {
+          "owner": "Commercial Director",
+          "budget": 200000
+        },
+        "People & change": {
+          "owner": "HR + Employee Rep",
+          "budget": 700000
+        },
+        "Safety & governance": {
+          "owner": "Steering committee",
+          "budget": 800000
+        }
+      },
+      "checkpoints": [
+        "Pilot lanes: queue -25%; status shared within 1 h; rehandle baseline",
+        "Dwell <= 5.3 days; turn <= 55 min; rehandles -20%",
+        "Dwell <= 4.8 days; turn < 45 min; savings confirmed"
+      ]
+    },
+    "problem": {
+      "stats": [
+        {
+          "value": "88%",
+          "label": "Yard utilization today",
+          "sub": "21,120 of 24,000 TEU"
+        },
+        {
+          "value": "6 days",
+          "label": "Average dwell",
+          "sub": "every box held 6 days"
+        },
+        {
+          "value": "72 min",
+          "label": "Truck turn time",
+          "sub": "40 queue + 32 inside"
+        },
+        {
+          "value": "$14M/yr",
+          "label": "Overtime + penalties",
+          "sub": "$6M + $8M"
+        }
+      ],
+      "chart": {
+        "title": "Year-5 yard utilization at +20% volume",
+        "unit": "%",
+        "bars": [
+          {
+            "label": "Today",
+            "value": 88.0
+          },
+          {
+            "label": "Year 5, do nothing",
+            "value": 105.6
+          },
+          {
+            "label": "Year 5, expansion only",
+            "value": 90.5
+          },
+          {
+            "label": "Year 5, our plan",
+            "value": 82.7
+          }
+        ],
+        "lines": [
+          {
+            "label": "Objective 85%",
+            "value": 85
+          },
+          {
+            "label": "Full 100%",
+            "value": 100
+          }
+        ]
+      },
+      "objectives": "Year-5 objectives: yard utilization <= 85% and truck turn < 45 minutes. Today PortFlow meets neither."
+    },
+    "causes": {
+      "core": "Fragmented release and schedule information",
+      "core_detail": "Release status, vessel changes and pickup plans are not shared across teams, truckers, rail or customers; planning runs in separate systems on fixed rules.",
+      "mechanisms": [
+        {
+          "name": "Containers wait",
+          "effect": "Customers learn late that a box is released, so pickups slip",
+          "evidence": "Dwell 6 days"
+        },
+        {
+          "name": "Trucks bunch",
+          "effect": "No appointments or readiness signal, so arrivals cluster",
+          "evidence": "40 min queue"
+        },
+        {
+          "name": "Stacks get reshuffled",
+          "effect": "Exact position and pickup time unknown, so cranes dig",
+          "evidence": "32 min inside"
+        }
+      ],
+      "symptoms": [
+        "Yard crowding",
+        "72-min truck turns",
+        "$6M overtime",
+        "$8M penalties",
+        "Customers can't plan",
+        "Staff anxiety"
+      ],
+      "law": "Little's Law: inventory = throughput x dwell. 3,520 TEU/day x 6 days = 21,120 TEU. At 4,224 TEU/day the same dwell needs 25,344 TEU (106%). The 15-acre parcel only reaches 90.5%. Dwell must fall to 4.83 days or less."
+    },
+    "savings": [
+      {
+        "label": "Overtime -40%",
+        "value": 2400000,
+        "owner": "Operations Manager"
+      },
+      {
+        "label": "Penalties -50%",
+        "value": 4000000,
+        "owner": "Commercial Director"
+      }
+    ],
+    "not_chosen": [
+      "Expansion only: about $14.5M, over budget, and still 90.5% utilization",
+      "Full crane automation: far above $10M, labour and safety risk, and no fix for the information gap"
+    ],
+    "market": {
+      "headline": "Demand is rising across Canadian gateways, peers win on reliability rather than space, and automation is a labour flashpoint.",
+      "forces": [
+        {
+          "title": "Volumes are growing",
+          "fact": "The Port of Vancouver handled a record 3.8M TEU in 2025, about 9% above 2024, as Canada diversified trade. PortFlow's +20% over five years is in line with this.",
+          "src": 1
+        },
+        {
+          "title": "Congestion is the industry's pain point",
+          "fact": "Container dwell at Canada's largest port was still a significant issue in early 2025, with rail capacity lagging the surge in boxes.",
+          "src": 2
+        },
+        {
+          "title": "Customers buy reliability",
+          "fact": "Shippers and truckers plan around release certainty. Terminals that share status and keep appointment windows win repeat volume; uncertainty shows up as penalties.",
+          "src": 0
+        },
+        {
+          "title": "Automation is a labour flashpoint",
+          "fact": "The November 2024 B.C. port lockout centred on automation and manpower; Ottawa ordered binding arbitration on both coasts.",
+          "src": 5
+        }
+      ],
+      "benchmarks": [
+        {
+          "who": "GCT Bayonne (NY/NJ)",
+          "practice": "Truck appointment system, phased rollout with trucker outreach",
+          "result": "Turn times in appointment hours improved by more than 40%; over 90% of reservations kept",
+          "src": 3
+        },
+        {
+          "who": "LA / Long Beach terminals",
+          "practice": "Appointment systems introduced in 2015",
+          "result": "Mixed results: no clear turn-time gain without wider coordination",
+          "src": 4
+        },
+        {
+          "who": "Seattle, Houston, Tacoma",
+          "practice": "Extended-dwell fees after free time",
+          "result": "Escalating daily charges (e.g. Houston $50 to $150 per unit per day) push import boxes out of the yard",
+          "src": 6
+        }
+      ],
+      "implications": [
+        "Appointments work only with readiness information and partner buy-in, which is why PortFlow pairs them with the release portal and co-design.",
+        "Dwell pricing is standard practice, so a free-time tariff is defensible to customers.",
+        "Choose AI that assists people over crane automation, and pair it with a no-layoff commitment, to avoid the dispute seen at B.C. ports.",
+        "Reliability, not more space, is how PortFlow defends its share as rival gateways add capacity."
+      ],
+      "sources": [
+        {
+          "id": 0,
+          "label": "Case brief: stakeholder perspectives (trucking, supply chain partner)"
+        },
+        {
+          "id": 1,
+          "label": "Port Technology, Port of Vancouver posts record 170m metric tonnes in 2025",
+          "url": "https://www.porttechnology.org/news/ports-and-terminals/port-of-vancouver-posts-record-170m-metric-tonnes-in-2025/"
+        },
+        {
+          "id": 2,
+          "label": "Trains.com, CPKC container dwell still an issue at Canada's largest port",
+          "url": "https://www.trains.com/?p=224969"
+        },
+        {
+          "id": 3,
+          "label": "US EPA Ports Initiative, GCT Bayonne drayage truck appointment system",
+          "url": "https://19january2025snapshot.epa.gov/ports-initiative/gct-bayonnes-drayage-truck-appointment-system/index.html"
+        },
+        {
+          "id": 4,
+          "label": "AJOT, Do truck appointment systems decrease turn times? Preliminary data shows no",
+          "url": "https://www.ajot.com/news/do-truck-appointment-systems-decrease-turn-times-preliminary-data-shows-no"
+        },
+        {
+          "id": 5,
+          "label": "CBC, B.C. ports are frozen amid a labour dispute",
+          "url": "https://www.cbc.ca/lite/story/1.7373904"
+        },
+        {
+          "id": 6,
+          "label": "gCaptain, Port Houston to begin charging for long-dwelling import containers; Green Worldwide (Seattle); FreightWaves (Tacoma)",
+          "url": "https://gcaptain.com/port-houston-to-begin-charging-for-long-dwelling-import-containers"
         }
       ]
     }
@@ -893,7 +1399,7 @@
       {
         "item": "Top risks with triggers",
         "ok": true,
-        "evidence": "5 risks logged"
+        "evidence": "6 risks logged"
       },
       {
         "item": "Q&A bank of 10+ prepared answers",

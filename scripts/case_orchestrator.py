@@ -52,6 +52,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 from case_intelligence import build_intelligence  # noqa: E402
 import case_videos  # noqa: E402
 from case_visual_pdf import generate_case_study_booklet  # noqa: E402
+from case_slide_pdf import generate_slide_pdf  # noqa: E402
 DATA_DIR = REPO_ROOT / "data"
 
 # --------------------------------------------------------------------------------------
@@ -189,7 +190,8 @@ def _from_json_case(c: dict, source: str) -> dict:
     )
 
 
-PACK_KEYS = ("diagnosis", "risks", "horizons", "kpis", "pillars", "package", "analysis_sections", "deck", "secondary_targets")
+PACK_KEYS = ("package", "analysis_sections", "deck", "secondary_targets", "problem_statement", "kpi_bars", "gantt",
+             "problem", "causes", "savings", "not_chosen", "market")  # carried into spec["case_pack"]
 
 
 def _from_structured(c: dict) -> dict:
@@ -710,7 +712,7 @@ def build_solution_spec(case: dict, unit_value_override: float | None = None) ->
         "risks": build_risks(case, win, scen),
         "red_team_defense": build_red_team(case, opts, win, scen, tornado),
     }
-    pack = {k: case[k] for k in ("package", "analysis_sections", "deck", "secondary_targets") if case.get(k)}
+    pack = {k: case[k] for k in PACK_KEYS if case.get(k)}
     if pack:
         spec["case_pack"] = pack
     spec["intelligence"] = build_intelligence(case, spec)
@@ -1483,6 +1485,7 @@ def run_agent_pipeline(case_info: dict, render_video: bool = True, unit_value_ov
         ("06 Financial workbooks", lambda: write_financial_workbooks(spec)),
         ("10 PDF deliverables", lambda: generate_pdf_deliverables(spec)),
         ("10 Case study booklet", lambda: generate_case_study_booklet(spec, OUTPUT_ROOT / DELIVERABLES["case_study_booklet_pdf"])),
+        ("10 Presentation slides PDF", lambda: generate_slide_pdf(spec, OUTPUT_ROOT / "06_PDF_Deliverables/Presentation_Slides.pdf")),
         ("11 PowerPoint deck", lambda: generate_powerpoint_deck(spec)),
         ("13 Video suite", lambda: generate_video_assets(spec, render_video, tts)),
     ]

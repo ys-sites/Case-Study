@@ -7,3 +7,4 @@
 | Cutover disrupts live operations | Medium | High | Lane-by-lane and block-by-block rollout, parallel running, go-lives outside vessel peaks, rollback plan | Gate throughput below baseline for 2 shifts |
 | Staff resistance and role concerns | Medium | Medium | Staff involved before tools arrive, paid training, no layoffs from this program, redeployment into the planning cell | Training completion < 90% or AI advice acceptance < 50% |
 | AI advice wrong or data quality poor | Low | High | Advisory only, 6 weeks in shadow mode, hard safety rules locked, weekly model review | Override rate > 30% or any near-miss linked to a recommendation |
+| Savings fall short (customs-driven penalties) | Medium | Medium | Holds flagged early in the portal; savings tracked monthly by owner; plan still pays back at $3.1M/yr | Penalties down < 25% by month 12 |

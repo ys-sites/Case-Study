@@ -7,7 +7,7 @@
 - [x] **Financials: NPV, payback, sensitivity** — NPV CAD $6,491,191, payback 31.7 months
 - [x] **Bear case tested (-15% performance, +20% cost)** — bear NPV CAD $620,445
 - [x] **30/60/90 roadmap with owners and gates** — pilot → prove → scale
-- [x] **Top risks with triggers** — 5 risks logged
+- [x] **Top risks with triggers** — 6 risks logged
 - [x] **Q&A bank of 10+ prepared answers** — see judge_QA_preparation.md
 - [ ] **Assumptions validated with real data** — replace: Monetisation, Discount rate (WACC), Appraisal horizon, Annual O&M, Benefit during implementation
 - [x] **Safety & licensed engineering review noted** — MOC + HAZOP before commissioning

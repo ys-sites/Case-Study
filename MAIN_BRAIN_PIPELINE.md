@@ -36,8 +36,19 @@ the brief's own formulas, so for a real case the agent does the decrypt thinking
 - `decrypt`: case-specific `issue_tree`, `hypothesis`, `toolkit`, `quick_math`, `time_plan`, `scqa.complication`,
   `what_the_case_tests` (override the generic family templates).
 - `deck`: `max_content_slides` and grouped `slides` when the brief caps the deck.
+- Slide blocks for `Presentation_Slides.pdf`: `problem_statement`, `problem` (stats + chart), `causes`, `kpi_bars`,
+  `savings`, `not_chosen`, `gantt` (phases, checkpoints, streams with owner/budget, rows, milestones, continuity),
+  `market` (forces, peer benchmarks, implications, sourced; never invent market facts: search and cite).
 The engine then adds the undiscounted five-year net impact (`Investment + 5 x (added annual costs - annual savings)`),
-a Package page and a Required Analysis page to the booklet, a capped answer-first deck, and both scenes to video 3.
+a Package page and a Required Analysis page to the booklet, a capped answer-first deck, both scenes to video 3, and
+`06_PDF_Deliverables/Presentation_Slides.pdf`: 8 agenda slides numbered 2-9 (problem & root cause, solution,
+congestion to flow, budget & decision matrix, financial case, Gantt, market analysis, risks) that slot in behind a
+team's own title and agenda slides.
+
+**PDF design standard (all PDFs, mandatory):** every PDF follows the `Case_Study_Booklet.pdf` style: pine header
+band with section label and case ID, emerald/mint accents, canvas background, Segoe UI for structure, Georgia for
+editorial lines, stat cards, mint caps kicker labels, `NN / TT` footer. New renderers import the colour tokens `C`
+from `scripts/case_visual_pdf.py`; do not introduce new palettes or display fonts unless the user asks.
 
 | The user wants… | Mode |
 | :--- | :--- |
