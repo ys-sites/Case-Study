@@ -22,7 +22,7 @@ export const TemplatesModal: React.FC<TemplatesModalProps> = ({
           <div className="flex items-center gap-2">
             <BookOpen className="w-4 h-4 text-neutral-600 dark:text-neutral-400" />
             <h3 className="text-sm font-bold text-neutral-900 dark:text-neutral-100">
-              Blank Page Jumpstarts & Templates
+              Case Competition Frameworks & Blueprints
             </h3>
           </div>
           <button
@@ -34,7 +34,7 @@ export const TemplatesModal: React.FC<TemplatesModalProps> = ({
         </div>
 
         <p className="text-xs text-neutral-500 py-3 shrink-0">
-          Overcome the blank canvas with clean, battle-tested structural frameworks.
+          Battle-tested strategic management structures, 10-slide case decks, financial models, and rapid sprint frameworks.
         </p>
 
         {/* Templates Grid */}

@@ -1,0 +1,11 @@
+# Vercel Deployment Ignore Rules (Concordia Website Standard)
+node_modules
+001 Main
+.git
+.github
+*.log
+.env
+.env.*
+dist
+docs
+

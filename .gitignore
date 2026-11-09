@@ -1,8 +1,41 @@
+# Dependencies & Build Output
 node_modules/
-build/
+**/node_modules/
 dist/
+**/dist/
+build/
 coverage/
+.vite/
+.pnpm-store/
+
+# OS & Environment
 .DS_Store
+Thumbs.db
 *.log
-.env*
+.env
+.env.*
 !.env.example
+
+# Large Media & Archives (>50MB GitHub limits)
+*.mp4
+*.mov
+*.avi
+*.mkv
+*.wmv
+*.zip
+*.rar
+*.7z
+*.tar.gz
+
+# Executable Binaries
+*.exe
+*.dll
+*.so
+*.dylib
+*.bin
+
+# Local 001 Main skill library (ignored in git per Concordia standard)
+/001 Main/
+001 Main/
+001 Main/**
+**/001 Main/**

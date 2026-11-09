@@ -149,7 +149,7 @@ export default function App() {
 
   // Focus timer countdown
   useEffect(() => {
-    let interval: NodeJS.Timeout | null = null;
+    let interval: ReturnType<typeof setInterval> | null = null;
     if (isTimerRunning && timeLeft > 0) {
       interval = setInterval(() => {
         setTimeLeft((prev) => prev - 1);
@@ -505,7 +505,7 @@ export default function App() {
               Shortcuts (Cmd+K)
             </button>
             <span aria-hidden="true">·</span>
-            <span>BlankPage Studio</span>
+            <span>Case-Study Studio · Academic & Competition Strategy Platform</span>
           </div>
         </footer>
       )}

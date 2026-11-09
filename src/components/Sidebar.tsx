@@ -100,7 +100,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
         <div className="p-4 border-b border-neutral-200/80 dark:border-neutral-800 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <span className="font-editorial text-lg font-semibold text-neutral-900 dark:text-neutral-100">
-              Documents
+              Case Briefs & Decks
             </span>
             <span className="text-xs text-neutral-400 font-mono tabular-nums">
               ({documents.length})
@@ -125,7 +125,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
             className="flex items-center justify-center gap-1.5 px-3 py-2 text-xs font-semibold text-white bg-neutral-900 hover:bg-neutral-800 dark:bg-neutral-100 dark:text-neutral-900 dark:hover:bg-white rounded-md transition-all shadow-xs active:scale-98"
           >
             <Plus className="w-3.5 h-3.5" />
-            <span>Blank Page</span>
+            <span>New Brief</span>
           </button>
 
           <button
@@ -136,7 +136,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
             className="flex items-center justify-center gap-1.5 px-3 py-2 text-xs font-medium text-neutral-700 dark:text-neutral-300 bg-white dark:bg-neutral-800 hover:bg-neutral-100 dark:hover:bg-neutral-750 border border-neutral-200 dark:border-neutral-700 rounded-md transition-colors"
           >
             <BookOpen className="w-3.5 h-3.5" />
-            <span>Templates</span>
+            <span>Frameworks</span>
           </button>
         </div>
 

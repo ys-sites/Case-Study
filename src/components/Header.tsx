@@ -96,9 +96,12 @@ export const Header: React.FC<HeaderProps> = ({
         <a
           href="#"
           onClick={(e) => { e.preventDefault(); onToggleSidebar(); }}
-          className="text-sm font-bold tracking-tight text-neutral-900 dark:text-neutral-100 whitespace-nowrap shrink-0 flex items-center gap-1.5"
+          className="text-sm font-bold tracking-tight text-neutral-900 dark:text-neutral-100 whitespace-nowrap shrink-0 flex items-center gap-2"
         >
-          <span className="font-editorial text-base italic font-semibold">BlankPage</span>
+          <span className="font-editorial text-base italic font-semibold tracking-tight">Case-Study</span>
+          <span className="hidden md:inline-block text-[10px] font-mono px-1.5 py-0.5 rounded bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-400 border border-neutral-200 dark:border-neutral-700">
+            Strategy Hub
+          </span>
         </a>
 
         <div className="hidden sm:flex items-center text-xs text-neutral-400 dark:text-neutral-500 shrink-0">
