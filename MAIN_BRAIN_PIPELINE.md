@@ -35,6 +35,7 @@ Match the user's intent to the appropriate skill and resource below:
 | **Global Case Competitions Research (132+)** | `data/global_case_competitions_research.csv` | Browse or filter verified global competitions, solution models, and official directory sources. Synchronized in `src/data/competitions.json`. |
 | **Web Studio UI, Simulator & Components** | `src/App.tsx`, `src/components/` | Modify React components. Verify with `npm run build` (`tsc --noEmit && vite build`). Features `CaseSimulatorModal` and `GlobalCompetitionsModal`. |
 | **Motion Graphics & Demonstration Video** | `.agents/skills/motionmaxxing/`, `scroll-film-studio/` | Create scripted motion graphics, GSAP curves, or render 120s demonstration video via FFmpeg. |
+| **Concordia Illustrated Engineering Motion Videos** | `.agents/skills/concordia-motion-director/`, `001 Main/ode-motion-lessons/` | Render warm-white illustrated engineering lessons and quiz walkthroughs adhering to the 6-pillar pipeline across ENGR 213, INDU 211, MIAE 215, and MIAE 221. |
 | **Security Audit of Agent Skills** | `001 Main/05 - Security & Standards/SkillSpector` | Run `python -m skillspector.cli scan <path_to_skill> --no-llm` before adopting any new skill or package. |
 | **Codebase & Architecture Security Review** | `.agents/skills/security-audit/` (Cloudflare) | Run Cloudflare security audit checks across state isolation, API endpoints, and supply chain. |
 

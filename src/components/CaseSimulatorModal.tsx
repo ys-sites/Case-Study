@@ -17,9 +17,11 @@ import {
   Workflow,
   BookOpen,
   ArrowRight,
+  Film,
 } from 'lucide-react';
 import solutionData from '../data/current_case_solution.json';
 import sampleCases from '../data/case_index.json';
+import concordiaVideos from '../data/concordia_video_registry.json';
 
 interface CaseSimulatorModalProps {
   isOpen: boolean;
@@ -32,7 +34,9 @@ export const CaseSimulatorModal: React.FC<CaseSimulatorModalProps> = ({
   onClose,
   onLoadCaseIntoEditor,
 }) => {
-  const [activeTab, setActiveTab] = useState<'solution' | 'pinterest' | 'financials' | 'defense' | 'video' | 'agents' | 'architecture'>('pinterest');
+  const [activeTab, setActiveTab] = useState<'solution' | 'pinterest' | 'financials' | 'defense' | 'video' | 'agents' | 'architecture' | 'concordia'>('pinterest');
+  const [concordiaCourseFilter, setConcordiaCourseFilter] = useState<string>('ALL');
+  const [concordiaSearchQuery, setConcordiaSearchQuery] = useState<string>('');
   const [selectedCaseId, setSelectedCaseId] = useState(solutionData.case_identification.id);
 
   // Financial Interactive Simulator State
@@ -118,6 +122,7 @@ export const CaseSimulatorModal: React.FC<CaseSimulatorModalProps> = ({
         <div className="flex border-b border-stone-200 dark:border-stone-800 bg-stone-100 dark:bg-stone-900 px-6 gap-2 pt-2 overflow-x-auto">
           {[
             { id: 'pinterest', label: 'Pinterest Case Study', icon: BookOpen },
+            { id: 'concordia', label: 'Concordia Motion Pipeline', icon: Film },
             { id: 'solution', label: 'Executive Summary', icon: Award },
             { id: 'financials', label: 'Financial Simulator', icon: Calculator },
             { id: 'defense', label: 'Judge Q&A Defense', icon: ShieldAlert },
@@ -554,6 +559,263 @@ export const CaseSimulatorModal: React.FC<CaseSimulatorModalProps> = ({
                       </p>
                     </div>
                   ))}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {activeTab === 'concordia' && (
+            <div className="space-y-6 max-w-5xl mx-auto">
+              {/* Concordia Hero Banner */}
+              <div className="p-6 rounded-2xl bg-[#FCFBF7] dark:bg-stone-900 border border-amber-200 dark:border-stone-800 text-stone-900 dark:text-stone-100 shadow-sm">
+                <div className="flex flex-wrap items-center justify-between gap-3 mb-3">
+                  <div className="flex items-center gap-2">
+                    <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-amber-100 dark:bg-amber-900/40 text-amber-800 dark:text-amber-300 border border-amber-300 dark:border-amber-700/50">
+                      GINA CODY SCHOOL OF ENGINEERING
+                    </span>
+                    <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-blue-100 dark:bg-blue-900/40 text-blue-800 dark:text-blue-300 border border-blue-300 dark:border-blue-700/50">
+                      127 EDITED VIDEOS
+                    </span>
+                  </div>
+                  <span className="text-xs font-mono text-stone-500 dark:text-stone-400">
+                    Deterministic Canvas Engine · 6-Pillar Pipeline
+                  </span>
+                </div>
+                <h3 className="text-xl font-bold tracking-tight text-stone-900 dark:text-white mb-2">
+                  Concordia Engineering Illustrated Motion-Video Director
+                </h3>
+                <p className="text-xs text-stone-600 dark:text-stone-300 leading-relaxed max-w-3xl">
+                  Comprehensive architectural standard for deterministic educational engineering films. Powered by a warm-white 
+                  illustrated notebook canvas (<code className="font-mono text-amber-700 dark:text-amber-300">#FCFBF7</code>), 
+                  Kokoro-82M neural narration, live KaTeX soft-mask write-on, and procedural audio mastering across four core undergraduate courses.
+                </p>
+                
+                {/* 4 Course Counters */}
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-4 pt-4 border-t border-amber-200/60 dark:border-stone-800">
+                  {[
+                    { code: 'ENGR 213', label: 'Ordinary Diff. Equations', count: 28, color: 'text-blue-600 dark:text-blue-400' },
+                    { code: 'MIAE 221', label: 'Materials Science & Eng.', count: 38, color: 'text-emerald-600 dark:text-emerald-400' },
+                    { code: 'INDU 211', label: 'Production & Mfg Systems', count: 54, color: 'text-amber-600 dark:text-amber-400' },
+                    { code: 'MIAE 215', label: 'C++ CodeLab & Memory', count: 7, color: 'text-purple-600 dark:text-purple-400' },
+                  ].map((c) => (
+                    <div key={c.code} className="p-3 rounded-xl bg-white/80 dark:bg-stone-950/80 border border-stone-200 dark:border-stone-800 text-center">
+                      <div className={`text-lg font-bold font-mono ${c.color}`}>{c.count} Videos</div>
+                      <div className="text-xs font-semibold text-stone-900 dark:text-stone-100">{c.code}</div>
+                      <div className="text-[10px] text-stone-500 dark:text-stone-400 truncate">{c.label}</div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* The 6 Architectural Pillars Grid */}
+              <div>
+                <h4 className="text-xs font-bold uppercase tracking-wider text-stone-500 dark:text-stone-400 mb-3">
+                  The 6 Core Architectural Pillars (Permanent Video Directive)
+                </h4>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-3.5">
+                  {[
+                    {
+                      num: '01',
+                      title: 'Warm-White Notebook Style',
+                      tag: 'VISUAL DIRECTION',
+                      color: 'border-amber-400/80',
+                      points: [
+                        'Warm paper canvas (#FCFBF7) with dot grid texture',
+                        'Fine dark-ink contours (#1E242B) + dimensional 3D forms',
+                        'KaTeX live left-to-right 90px soft-mask write-on',
+                        'Continuous motion: term updates or rotates every 3-6s',
+                      ],
+                    },
+                    {
+                      num: '02',
+                      title: 'Two Video Archetypes',
+                      tag: 'PEDAGOGICAL STRUCTURE',
+                      color: 'border-blue-400/80',
+                      points: [
+                        'Archetype A (Topics): 7-stage narrative arc (Hook -> Form -> Recipe -> Examples -> Prediction -> Traps -> Recap)',
+                        'Archetype B (Walkthroughs): "Solution-First" Law',
+                        'Frame 0 = Step 1; never reread prompt aloud',
+                        'Zero skipped algebra (every intermediate step shown)',
+                      ],
+                    },
+                    {
+                      num: '03',
+                      title: 'The Patient Tutor Persona',
+                      tag: 'VOICEOVER & SPEED',
+                      color: 'border-emerald-400/80',
+                      points: [
+                        'Local Kokoro-82M neural TTS (af_heart voice)',
+                        'Pacing: 0.90x to 0.96x speed (calm & conversational)',
+                        'Phonetic math: "d y by d x" instead of raw LaTeX tokens',
+                        '0.35s - 0.60s breathing micro-pauses after formulas',
+                      ],
+                    },
+                    {
+                      num: '04',
+                      title: 'Deterministic Canvas Engine',
+                      tag: 'RENDERING RUNTIME',
+                      color: 'border-purple-400/80',
+                      points: [
+                        'Pure deterministic function of time f(t)',
+                        'Headless Chromium (puppeteer-core) + FFmpeg',
+                        'Scenes: write.js, xy.js, atoms.js, crystal.js, doodle.js, code.js',
+                        'Generates matching warm-white high-contrast posters',
+                      ],
+                    },
+                    {
+                      num: '05',
+                      title: 'Code-Synthesized Music',
+                      tag: 'AUDIO & DUCKING',
+                      color: 'border-rose-400/80',
+                      points: [
+                        'Warm ambient pad synthesized in code (< 1.5 kHz)',
+                        'Sidechain ducking: 22-27 dB below speech',
+                        'Procedural SFX: paper swish, pen ticks, chime',
+                        'Mastered to -16 LUFS integrated loudness & -1.5 dBTP',
+                      ],
+                    },
+                    {
+                      num: '06',
+                      title: 'Website Registry & Schema',
+                      tag: 'INTEGRATION',
+                      color: 'border-cyan-400/80',
+                      points: [
+                        'Synchronized in concordia/website videoSources.ts',
+                        'Course-specific gates: ENGR213, MIAE221, INDU211, MIAE215',
+                        'Explicit seconds-based chapter timeline markers',
+                        'Strict Anonymity Law: zero personal student names',
+                      ],
+                    },
+                  ].map((p) => (
+                    <div
+                      key={p.num}
+                      className={`p-4 rounded-xl bg-white dark:bg-stone-950 border ${p.color} shadow-sm flex flex-col justify-between`}
+                    >
+                      <div>
+                        <div className="flex items-center justify-between mb-2">
+                          <span className="font-mono text-xs font-bold text-stone-400 dark:text-stone-500">
+                            PILLAR {p.num}
+                          </span>
+                          <span className="px-2 py-0.5 rounded text-[9px] font-bold bg-stone-100 dark:bg-stone-800 text-stone-700 dark:text-stone-300">
+                            {p.tag}
+                          </span>
+                        </div>
+                        <h5 className="text-sm font-bold text-stone-900 dark:text-stone-100 mb-2.5">
+                          {p.title}
+                        </h5>
+                        <ul className="space-y-1.5 text-[11px] text-stone-600 dark:text-stone-300">
+                          {p.points.map((pt, idx) => (
+                            <li key={idx} className="flex items-start gap-1.5">
+                              <span className="text-amber-500 font-bold mt-0.5">•</span>
+                              <span>{pt}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* 127 Videos Interactive Catalog */}
+              <div className="p-5 rounded-2xl bg-white dark:bg-stone-950 border border-stone-200 dark:border-stone-800 shadow-sm space-y-4">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                  <div>
+                    <h4 className="text-sm font-bold text-stone-900 dark:text-stone-100">
+                      Catalog of 127 Edited & Published Engineering Videos
+                    </h4>
+                    <p className="text-xs text-stone-500 dark:text-stone-400">
+                      Filtered by course and searchable across registry IDs and lecture titles.
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="text"
+                      placeholder="Search title, ID, or topic..."
+                      value={concordiaSearchQuery}
+                      onChange={(e) => setConcordiaSearchQuery(e.target.value)}
+                      className="px-3 py-1.5 text-xs rounded-lg border border-stone-300 dark:border-stone-700 bg-stone-50 dark:bg-stone-900 text-stone-900 dark:text-stone-100 focus:outline-none focus:ring-1 focus:ring-amber-500 w-48 sm:w-60"
+                    />
+                  </div>
+                </div>
+
+                {/* Course Filter Tabs */}
+                <div className="flex flex-wrap gap-2 pt-1 border-t border-stone-100 dark:border-stone-800">
+                  {['ALL', 'ENGR213', 'MIAE221', 'INDU211', 'MIAE215'].map((course) => {
+                    const isSelected = concordiaCourseFilter === course;
+                    return (
+                      <button
+                        key={course}
+                        onClick={() => setConcordiaCourseFilter(course)}
+                        className={`px-3 py-1 rounded-lg text-xs font-semibold transition ${
+                          isSelected
+                            ? 'bg-amber-500 text-white shadow-sm'
+                            : 'bg-stone-100 dark:bg-stone-900 text-stone-600 dark:text-stone-400 hover:bg-stone-200 dark:hover:bg-stone-800'
+                        }`}
+                      >
+                        {course === 'ALL' ? 'All (127)' : `${course} (${concordiaVideos.filter(v => v.course === course).length})`}
+                      </button>
+                    );
+                  })}
+                </div>
+
+                {/* Video Table List */}
+                <div className="max-h-96 overflow-y-auto space-y-2 pr-1">
+                  {concordiaVideos
+                    .filter((v) => {
+                      if (concordiaCourseFilter !== 'ALL' && v.course !== concordiaCourseFilter) return false;
+                      if (!concordiaSearchQuery.trim()) return true;
+                      const q = concordiaSearchQuery.toLowerCase();
+                      return (
+                        v.title.toLowerCase().includes(q) ||
+                        v.id.toLowerCase().includes(q) ||
+                        v.visual_style.toLowerCase().includes(q)
+                      );
+                    })
+                    .slice(0, 50)
+                    .map((v) => (
+                      <div
+                        key={v.id}
+                        className="p-3 rounded-xl bg-stone-50 dark:bg-stone-900/60 border border-stone-200 dark:border-stone-800/80 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs"
+                      >
+                        <div className="space-y-1">
+                          <div className="flex items-center gap-2">
+                            <span className="font-mono text-[10px] text-stone-400 dark:text-stone-500">#{v.num}</span>
+                            <span
+                              className={`px-2 py-0.5 rounded text-[10px] font-bold ${
+                                v.course === 'ENGR213'
+                                  ? 'bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300'
+                                  : v.course === 'MIAE221'
+                                  ? 'bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-300'
+                                  : v.course === 'INDU211'
+                                  ? 'bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-300'
+                                  : 'bg-purple-100 dark:bg-purple-900/40 text-purple-700 dark:text-purple-300'
+                              }`}
+                            >
+                              {v.course}
+                            </span>
+                            <span className="font-semibold text-stone-900 dark:text-stone-100">{v.title}</span>
+                          </div>
+                          <div className="text-[11px] text-stone-500 dark:text-stone-400 font-mono truncate max-w-xl">
+                            {v.id} · {v.visual_style}
+                          </div>
+                        </div>
+
+                        <div className="flex items-center gap-3 text-stone-500 dark:text-stone-400 text-[11px] self-end sm:self-center font-mono">
+                          <span>{v.duration_seconds}s</span>
+                          <span>·</span>
+                          <span>{v.chapters_count} ch</span>
+                          <span className="px-1.5 py-0.5 rounded text-[9px] uppercase font-bold bg-stone-200 dark:bg-stone-800 text-stone-700 dark:text-stone-300">
+                            {v.kind}
+                          </span>
+                        </div>
+                      </div>
+                    ))}
+                </div>
+
+                <div className="p-3 rounded-lg bg-stone-100 dark:bg-stone-900 text-stone-600 dark:text-stone-400 text-xs flex items-center justify-between font-mono">
+                  <span>CLI Integration: python scripts/concordia_motion_director.py list</span>
+                  <span className="text-amber-600 dark:text-amber-400 font-bold">127 Videos Verified</span>
                 </div>
               </div>
             </div>

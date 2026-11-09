@@ -82,3 +82,14 @@ On every prompt where changes, fixes, enhancements, or new files are created or 
 3. **Mandatory Remote Target**:
    - All commits and branch pushes MUST strictly target: `https://github.com/ys-sites/Case-Study.git`
    - Never push to alternate repositories without explicit user instruction.
+
+---
+
+## 6. CONCORDIA ILLUSTRATED ENGINEERING MOTION-VIDEO DIRECTIVE (THE 6 PILLARS)
+Whenever designing, scripting, or rendering motion-graphics, visual lessons, or problem walkthroughs for engineering courses (ENGR 213, INDU 211, MIAE 215, MIAE 221), the agent MUST strictly adhere to the 6 pillars defined in `.agents/skills/concordia-motion-director/SKILL.md`:
+1. **Pillar 1: Warm-White Illustrated Notebook Style**: Warm paper canvas (`#FCFBF7` to `#FAF8F3`), fine dark-ink contour lines (`#1E242B`), dimensional 3D isometric objects (crystal unit cells, Miller planes, stress-strain bars, MRP trees), real KaTeX mathematical write-on (`write.js`), and continuous camera choreography.
+2. **Pillar 2: Two Video Archetypes**: Archetype A (7-Stage Narrative Arc for Topic Lessons) and Archetype B ("Solution-First" Law where Frame 0 = Step 1 for Quiz/Exam Solutions).
+3. **Pillar 3: The Patient One-on-One Tutor**: Local `Kokoro-82M` neural TTS (`af_heart` at 0.90x-0.96x), phonetic spoken math, and 0.35s-0.6s breathing micro-pauses after key formulas.
+4. **Pillar 5: Deterministic Canvas Engine**: Pure function of time $f(t)$ driven by word-level beats (`beats.json`), headless Chromium + FFmpeg via `001 Main/ode-motion-lessons`, scene builders (`write.js`, `xy.js`, `sheet.js`, `atoms.js`, `crystal.js`, `doodle.js`, `code.js`), and high-contrast warm-white posters.
+5. **Pillar 5: Code-Synthesized Music & Ducking**: Original score ducked 22-27 dB under voice, procedural pen ticks and chapter swishes, normalized to -16 LUFS.
+6. **Pillar 6: Website Registry & Chapter Schema**: Synchronized in `videoSources.ts` with explicit seconds-based chapter markers and poster metadata.
