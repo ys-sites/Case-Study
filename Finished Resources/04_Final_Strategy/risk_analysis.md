@@ -2,9 +2,9 @@
 
 | Risk | Likelihood | Impact | Mitigation | Trigger |
 | --- | --- | --- | --- | --- |
-| Truckers do not adopt appointments | Medium | High | Slot rules co-designed with trucking firms, grace windows, priority lanes for on-time trucks, a walk-in lane kept during transition | Slot adherence < 75% for 2 weeks |
-| Dwell does not fall enough | Medium | High | Free-time tariff, release alerts, empties evacuation agreements; parcel design kept ready as phase 2 | Dwell > 5.3 days at month 9 |
-| Cutover disrupts live operations | Medium | High | Lane-by-lane and block-by-block rollout, parallel running, go-lives outside vessel peaks, rollback plan | Gate throughput below baseline for 2 shifts |
-| Staff resistance and role concerns | Medium | Medium | Staff involved before tools arrive, paid training, no layoffs from this program, redeployment into the planning cell | Training completion < 90% or AI advice acceptance < 50% |
-| AI advice wrong or data quality poor | Low | High | Advisory only, 6 weeks in shadow mode, hard safety rules locked, weekly model review | Override rate > 30% or any near-miss linked to a recommendation |
-| Savings fall short (customs-driven penalties) | Medium | Medium | Holds flagged early in the portal; savings tracked monthly by owner; plan still pays back at $3.1M/yr | Penalties down < 25% by month 12 |
+| AGV breakdown or navigation fault | Medium | High | Preventive maintenance plan and vendor SLA, sensor health monitoring, fenced lane, manual tractors as instant fallback | AGV availability < 90% or any unplanned stop in the lane |
+| Tracking or database errors (wrong slot recorded) | Medium | High | OCR and crane-sensor double check on every move, nightly reconciliation audit, manual search procedure kept | Position accuracy < 99% in the daily audit |
+| AI slotting or demand forecast wrong | Medium | Medium | Re-slots run weekly on actual bookings; planners approve; segregation rules locked; 6 weeks of shadow mode | Override rate > 30% or rehandles rise for 2 weeks |
+| Re-zoning moves disrupt live operations | Medium | High | One block at a time, overnight housekeeping moves only, go-lives outside vessel peaks, rollback plan | Gate throughput below baseline for 2 shifts |
+| Employee resistance to AGVs and AI | Medium | Medium | No layoffs from this program; drivers retrain as AGV supervisors and technicians; staff co-design before tools arrive | Training completion < 90% or advice acceptance < 50% |
+| AGV pilot costs more than it saves | Medium | Medium | Fixed-price quote, pilot capped at 2 units, fleet expands only if the month-12 gate passes | Cost per move above manual tractor after 3 months |

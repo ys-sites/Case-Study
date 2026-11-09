@@ -16,10 +16,10 @@ And there are hard limits. Upfront investment at most $10M CAD; it does not need
 Which package, within the $10M upfront budget, attacks PortFlow's core issue so that at +20% volume the yard runs at or below 85% utilization and trucks turn in under 45 minutes by year five?
 
 **6. Three alternatives**
-Three alternatives are on the table: option A, Gate quick win: truck appointments and release portal; option B, Integrated flow package: shared visibility, appointments, AI-assisted yard planning; option C, Yard expansion on the 15-acre parcel with two added RTGs. Video two shows how to compare them.
+Three alternatives are on the table: option A, Static re-zoning only: one-off MIP and CRAFT layout; option B, Dynamic yard: demand zoning, MIP/CRAFT slotting, tracking database, AI AGV pilot; option C, Yard expansion on the 15-acre parcel with two added RTGs. Video two shows how to compare them.
 
 **7. Operations & engineering improvement**
-This is a flow problem that looks like a space problem. Judges test whether you separate causes from symptoms with the case data (Little's Law on dwell), resist the obvious expansion, and still cover finance, operations and safety, supply chain, change management and AI within a $10M budget. The scoring rewards diagnosis, rigour and a defensible recommendation.
+Judges test whether you separate causes from symptoms, resist the obvious expansion, and use analytics and automation responsibly, covering finance, operations and safety, supply chain, change management and AI within $10M. The scoring rewards diagnosis, rigour and a defensible recommendation.
 
 # How to Tackle
 
@@ -30,13 +30,13 @@ How to tackle case PORTFLOW. A step-by-step method you can repeat on any case li
 Cases like this follow the operations & engineering improvement model: Baseline KPIs, then bottleneck/root cause, then optimize/simulate, then pilot, then ROI + KPIs.
 
 **3. Break the question into three MECE branches**
-Start with one question: How does PortFlow reach <= 85% yard utilization and < 45-minute truck turns at +20% volume, within $10M? Split it into three branches with no overlap: Yard inventory (dwell), Yard handling (rehandles), Gate and landside (arrivals). Each person on the team owns one branch.
+Start with one question: How does PortFlow reach <= 85% yard utilization and < 45-minute truck turns at +20% volume, within $10M? Split it into three branches with no overlap: Placement (where boxes sit), Order and timing (when they leave), Information and movement. Each person on the team owns one branch.
 
 **4. Commit to a guess in the first 20 minutes**
-Within twenty minutes, write down a hypothesis you can prove wrong. Here: The core issue is fragmented release and schedule information, not a lack of space. Sharing it, booking trucks against ready containers and planning the yard around known pickups cuts dwell below 4.83 days and truck turn below 45 minutes without new land. If the data kills it, pivot and say so. Judges reward honesty.
+Within twenty minutes, write down a hypothesis you can prove wrong. Here: PortFlow's yard is static and blind. Demand-based zoning (MIP + CRAFT), dynamic slotting on one tracked database, and shared release status cut handling time and dwell enough to meet both objectives without new land; AI AGVs are piloted, not bet on. If the data kills it, pivot and say so. Judges reward honesty.
 
 **5. The tools that fit this problem**
-Use only the tools that fit. Little's Law: inventory = throughput x dwell. Cause-versus-symptom tree (5 whys). Queueing view of truck arrivals: peak-to-average ratio. Then do the quick math: Today: 21,120 TEU / 6 days = 3,520 TEU/day; 21,120 / 24,000 = 88%. Year 5: 4,224 TEU/day x 6 days = 25,344 TEU = 106% of capacity.
+Use only the tools that fit. MIP: container-group-to-block assignment. CRAFT: pairwise exchange layout improvement. Demand forecasting with seasonality. Then do the quick math: Today: 21,120 / 24,000 TEU = 88% full. Year 5 at today's stay: about 25,300 TEU, over capacity.
 
 **6. Compare every option on the same basis**
 Score all three options with explicit weights: target attainment, return, payback, downside resilience and budget headroom. The budget is a hard gate: an option over budget cannot win.
@@ -49,35 +49,35 @@ Finally, protect your time. 0:00 to 0:25, Read & align. 0:25 to 0:55, Quick math
 
 # Solution & Submission Brief
 
-**1. Option B: Integrated flow package: shared visibility, appointments, AI-assisted yard planning**
+**1. Option B: Dynamic yard: demand zoning, MIP/CRAFT slotting, tracking database, AI AGV pilot**
 The solution to case PORTFLOW, and everything to check before you submit.
 
 **2. Recommend Option B**
-Our answer: option B, Integrated flow package: shared visibility, appointments, AI-assisted yard planning. It delivers 21.7 percent against a target of 19.5 percent, for 9.00 million dollars of a 10.00 million dollars budget.
+Our answer: option B, Dynamic yard: demand zoning, MIP/CRAFT slotting, tracking database, AI AGV pilot. It delivers 21.7 percent against a target of 19.5 percent, for 9.40 million dollars of a 10.00 million dollars budget.
 
 **3. Where it sits on the solution ladder**
 Option B is recommended. It is both the cheapest compliant option and the best value: a dominant choice.
 
-**4. $9.00M upfront · five-year net -$16.50M**
-The package has 7 initiatives for 9.00 million dollars upfront, 1.30 million dollars a year to run, and 6.40 million dollars a year of savings. Using the case formula, the five-year net financial impact is minus 16.50 million dollars, a net saving.
+**4. $9.40M upfront · five-year net -$16.10M**
+The package has 7 initiatives for 9.40 million dollars upfront, 1.30 million dollars a year to run, and 6.40 million dollars a year of savings. Using the case formula, the five-year net financial impact is minus 16.10 million dollars, a net saving.
 
 **5. Operations, supply chain, people, AI**
-Operations & Safety: Storage: dwell 6.0 to 4.7 days keeps year-5 utilization near 83% with no new land Supply Chain: Lines, trucks, rail and customers share one release and ETA status Organizational Change Management: Staff co-design rules before tools arrive; training in paid time with super-users per shift AI & Automation: AI recommends stacking and overnight moves; planners approve; safety rules locked
+Operations & Safety: Zoning and slotting: fast movers near exits, stacks by pickup order Supply Chain: One database feeds lines, trucks, rail and customers Organizational Change Management: Co-design before tools; paid training; drivers can become AGV supervisors AI & Automation: MIP + CRAFT layout; weekly dynamic slotting; planners approve
 
-**6. Five-year cash flow · NPV $6.49M**
-The economics: a run-rate benefit of 6.40 million dollars a year, net present value of 6.49 million dollars, and payback in 32 months.
+**6. Five-year cash flow · NPV $6.09M**
+The economics: a run-rate benefit of 6.40 million dollars a year, net present value of 6.09 million dollars, and payback in 33 months.
 
 **7. What happens when the numbers move**
-Now stress it. If performance falls fifteen percent and costs rise twenty, the gain is 18.45 percent and NPV is 620 thousand dollars. The target would be missed, which is why the pilot gate comes first. The most sensitive driver is annual benefit: achieved gain x unit value.
+Now stress it. If performance falls fifteen percent and costs rise twenty, the gain is 18.45 percent and NPV is 140 thousand dollars. The target would be missed, which is why the pilot gate comes first. The most sensitive driver is annual benefit: achieved gain x unit value.
 
 **8. 30 / 60 / 90 days**
-Days 1 to 30: Validate & pilot. Confirm baseline data and the binding constraint. Days 31 to 60: Prove & decide. Pilot gate: Slot adherence at least 80% on pilot lanes and no safety incidents. Days 61 to 90: Scale & control. Begin scale appointments, positioning and ai advice.
+Days 1 to 30: Validate & pilot. Confirm baseline data and the binding constraint. Days 31 to 60: Prove & decide. Pilot gate: Layout model beats today's travel by at least 20% in simulation; AGV safety case signed. Days 61 to 90: Scale & control. Begin re-zone, go dynamic, pilot 2 agvs.
 
 **9. Top three risks and their triggers**
-The three risks to manage: Truckers do not adopt appointments, mitigated by slot rules co-designed with trucking firms, grace windows, priority lanes for on-time trucks, a walk-in lane kept during transition. Dwell does not fall enough, mitigated by free-time tariff, release alerts, empties evacuation agreements. Cutover disrupts live operations, mitigated by lane-by-lane and block-by-block rollout, parallel running, go-lives outside vessel peaks, rollback plan.
+The three risks to manage: AGV breakdown or navigation fault, mitigated by preventive maintenance plan and vendor sla, sensor health monitoring, fenced lane, manual tractors as instant fallback. Tracking or database errors (wrong slot recorded), mitigated by ocr and crane-sensor double check on every move, nightly reconciliation audit, manual search procedure kept. AI slotting or demand forecast wrong, mitigated by re-slots run weekly on actual bookings.
 
 **10. Questions you will be asked**
-Question: Why not just build on the 15-acre parcel? Answer: Space alone fails the objective: 25,344 TEU / 28,000 TEU = 90.5% at year 5. It costs about $14.5M, over the $10M budget, and must be phased around live operations. Cutting dwell to 4.7 days reaches about 83% on today's footprint. We keep the parcel as a phase-2 option if dwell stays above 5.6 days. Question: What if dwell does not fall as much as you assume? Answer: The threshold is explicit: dwell at or below 4.83 days meets 85% without land. If dwell is above 5.3 days at month 9 (our gate trigger), we tighten the free-time tariff and start the parcel design. With dwell at 5.6 days or less, the parcel would then meet the objective.
+Question: Why not just build on the 15-acre parcel? Answer: Space alone fails the objective: 25,344 / 28,000 TEU = 90.5% at year 5, for about $14.5M, over budget. Cutting dwell to 4.7 days reaches about 83% on today's footprint. Question: Why only two AGVs? Answer: The evidence is mixed: successful automated terminals cut operating costs 25-55%, but some lose 7-15% productivity. Two units in a fenced lane prove uptime, cost per move and safety for $1.6M; the fleet grows only if the month-12 gate passes.
 
 **11. Pre-submission checklist**
 Before you submit, run the checklist. 10 of 11 items are ready. Still open: assumptions validated with real data. Replace the assumptions with real data if you can, or state them clearly on an appendix slide.

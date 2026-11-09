@@ -1,5 +1,5 @@
 # All Ideas Considered
 
-- **Option A** — Gate quick win: truck appointments and release portal (CAD $4,100,000, 10%)
-- **Option B** — Integrated flow package: shared visibility, appointments, AI-assisted yard planning (CAD $9,000,000, 21.7%)
+- **Option A** — Static re-zoning only: one-off MIP and CRAFT layout (CAD $1,600,000, 3.9%)
+- **Option B** — Dynamic yard: demand zoning, MIP/CRAFT slotting, tracking database, AI AGV pilot (CAD $9,400,000, 21.7%)
 - **Option C** — Yard expansion on the 15-acre parcel with two added RTGs (CAD $14,500,000, 14.3%)

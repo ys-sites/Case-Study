@@ -16,6 +16,6 @@
     "Customs holds and missing documentation cannot be overridden by PortFlow",
     "Up to 8 content slides for a 10-minute presentation"
   ],
-  "suggested_analysis": "Little's Law (inventory = throughput x dwell), cause-versus-symptom tree, truck arrival queue analysis",
+  "suggested_analysis": "Cause-versus-symptom tree, MIP block assignment, CRAFT layout improvement, demand forecasting",
   "rubric": {}
 }

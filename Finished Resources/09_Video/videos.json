@@ -1,19 +1,19 @@
 [
   {
     "file": "01_The_Case.mp4",
-    "duration_s": 150.6,
+    "duration_s": 149.5,
     "scenes": 7,
     "narrated": true
   },
   {
     "file": "02_How_To_Tackle.mp4",
-    "duration_s": 173.8,
+    "duration_s": 161.5,
     "scenes": 8,
     "narrated": true
   },
   {
     "file": "03_Solution_Brief.mp4",
-    "duration_s": 258.7,
+    "duration_s": 244.4,
     "scenes": 12,
     "narrated": true
   }

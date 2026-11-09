@@ -63,21 +63,17 @@ Customs holds and missing documentation cannot be overridden by PortFlow.
 Which package, within the $10M upfront budget, attacks PortFlow's core issue so that at +20% volume the yard runs at or below 85% utilization and trucks turn in under 45 minutes by year five?
 
 17
-00:01:45,660 --> 00:02:02,000
-Three alternatives are on the table: option A, Gate quick win: truck appointments and release portal; option B, Integrated flow package: shared visibility, appointments, AI-assisted yard planning; option C, Yard expansion on the 15-acre parcel with two added RTGs.
+00:01:45,660 --> 00:02:04,982
+Three alternatives are on the table: option A, Static re-zoning only: one-off MIP and CRAFT layout; option B, Dynamic yard: demand zoning, MIP/CRAFT slotting, tracking database, AI AGV pilot; option C, Yard expansion on the 15-acre parcel with two added RTGs.
 
 18
-00:02:02,000 --> 00:02:05,364
+00:02:04,982 --> 00:02:07,668
 Video two shows how to compare them.
 
 19
-00:02:06,360 --> 00:02:09,951
-This is a flow problem that looks like a space problem.
+00:02:08,670 --> 00:02:23,995
+Judges test whether you separate causes from symptoms, resist the obvious expansion, and use analytics and automation responsibly, covering finance, operations and safety, supply chain, change management and AI within $10M.
 
 20
-00:02:09,951 --> 00:02:25,358
-Judges test whether you separate causes from symptoms with the case data (Little's Law on dwell), resist the obvious expansion, and still cover finance, operations and safety, supply chain, change management and AI within a $10M budget.
-
-21
-00:02:25,358 --> 00:02:29,928
+00:02:23,995 --> 00:02:28,806
 The scoring rewards diagnosis, rigour and a defensible recommendation.

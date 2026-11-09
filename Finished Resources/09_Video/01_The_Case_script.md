@@ -16,7 +16,7 @@ And there are hard limits. Upfront investment at most $10M CAD; it does not need
 Which package, within the $10M upfront budget, attacks PortFlow's core issue so that at +20% volume the yard runs at or below 85% utilization and trucks turn in under 45 minutes by year five?
 
 **6. Three alternatives**
-Three alternatives are on the table: option A, Gate quick win: truck appointments and release portal; option B, Integrated flow package: shared visibility, appointments, AI-assisted yard planning; option C, Yard expansion on the 15-acre parcel with two added RTGs. Video two shows how to compare them.
+Three alternatives are on the table: option A, Static re-zoning only: one-off MIP and CRAFT layout; option B, Dynamic yard: demand zoning, MIP/CRAFT slotting, tracking database, AI AGV pilot; option C, Yard expansion on the 15-acre parcel with two added RTGs. Video two shows how to compare them.
 
 **7. Operations & engineering improvement**
-This is a flow problem that looks like a space problem. Judges test whether you separate causes from symptoms with the case data (Little's Law on dwell), resist the obvious expansion, and still cover finance, operations and safety, supply chain, change management and AI within a $10M budget. The scoring rewards diagnosis, rigour and a defensible recommendation.
+Judges test whether you separate causes from symptoms, resist the obvious expansion, and use analytics and automation responsibly, covering finance, operations and safety, supply chain, change management and AI within $10M. The scoring rewards diagnosis, rigour and a defensible recommendation.

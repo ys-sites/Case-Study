@@ -10,7 +10,7 @@ Lead with the core issue in one line: containers stay too long and move blind. T
 Separated using the case data
 
 ### 4. 3. Recommended package
-CAD $9,000,000 upfront of CAD $10,000,000; owners named
+CAD $9,400,000 upfront of CAD $10,000,000; owners named
 
 ### 5. 4. Directions considered: decision matrix
 Weighted criteria; budget is a hard gate

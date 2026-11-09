@@ -11,117 +11,117 @@ A step-by-step method you can repeat on any case like this one.
 Cases like this follow the operations & engineering improvement model: Baseline KPIs, then bottleneck/root cause, then optimize/simulate, then pilot, then ROI + KPIs.
 
 4
-00:00:22,000 --> 00:00:32,474
+00:00:22,000 --> 00:00:31,897
 Start with one question: How does PortFlow reach <= 85% yard utilization and < 45-minute truck turns at +20% volume, within $10M?
 
 5
-00:00:32,474 --> 00:00:42,704
-Split it into three branches with no overlap: Yard inventory (dwell), Yard handling (rehandles), Gate and landside (arrivals).
+00:00:31,897 --> 00:00:42,331
+Split it into three branches with no overlap: Placement (where boxes sit), Order and timing (when they leave), Information and movement.
 
 6
-00:00:42,704 --> 00:00:45,952
+00:00:42,331 --> 00:00:45,400
 Each person on the team owns one branch.
 
 7
-00:00:46,950 --> 00:00:51,538
+00:00:46,400 --> 00:00:51,245
 Within twenty minutes, write down a hypothesis you can prove wrong.
 
 8
-00:00:51,538 --> 00:00:57,632
-Here: The core issue is fragmented release and schedule information, not a lack of space.
+00:00:51,245 --> 00:00:54,282
+Here: PortFlow's yard is static and blind.
 
 9
-00:00:57,632 --> 00:01:09,341
-Sharing it, booking trucks against ready containers and planning the yard around known pickups cuts dwell below 4.83 days and truck turn below 45 minutes without new land.
+00:00:54,282 --> 00:01:09,613
+Demand-based zoning (MIP + CRAFT), dynamic slotting on one tracked database, and shared release status cut handling time and dwell enough to meet both objectives without new land; AI AGVs are piloted, not bet on.
 
 10
-00:01:09,341 --> 00:01:12,012
+00:01:09,613 --> 00:01:12,433
 If the data kills it, pivot and say so.
 
 11
-00:01:12,012 --> 00:01:13,518
+00:01:12,433 --> 00:01:14,024
 Judges reward honesty.
 
 12
-00:01:14,520 --> 00:01:18,033
+00:01:15,020 --> 00:01:17,831
 Use only the tools that fit.
 
 13
-00:01:18,033 --> 00:01:23,679
-Little's Law: inventory = throughput x dwell.
+00:01:17,831 --> 00:01:21,948
+MIP: container-group-to-block assignment.
 
 14
-00:01:23,679 --> 00:01:28,071
-Cause-versus-symptom tree (5 whys).
+00:01:21,948 --> 00:01:26,366
+CRAFT: pairwise exchange layout improvement.
 
 15
-00:01:28,071 --> 00:01:34,971
-Queueing view of truck arrivals: peak-to-average ratio.
+00:01:26,366 --> 00:01:29,980
+Demand forecasting with seasonality.
 
 16
-00:01:34,971 --> 00:01:46,263
-Then do the quick math: Today: 21,120 TEU / 6 days = 3,520 TEU/day; 21,120 / 24,000 = 88%.
+00:01:29,980 --> 00:01:36,205
+Then do the quick math: Today: 21,120 / 24,000 TEU = 88% full.
 
 17
-00:01:46,263 --> 00:01:54,168
-Year 5: 4,224 TEU/day x 6 days = 25,344 TEU = 106% of capacity.
+00:01:36,205 --> 00:01:41,828
+Year 5 at today's stay: about 25,300 TEU, over capacity.
 
 18
-00:01:55,170 --> 00:02:03,687
+00:01:42,830 --> 00:01:51,347
 Score all three options with explicit weights: target attainment, return, payback, downside resilience and budget headroom.
 
 19
-00:02:03,687 --> 00:02:07,842
+00:01:51,347 --> 00:01:55,502
 The budget is a hard gate: an option over budget cannot win.
 
 20
-00:02:08,840 --> 00:02:11,148
+00:01:56,500 --> 00:01:58,808
 Then build a solution ladder.
 
 21
-00:02:11,148 --> 00:02:13,137
+00:01:58,808 --> 00:02:00,797
 Level one, the quick win.
 
 22
-00:02:13,137 --> 00:02:17,355
+00:02:00,797 --> 00:02:05,015
 Level two, the cheapest option that meets the target.
 
 23
-00:02:17,355 --> 00:02:19,981
+00:02:05,015 --> 00:02:07,641
 Level three, the value maximiser.
 
 24
-00:02:19,981 --> 00:02:21,891
+00:02:07,641 --> 00:02:09,551
 Level four, the stretch.
 
 25
-00:02:21,891 --> 00:02:26,984
+00:02:09,551 --> 00:02:14,644
 Your recommendation should explain where it sits on this ladder.
 
 26
-00:02:27,980 --> 00:02:31,076
+00:02:15,640 --> 00:02:18,736
 Finally, protect your time.
 
 27
-00:02:31,076 --> 00:02:34,171
+00:02:18,736 --> 00:02:21,831
 0:00 to 0:25, Read & align.
 
 28
-00:02:34,171 --> 00:02:37,038
+00:02:21,831 --> 00:02:24,698
 0:25 to 0:55, Quick math.
 
 29
-00:02:37,038 --> 00:02:40,707
+00:02:24,698 --> 00:02:28,367
 0:55 to 1:40, Package & finance.
 
 30
-00:02:40,707 --> 00:02:44,146
+00:02:28,367 --> 00:02:31,806
 1:40 to 2:30, Deck (8 slides).
 
 31
-00:02:44,146 --> 00:02:47,471
+00:02:31,806 --> 00:02:35,131
 2:30 to 3:00, Rehearse & Q&A.
 
 32
-00:02:47,471 --> 00:02:53,204
+00:02:35,131 --> 00:02:40,864
 Video three shows the answer this method produces.

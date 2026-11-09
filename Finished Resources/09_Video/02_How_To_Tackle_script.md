@@ -7,13 +7,13 @@ How to tackle case PORTFLOW. A step-by-step method you can repeat on any case li
 Cases like this follow the operations & engineering improvement model: Baseline KPIs, then bottleneck/root cause, then optimize/simulate, then pilot, then ROI + KPIs.
 
 **3. Break the question into three MECE branches**
-Start with one question: How does PortFlow reach <= 85% yard utilization and < 45-minute truck turns at +20% volume, within $10M? Split it into three branches with no overlap: Yard inventory (dwell), Yard handling (rehandles), Gate and landside (arrivals). Each person on the team owns one branch.
+Start with one question: How does PortFlow reach <= 85% yard utilization and < 45-minute truck turns at +20% volume, within $10M? Split it into three branches with no overlap: Placement (where boxes sit), Order and timing (when they leave), Information and movement. Each person on the team owns one branch.
 
 **4. Commit to a guess in the first 20 minutes**
-Within twenty minutes, write down a hypothesis you can prove wrong. Here: The core issue is fragmented release and schedule information, not a lack of space. Sharing it, booking trucks against ready containers and planning the yard around known pickups cuts dwell below 4.83 days and truck turn below 45 minutes without new land. If the data kills it, pivot and say so. Judges reward honesty.
+Within twenty minutes, write down a hypothesis you can prove wrong. Here: PortFlow's yard is static and blind. Demand-based zoning (MIP + CRAFT), dynamic slotting on one tracked database, and shared release status cut handling time and dwell enough to meet both objectives without new land; AI AGVs are piloted, not bet on. If the data kills it, pivot and say so. Judges reward honesty.
 
 **5. The tools that fit this problem**
-Use only the tools that fit. Little's Law: inventory = throughput x dwell. Cause-versus-symptom tree (5 whys). Queueing view of truck arrivals: peak-to-average ratio. Then do the quick math: Today: 21,120 TEU / 6 days = 3,520 TEU/day; 21,120 / 24,000 = 88%. Year 5: 4,224 TEU/day x 6 days = 25,344 TEU = 106% of capacity.
+Use only the tools that fit. MIP: container-group-to-block assignment. CRAFT: pairwise exchange layout improvement. Demand forecasting with seasonality. Then do the quick math: Today: 21,120 / 24,000 TEU = 88% full. Year 5 at today's stay: about 25,300 TEU, over capacity.
 
 **6. Compare every option on the same basis**
 Score all three options with explicit weights: target attainment, return, payback, downside resilience and budget headroom. The budget is a hard gate: an option over budget cannot win.

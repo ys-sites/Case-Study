@@ -1,6 +1,6 @@
 {
   "version": "2.0.0",
-  "generated_at": "2026-11-09T15:04:42+00:00",
+  "generated_at": "2026-11-09T15:23:24+00:00",
   "case_identification": {
     "id": "PORTFLOW",
     "title": "PortFlow Container Terminal: Yard and Gate Flow",
@@ -26,22 +26,22 @@
       "Customs holds and missing documentation cannot be overridden by PortFlow",
       "Up to 8 content slides for a 10-minute presentation"
     ],
-    "suggested_analysis": "Little's Law (inventory = throughput x dwell), cause-versus-symptom tree, truck arrival queue analysis",
+    "suggested_analysis": "Cause-versus-symptom tree, MIP block assignment, CRAFT layout improvement, demand forecasting",
     "rubric": {}
   },
   "problem_diagnosis": {
-    "core_bottleneck": "The yard problem is a dwell-time problem, not a space problem. Little's Law: 3,520 TEU/day x 6 days = 21,120 TEU (88% of 24,000). At +20% volume (4,224 TEU/day) the same 6-day dwell needs 25,344 TEU, 106% of capacity. Even with the 15-acre parcel (28,000 TEU) utilization would be 90.5%, so space alone cannot meet the 85% objective. Dwell must fall to 4.83 days or less (-19.5%).",
+    "core_bottleneck": "The yard is static and blind. Today 21,120 of 24,000 TEU are in use (88%), containers stay 6 days and trucks take 72 minutes. With +20% volume the yard passes its capacity by year 5 unless containers are placed, moved and released faster; the 15-acre parcel alone would still leave about 90%.",
     "baseline_value": 105.6,
     "baseline_unit": "% of capacity",
     "baseline_metric": "Year-5 yard utilization if nothing changes",
     "target_improvement_percent": 19.5,
     "target_absolute_change": 20.59,
     "root_causes": [
-      "Core issue (cause): fragmented release and schedule information. Release status, vessel changes and pickup plans are not shared across teams, truckers, rail or customers, and planning runs in separate systems on fixed rules.",
-      "It drives dwell: customers learn late that a container is released, so pickups slip and boxes sit in the yard.",
-      "It drives truck queues: with no appointments or readiness information, trucks arrive in concentrated windows and queue 40 minutes.",
-      "It drives rehandles: the system knows the stack but not the exact position, and stacks are not built around known pickup times, so crane time goes on reshuffles and trucks spend 32 minutes inside.",
-      "Symptoms, not causes: yard crowding, $6M overtime, $8M penalties, customers unable to plan and staff anxiety. More land or more overtime treats these without removing the cause."
+      "Core issue (cause): the yard runs on fixed rules with incomplete data. Blocks are not zoned by demand, stacks ignore pickup order and exact position, the layout never adapts as demand shifts by season, and release status is not shared.",
+      "Wrong place: busy container groups sit far from the gate, rail and quay exits, so every move travels further (32 minutes inside).",
+      "Wrong order: stacks are built without knowing pickup time or exact slot, so cranes reshuffle boxes to dig out the one needed (rehandles and $6M overtime).",
+      "Wrong time: demand shifts (a product peaking in December but not in March) while the layout stays fixed, and customers learn late that boxes are released (6-day dwell, 40-minute queues).",
+      "Symptoms, not causes: yard crowding, $6M overtime, $8M penalties, customers unable to plan and staff anxiety."
     ]
   },
   "options_evaluation": {
@@ -70,50 +70,50 @@
     "options": [
       {
         "label": "A",
-        "name": "Gate quick win: truck appointments and release portal",
-        "capex_CAD": 4100000,
-        "improvement_percent": 10.0,
-        "source": "assumption: estimate (overtime -15%, penalties -30%; dwell 6.0 to 5.4 days)",
+        "name": "Static re-zoning only: one-off MIP and CRAFT layout",
+        "capex_CAD": 1600000,
+        "improvement_percent": 3.9,
+        "source": "assumption: estimate (overtime -25%, penalties -6%; effective capacity +4%, dwell unchanged)",
         "within_budget": true,
         "meets_target": false,
-        "npv_CAD": 4157625,
-        "payback_months": 28.5,
-        "annual_benefit_CAD": 3300000,
-        "annual_opex_CAD": 600000,
-        "five_year_net_impact_CAD": -9400000,
-        "why_not": "fixes the gate queue but not the yard; dwell falls only about 10%, so year-5 utilization stays near 95% and rehandles keep trucks inside too long.",
+        "npv_CAD": 4032937,
+        "payback_months": 20.0,
+        "annual_benefit_CAD": 2000000,
+        "annual_opex_CAD": 200000,
+        "five_year_net_impact_CAD": -7400000,
+        "why_not": "a one-off layout goes stale as demand shifts and does not cut dwell, so year-5 utilization stays above 100%.",
         "scores": {
-          "Target attainment": 3.42,
-          "Financial return (NPV)": 9.12,
-          "Payback speed": 5.25,
-          "Downside resilience (-15% perf.)": 4.36,
-          "Budget headroom": 5.9
+          "Target attainment": 1.33,
+          "Financial return (NPV)": 9.21,
+          "Payback speed": 6.67,
+          "Downside resilience (-15% perf.)": 1.7,
+          "Budget headroom": 8.4
         },
-        "weighted_total": 5.63,
+        "weighted_total": 5.22,
         "selected": false
       },
       {
         "label": "B",
-        "name": "Integrated flow package: shared visibility, appointments, AI-assisted yard planning",
-        "capex_CAD": 9000000,
+        "name": "Dynamic yard: demand zoning, MIP/CRAFT slotting, tracking database, AI AGV pilot",
+        "capex_CAD": 9400000,
         "improvement_percent": 21.7,
         "source": "assumption: estimate (overtime -40%, penalties -50%; dwell 6.0 to 4.7 days)",
         "within_budget": true,
         "meets_target": true,
-        "npv_CAD": 6491191,
-        "payback_months": 31.7,
+        "npv_CAD": 6091191,
+        "payback_months": 32.7,
         "annual_benefit_CAD": 6400000,
         "annual_opex_CAD": 1300000,
-        "five_year_net_impact_CAD": -16500000,
+        "five_year_net_impact_CAD": -16100000,
         "why_not": "",
         "scores": {
           "Target attainment": 7.42,
           "Financial return (NPV)": 10.0,
-          "Payback speed": 4.71,
+          "Payback speed": 4.56,
           "Downside resilience (-15% perf.)": 9.46,
-          "Budget headroom": 1.0
+          "Budget headroom": 0.6
         },
-        "weighted_total": 7.0,
+        "weighted_total": 6.92,
         "selected": true
       },
       {
@@ -129,7 +129,7 @@
         "annual_benefit_CAD": 1400000,
         "annual_opex_CAD": 1200000,
         "five_year_net_impact_CAD": 13500000,
-        "why_not": "costs about $14.5M (over budget) and still misses the objective at 90.5% utilization; it treats the symptom while dwell keeps growing. Kept as a phase-2 option.",
+        "why_not": "costs about $14.5M (over budget) and still misses the objective at 90.5% utilization; it treats the symptom.",
         "scores": {
           "Target attainment": 4.89,
           "Financial return (NPV)": 2.0,
@@ -145,29 +145,33 @@
   },
   "approved_solution": {
     "label": "B",
-    "name": "Integrated flow package: shared visibility, appointments, AI-assisted yard planning",
-    "value_proposition": "Option B \u2014 Integrated flow package: shared visibility, appointments, AI-assisted yard planning \u2014 delivers 21.7% lower year-5 yard utilization (target 19.5%) for CAD $9,000,000 of the CAD $10,000,000 budget: NPV CAD $6,491,191 at 9.5%, payback 31.7 months. Five-year net financial impact (case formula): -CAD $16,500,000 (net savings).",
+    "name": "Dynamic yard: demand zoning, MIP/CRAFT slotting, tracking database, AI AGV pilot",
+    "value_proposition": "Option B \u2014 Dynamic yard: demand zoning, MIP/CRAFT slotting, tracking database, AI AGV pilot \u2014 delivers 21.7% lower year-5 yard utilization (target 19.5%) for CAD $9,400,000 of the CAD $10,000,000 budget: NPV CAD $6,091,191 at 9.5%, payback 32.7 months. Five-year net financial impact (case formula): -CAD $16,100,000 (net savings).",
     "pillars": [
       {
-        "name": "See it: shared release and slot-level visibility",
-        "impact": "Release status, holds and exact container position visible to every party"
+        "name": "Zone it: demand-based yard zoning (MIP + CRAFT)",
+        "impact": "Fast movers next to their exit; time inside 32 to about 22 min"
       },
       {
-        "name": "Schedule it: truck appointments and dwell rules",
-        "impact": "Queue 40 to about 14 min; dwell 6.0 to 4.7 days"
+        "name": "Slot it: dynamic container slotting",
+        "impact": "Stacks follow pickup order and seasonal demand; rehandles -30%"
       },
       {
-        "name": "Plan it together: AI-assisted yard plan and one operations cell",
-        "impact": "Fewer rehandles; time inside 32 to about 26 min"
+        "name": "Track it: tracking chips and one yard database",
+        "impact": "Exact position of every box; release status and pickup windows shared; dwell 6.0 to 4.7 days"
+      },
+      {
+        "name": "Move it: AI AGV pilot (2 units)",
+        "impact": "Prove cost per move, uptime and safety before scaling the fleet"
       }
     ]
   },
   "financial_summary": {
-    "initial_investment_CAD": 9000000,
+    "initial_investment_CAD": 9400000,
     "budget_CAD": 10000000,
     "annual_run_rate_benefit_CAD": 6400000,
     "annual_om_CAD": 1300000,
-    "five_year_net_impact_CAD": -16500000,
+    "five_year_net_impact_CAD": -16100000,
     "five_year_formula": "Investment + 5 x (additional annual costs - annual savings); undiscounted; negative = net savings",
     "year_1_revenue_CAD": 1920000,
     "year_2_revenue_CAD": 6400000,
@@ -178,18 +182,18 @@
     "year_4_net_CAD": 5100000,
     "year_5_net_CAD": 5100000,
     "year_3_ebitda_CAD": 5100000,
-    "npv_CAD": 6491191,
-    "npv_10yr_discount_CAD": 6491191,
-    "irr_percent": 29.9,
-    "payback_period_months": 31.7,
-    "benefit_cost_ratio": 1.46,
-    "levelized_cost": 128752.43,
+    "npv_CAD": 6091191,
+    "npv_10yr_discount_CAD": 6091191,
+    "irr_percent": 28.1,
+    "payback_period_months": 32.7,
+    "benefit_cost_ratio": 1.42,
+    "levelized_cost": 134474.76,
     "levelized_cost_unit": "CAD per year per % point of improvement",
     "economic_case": "profit-driven",
     "wacc_percent": 9.5,
     "horizon_years": 5,
     "cash_flows_CAD": [
-      -9000000,
+      -9400000,
       620000,
       5100000,
       5100000,
@@ -201,54 +205,54 @@
     {
       "name": "Bear (-15% perf., +20% capex)",
       "improvement": 18.45,
-      "capex": 10800000,
-      "npv": 620445,
-      "irr": 11.3,
-      "payback_months": 45.2,
+      "capex": 11280000,
+      "npv": 140445,
+      "irr": 9.9,
+      "payback_months": 46.7,
       "meets_target": false
     },
     {
       "name": "Base (approved plan)",
       "improvement": 21.7,
-      "capex": 9000000,
-      "npv": 6491191,
-      "irr": 29.9,
-      "payback_months": 31.7,
+      "capex": 9400000,
+      "npv": 6091191,
+      "irr": 28.1,
+      "payback_months": 32.7,
       "meets_target": true
     },
     {
       "name": "Bull (+15% perf., -10% capex)",
       "improvement": 24.95,
-      "capex": 8100000,
-      "npv": 10962775,
-      "irr": 44.7,
-      "payback_months": 25.7,
+      "capex": 8460000,
+      "npv": 10602775,
+      "irr": 42.6,
+      "payback_months": 26.4,
       "meets_target": true
     }
   ],
   "sensitivity": [
     {
       "driver": "Annual benefit: achieved gain x unit value (+/-20%)",
-      "low_npv": 2394628,
-      "high_npv": 10587753,
+      "low_npv": 1994628,
+      "high_npv": 10187753,
       "swing": 8193125
     },
     {
       "driver": "O&M cost (x2 / x0.5)",
-      "low_npv": 1499569,
-      "high_npv": 8987001,
+      "low_npv": 1099569,
+      "high_npv": 8587001,
       "swing": 7487432
     },
     {
       "driver": "Capital cost (+20% / -20%)",
-      "low_npv": 3692866,
-      "high_npv": 9289515,
-      "swing": 5596649
+      "low_npv": 3212866,
+      "high_npv": 8969515,
+      "swing": 5756649
     },
     {
       "driver": "Implementation duration (+50% / -25%)",
-      "low_npv": 4623006,
-      "high_npv": 7514022,
+      "low_npv": 4223006,
+      "high_npv": 7114022,
       "swing": 2891016
     }
   ],
@@ -315,162 +319,162 @@
     {
       "horizon": "Phase 1",
       "timeline": "Months 1-3",
-      "name": "Co-design and pilot",
-      "budget_CAD": 2000000,
-      "kpi": "Pilot lanes: queue time -25%; release status shared within 1 hour; baseline rehandles measured",
-      "gate": "Slot adherence >= 80% on pilot lanes and no safety incidents"
+      "name": "Design: data, layout model, AGV safety case",
+      "budget_CAD": 2200000,
+      "kpi": "Move data cleaned; MIP/CRAFT layout validated in simulation; AGV vendor and safety case approved",
+      "gate": "Layout model beats today's travel by >= 20% in simulation; AGV safety case signed"
     },
     {
       "horizon": "Phase 2",
       "timeline": "Months 4-9",
-      "name": "Scale appointments, positioning and AI advice",
-      "budget_CAD": 5200000,
-      "kpi": "Dwell <= 5.3 days; truck turn <= 55 min; rehandles per box -20%",
-      "gate": "AI advice accepted >= 70% with every override logged; tariff announced with 90 days notice"
+      "name": "Re-zone, go dynamic, pilot 2 AGVs",
+      "budget_CAD": 5600000,
+      "kpi": "Dwell <= 5.3 days; turn <= 55 min; rehandles -20%; AGVs commissioned",
+      "gate": "Slotting advice accepted >= 70%; AGV availability >= 90% in the fenced lane"
     },
     {
       "horizon": "Phase 3",
       "timeline": "Months 10-12",
-      "name": "Stabilise, connect rail and customers, hand over",
-      "budget_CAD": 1800000,
-      "kpi": "Dwell <= 4.8 days; truck turn < 45 min; utilization on track for <= 85% at year 5",
-      "gate": "Finance confirms savings against each owner's target; contingency released"
+      "name": "Scale decision and hand over",
+      "budget_CAD": 1600000,
+      "kpi": "Dwell <= 4.8 days; turn < 45 min; utilization on track for <= 85%",
+      "gate": "AGV cost per move <= manual tractor before any fleet expansion; savings confirmed"
     }
   ],
   "risks": [
     {
-      "risk": "Truckers do not adopt appointments",
+      "risk": "AGV breakdown or navigation fault",
       "likelihood": "Medium",
       "impact": "High",
-      "mitigation": "Slot rules co-designed with trucking firms, grace windows, priority lanes for on-time trucks, a walk-in lane kept during transition",
-      "trigger": "Slot adherence < 75% for 2 weeks",
-      "owner": "Gate and Landside Manager",
-      "funding": "Appointment system $2.2M (co-design included)"
+      "mitigation": "Preventive maintenance plan and vendor SLA, sensor health monitoring, fenced lane, manual tractors as instant fallback",
+      "trigger": "AGV availability < 90% or any unplanned stop in the lane",
+      "owner": "Engineering and Maintenance Manager",
+      "funding": "AGV pilot $1.6M + $0.15M/yr maintenance"
     },
     {
-      "risk": "Dwell does not fall enough",
+      "risk": "Tracking or database errors (wrong slot recorded)",
       "likelihood": "Medium",
       "impact": "High",
-      "mitigation": "Free-time tariff, release alerts, empties evacuation agreements; parcel design kept ready as phase 2",
-      "trigger": "Dwell > 5.3 days at month 9",
-      "owner": "Commercial Director",
-      "funding": "Tariff design $0.2M; parcel design held in contingency"
+      "mitigation": "OCR and crane-sensor double check on every move, nightly reconciliation audit, manual search procedure kept",
+      "trigger": "Position accuracy < 99% in the daily audit",
+      "owner": "IT and Operations Manager",
+      "funding": "Tracking and database $2.2M"
     },
     {
-      "risk": "Cutover disrupts live operations",
+      "risk": "AI slotting or demand forecast wrong",
+      "likelihood": "Medium",
+      "impact": "Medium",
+      "mitigation": "Re-slots run weekly on actual bookings; planners approve; segregation rules locked; 6 weeks of shadow mode",
+      "trigger": "Override rate > 30% or rehandles rise for 2 weeks",
+      "owner": "Yard Planning Manager",
+      "funding": "Slotting engine $1.6M"
+    },
+    {
+      "risk": "Re-zoning moves disrupt live operations",
       "likelihood": "Medium",
       "impact": "High",
-      "mitigation": "Lane-by-lane and block-by-block rollout, parallel running, go-lives outside vessel peaks, rollback plan",
+      "mitigation": "One block at a time, overnight housekeeping moves only, go-lives outside vessel peaks, rollback plan",
       "trigger": "Gate throughput below baseline for 2 shifts",
       "owner": "Operations Manager",
       "funding": "Contingency $0.8M"
     },
     {
-      "risk": "Staff resistance and role concerns",
+      "risk": "Employee resistance to AGVs and AI",
       "likelihood": "Medium",
       "impact": "Medium",
-      "mitigation": "Staff involved before tools arrive, paid training, no layoffs from this program, redeployment into the planning cell",
-      "trigger": "Training completion < 90% or AI advice acceptance < 50%",
+      "mitigation": "No layoffs from this program; drivers retrain as AGV supervisors and technicians; staff co-design before tools arrive",
+      "trigger": "Training completion < 90% or advice acceptance < 50%",
       "owner": "HR Director with the Employee Representative",
-      "funding": "Change and training $0.7M + $0.15M/yr"
+      "funding": "Change and training $0.6M + $0.15M/yr"
     },
     {
-      "risk": "AI advice wrong or data quality poor",
-      "likelihood": "Low",
-      "impact": "High",
-      "mitigation": "Advisory only, 6 weeks in shadow mode, hard safety rules locked, weekly model review",
-      "trigger": "Override rate > 30% or any near-miss linked to a recommendation",
-      "owner": "Yard Planning Manager",
-      "funding": "Positioning and AI $2.9M, shadow mode included"
-    },
-    {
-      "risk": "Savings fall short (customs-driven penalties)",
+      "risk": "AGV pilot costs more than it saves",
       "likelihood": "Medium",
       "impact": "Medium",
-      "mitigation": "Holds flagged early in the portal; savings tracked monthly by owner; plan still pays back at $3.1M/yr",
-      "trigger": "Penalties down < 25% by month 12",
+      "mitigation": "Fixed-price quote, pilot capped at 2 units, fleet expands only if the month-12 gate passes",
+      "trigger": "Cost per move above manual tractor after 3 months",
       "owner": "Finance Director",
-      "funding": "No extra spend; break-even $3.1M/yr"
+      "funding": "No extra spend until the gate"
     }
   ],
   "red_team_defense": [
     {
       "question": "Why not just build on the 15-acre parcel?",
-      "rebuttal": "Space alone fails the objective: 25,344 TEU / 28,000 TEU = 90.5% at year 5. It costs about $14.5M, over the $10M budget, and must be phased around live operations. Cutting dwell to 4.7 days reaches about 83% on today's footprint. We keep the parcel as a phase-2 option if dwell stays above 5.6 days."
+      "rebuttal": "Space alone fails the objective: 25,344 / 28,000 TEU = 90.5% at year 5, for about $14.5M, over budget. Cutting dwell to 4.7 days reaches about 83% on today's footprint."
     },
     {
-      "question": "What if dwell does not fall as much as you assume?",
-      "rebuttal": "The threshold is explicit: dwell at or below 4.83 days meets 85% without land. If dwell is above 5.3 days at month 9 (our gate trigger), we tighten the free-time tariff and start the parcel design. With dwell at 5.6 days or less, the parcel would then meet the objective."
+      "question": "Why only two AGVs?",
+      "rebuttal": "The evidence is mixed: successful automated terminals cut operating costs 25-55%, but some lose 7-15% productivity. Two units in a fenced lane prove uptime, cost per move and safety for $1.6M; the fleet grows only if the month-12 gate passes."
     },
     {
-      "question": "How confident are you in the $6.4M of annual savings?",
-      "rebuttal": "Each saving has an owner and a mechanism. Break-even needs only $3.1M a year. If penalties fall 25% instead of 50%, the five-year impact is still -$6.5M."
+      "question": "How do the MIP and CRAFT work together?",
+      "rebuttal": "The MIP assigns container groups to blocks, minimising move frequency x distance to their exit within capacity and segregation rules. CRAFT then tries pairwise zone swaps and keeps any that lower total flow x distance, so the layout can be re-improved as demand shifts."
     },
     {
-      "question": "Will the AI and automation cost jobs?",
-      "rebuttal": "No layoffs from this program. The AI recommends and planners decide. Roles shift from manual re-planning and overtime to planning-cell and exception work, with training in paid time."
+      "question": "What if the seasonal forecast is wrong?",
+      "rebuttal": "Slotting re-runs weekly on actual bookings, not only the forecast; planners approve every re-slot; zoning is reviewed monthly."
     },
     {
-      "question": "How do you keep the terminal running during the rollout?",
-      "rebuttal": "Lane-by-lane appointments with a walk-in lane kept open, block-by-block positioning, 6 weeks of shadow mode for the AI, go-lives outside vessel peaks, and a rollback plan triggered if gate throughput drops below baseline for 2 shifts."
+      "question": "How do you know where every container is?",
+      "rebuttal": "OCR cameras read container numbers at the gate and quay, crane position sensors record the exact slot of every pick and drop, and RFID tags identify each AGV and truck. Every move writes to one yard database that the slotting engine, the AGVs and the customer portal all read."
     },
     {
-      "question": "How will you get truckers to use appointments?",
-      "rebuttal": "We co-design slot rules with them, guarantee the container is ready when a slot is booked, give on-time trucks a priority lane, and keep grace windows. Slots exist only for released containers, so a booking is never wasted."
+      "question": "Will automation cost jobs, and who maintains the AGVs?",
+      "rebuttal": "No layoffs from this program. Drivers can retrain as AGV supervisors and technicians. AGVs follow a preventive maintenance plan with a vendor SLA, and manual tractors stay as the fallback."
     }
   ],
   "case_pack": {
     "package": [
       {
-        "initiative": "Truck appointment system with gate pre-advice and OCR",
-        "purpose": "Spread arrivals into booked slots, only for released and ready containers; faster gate transactions.",
-        "capex": 2200000,
-        "annual_opex": 300000,
-        "owner": "Gate and Landside Manager",
-        "pillar": 1
-      },
-      {
-        "initiative": "Release and ETA visibility portal",
-        "purpose": "One shared status for lines, truckers, rail and customers, with customs-hold flags and a named escalation contact.",
-        "capex": 1400000,
-        "annual_opex": 250000,
-        "owner": "Commercial Director",
+        "initiative": "Yard zoning and block layout (MIP + CRAFT)",
+        "purpose": "MIP assigns container groups to blocks by move frequency and exit; CRAFT swaps zones while flow x distance falls; re-marking and phased moves.",
+        "capex": 1200000,
+        "annual_opex": 100000,
+        "owner": "Yard Planning Manager",
         "pillar": 0
       },
       {
-        "initiative": "Slot-level positioning and AI-assisted stacking",
-        "purpose": "RTG position sensors plus a planning upgrade so boxes due out first sit on top; planners approve each recommendation.",
-        "capex": 2900000,
-        "annual_opex": 400000,
+        "initiative": "Dynamic slotting engine with demand forecasting",
+        "purpose": "Re-slots containers as demand shifts (e.g. a December peak for one product) and stacks by planned pickup; planners approve.",
+        "capex": 1600000,
+        "annual_opex": 300000,
         "owner": "Yard Planning Manager",
-        "pillar": 2
-      },
-      {
-        "initiative": "Integrated operations planning cell",
-        "purpose": "One shared plan across vessel, yard, gate and rail teams, so a schedule change is re-planned once, not in several systems.",
-        "capex": 800000,
-        "annual_opex": 200000,
-        "owner": "Operations Manager",
-        "pillar": 2
-      },
-      {
-        "initiative": "Dwell-time rules: free-time tariff and empties evacuation",
-        "purpose": "Storage charges after free days, early-pickup incentives and agreements with lines to remove empties.",
-        "capex": 200000,
-        "annual_opex": 0,
-        "owner": "Commercial Director",
         "pillar": 1
       },
       {
+        "initiative": "Tracking and yard database (digital twin)",
+        "purpose": "OCR cameras, RFID tags on vehicles and crane position sensors log every move into one yard database.",
+        "capex": 2200000,
+        "annual_opex": 350000,
+        "owner": "IT and Operations Manager",
+        "pillar": 2
+      },
+      {
+        "initiative": "Release visibility and truck pickup windows",
+        "purpose": "The database shares release and hold status with lines, truckers, rail and customers; trucks book windows for ready boxes.",
+        "capex": 1400000,
+        "annual_opex": 250000,
+        "owner": "Commercial Director",
+        "pillar": 2
+      },
+      {
+        "initiative": "AI AGV pilot: 2 units in a fenced lane",
+        "purpose": "Two battery AGVs, fleet software linked to the database, navigation, charging and safety fencing; scale only if KPIs pass.",
+        "capex": 1600000,
+        "annual_opex": 150000,
+        "owner": "Engineering and Maintenance Manager",
+        "pillar": 3
+      },
+      {
         "initiative": "Change management and paid training",
-        "purpose": "Co-design workshops, super-users per shift and training in paid working time.",
-        "capex": 700000,
+        "purpose": "Co-design workshops, super-users per shift, AGV supervisor and technician training in paid time.",
+        "capex": 600000,
         "annual_opex": 150000,
         "owner": "HR Director with the Employee Representative",
         "pillar": -1
       },
       {
-        "initiative": "Contingency (about 10%)",
+        "initiative": "Contingency (about 9%)",
         "purpose": "Released at the phase-3 gate if unused.",
         "capex": 800000,
         "annual_opex": 0,
@@ -482,73 +486,73 @@
       {
         "title": "Finance",
         "points": [
-          "Upfront $9.0M of the $10M budget, including $0.8M contingency; $1.0M left unspent.",
-          "Added annual costs $1.3M: software subscriptions, support and sensor maintenance ($0.95M), planning-cell analysts ($0.2M), ongoing training ($0.15M).",
-          "Annual savings $6.4M, each with an owner: overtime -40% ($2.4M, Operations Manager) from fewer rehandles, smoother truck peaks and fewer late re-plans; delay and service penalties -50% ($4.0M, Commercial Director) from reliable release information and on-time handovers.",
-          "Five-year net impact = $9.0M + 5 x ($1.3M - $6.4M) = -$16.5M (net savings).",
-          "Main uncertainty: the share of the $8M penalties caused by customs or documentation holds PortFlow cannot override. If penalties fall only 25% ($2.0M), savings are $4.4M and the impact is still -$6.5M. Break-even needs only $3.1M a year of savings.",
-          "Upside not counted: storage revenue from the dwell tariff, and the avoided cost of building on the parcel."
+          "Upfront $9.4M of the $10M budget, including $0.8M contingency; $0.6M left unspent.",
+          "Added annual costs $1.3M: software and database licences, sensors and AGV maintenance, model upkeep and refresher training.",
+          "AGV pricing: a US DOT-hosted study put one terminal AGV at about EUR 150,000 (2021, conservative). We budget $1.6M for 2 units including navigation, charging, fleet software and fencing.",
+          "Annual savings $6.4M with owners: overtime -40% ($2.4M, Operations Manager) from shorter travel, fewer rehandles and fewer re-plans; penalties -50% ($4.0M, Commercial Director) from reliable release information and faster truck service.",
+          "Five-year net impact = $9.4M + 5 x ($1.3M - $6.4M) = -$16.1M (net savings).",
+          "Uncertainty: the share of penalties caused by customs holds PortFlow cannot override. If penalties fall only 25%, the impact is still -$6.1M; break-even needs $3.2M a year."
         ],
         "deck_points": [
           "Savings owners: overtime -40% ($2.4M, Operations Manager); penalties -50% ($4.0M, Commercial Director)",
-          "Uncertainty: penalties caused by customs holds. If penalties fall only 25%, impact is still -$6.5M; break-even is $3.1M/yr"
+          "AGVs are a $1.6M pilot; the fleet grows only if cost per move beats manual tractors"
         ]
       },
       {
         "title": "Operations & Safety",
         "points": [
-          "Storage: dwell 6.0 to 4.7 days keeps year-5 inventory near 19,900 TEU (83% of 24,000) at +20% volume, without new land.",
-          "Container movement: exact slot positions and stacking by planned pickup time cut rehandles, so RTG hours go to productive moves and the 12 RTGs absorb the 20% growth.",
-          "Truck service: appointments spread arrivals (queue 40 to about 14 min); pre-advice and pre-staged containers shorten time inside (32 to about 26 min): about 40 minutes in total, below the 45-minute objective.",
-          "Safety: fewer rehandles and shorter queues reduce truck-crane interaction; hard rules for hazardous, reefer and weight segregation stay locked; every go-live has a safety review.",
-          "Measures, reviewed weekly: utilization, dwell, rehandles per box, queue and inside time, slot adherence, safety incidents and near-misses."
+          "Storage: shared release status and pickup windows cut dwell from 6.0 to 4.7 days, keeping year-5 utilization near 83% without new land.",
+          "Container movement: MIP/CRAFT zoning puts high-demand groups next to their exit; dynamic slotting stacks by pickup order, so cranes stop digging.",
+          "Truck service: queue 40 to about 15 min with pickup windows; time inside 32 to about 22 min with fast movers near the gate: about 37 minutes in total.",
+          "Safety: AGVs run only in a fenced lane; segregation rules for hazardous, reefer and weight are locked in the model; every go-live has a safety review.",
+          "Measures, reviewed weekly: utilization, dwell, rehandles per box, travel per move, queue and inside time, AGV uptime, incidents and near-misses."
         ],
         "deck_points": [
-          "Storage: dwell 6.0 to 4.7 days keeps year-5 utilization near 83% with no new land",
-          "Trucks: queue 40 to ~14 min, inside 32 to ~26 min, about 40 min total (< 45)",
-          "Safety: fewer rehandles and queues; segregation rules locked; safety review at every go-live"
+          "Zoning and slotting: fast movers near exits, stacks by pickup order",
+          "Trucks: queue 40 to ~15 min, inside 32 to ~22 min, about 37 min total",
+          "Safety: AGVs fenced; segregation rules locked; review at every go-live"
         ]
       },
       {
         "title": "Supply Chain",
         "points": [
-          "Shipping lines: ETA changes feed one shared plan; export receiving windows and empty-container evacuation agreed.",
-          "Truckers: book pickup slots only when the container is released and ready; live status and a guaranteed window.",
-          "Rail: rail loads pre-staged by train departure; the rail operator sees release status through the same portal.",
-          "Customers: release, hold and ETA alerts to plan replenishment, plus a named contact and escalation process for urgent shipments.",
-          "Customs and documentation holds stay outside PortFlow's control, but they are flagged early so no truck is booked against a held container."
+          "Shipping lines: vessel ETA changes flow into the database and trigger re-slotting before the ship arrives.",
+          "Truckers: pickup windows only for released, ready containers, already staged near the gate.",
+          "Rail: rail-bound containers zoned next to the rail exit and staged by train departure.",
+          "Customers: release, hold and ETA alerts; seasonal demand signals (for example a December peak) feed the slotting forecast.",
+          "Customs holds stay outside PortFlow's control but are flagged early so no truck is booked against a held box."
         ],
         "deck_points": [
-          "Lines, trucks, rail and customers share one release and ETA status",
-          "Slots are booked only for released, ready containers; holds flagged early with a named escalation contact"
+          "One database feeds lines, trucks, rail and customers",
+          "Customers' seasonal demand signals drive re-zoning ahead of peaks"
         ]
       },
       {
         "title": "Organizational Change Management",
         "points": [
-          "Stakeholders: yard operators, gate clerks, planners and supervisors, maintenance, trucking firms, rail, shipping lines, customers and finance.",
-          "Involve staff before tools arrive: operators and planners co-design stacking rules and appointment rules in phase 1.",
-          "Train in paid working time: super-users on every shift, simulator sessions, refresher training budgeted at $0.15M a year.",
-          "Clarify roles: no layoffs from this program; gate clerks and planners move into the planning cell and exception handling; one RACI per process.",
-          "Keep operations running: lane-by-lane and block-by-block rollout, parallel running, go-lives outside vessel peaks and a rollback plan."
+          "Stakeholders: yard operators, tractor drivers, planners, maintenance, IT, truckers, rail, lines, customers and finance.",
+          "Involve staff before tools arrive: planners and operators co-design zones and slotting rules in phase 1.",
+          "Train in paid time: super-users per shift; tractor drivers can certify as AGV supervisors or technicians.",
+          "Clarify roles: no layoffs from this program; a RACI for every zone, model and AGV decision.",
+          "Keep operations running: one block re-zoned at a time, overnight moves, AGVs only in a fenced lane, rollback plan."
         ],
         "deck_points": [
-          "Staff co-design rules before tools arrive; training in paid time with super-users per shift",
-          "No layoffs from this program; roles shift to planning and exception handling; phased go-lives"
+          "Co-design before tools; paid training; drivers can become AGV supervisors",
+          "No layoffs; one block at a time; AGVs fenced"
         ]
       },
       {
         "title": "AI & Automation",
         "points": [
-          "Use: AI-assisted stacking and housekeeping recommendations: where to place each incoming container and which overnight moves to make, so boxes due out first sit on top.",
-          "Information needed: exact slot positions (RTG sensors), appointment bookings, release and hold status, vessel and rail schedules, and container attributes (size, weight, reefer, hazardous).",
-          "Oversight: the yard planner reviews and approves every recommendation; hard safety rules cannot be overridden by the model; the Yard Planning Manager owns model performance.",
-          "Performance check: 6 weeks in shadow mode against the current rules, then weekly tracking of rehandles per box, acceptance rate and override reasons; retrain or roll back if rehandles do not fall.",
-          "Set aside: fully automated cranes cost far more than the $10M budget, add safety and labour risk, and do not fix the information gap."
+          "MIP: assigns container groups (customer, product, direction) to blocks to minimise move frequency x distance to their exit, within block capacity and segregation rules.",
+          "CRAFT: tests pairwise swaps of zones and keeps any swap that lowers total flow x distance, so the layout can be improved again as demand changes.",
+          "Dynamic slotting: a demand forecast (seasonal peaks) plus actual bookings re-slot containers weekly; planners approve each change.",
+          "AI AGVs: 2 battery units in a fenced quay-to-block lane, tracked by the yard database; overseen by the Engineering and Maintenance Manager with preventive maintenance.",
+          "Performance checks: 6 weeks of shadow mode for slotting; AGV uptime, cost per move and incidents weekly; scale the fleet only if the month-12 gate passes."
         ],
         "deck_points": [
-          "AI recommends stacking and overnight moves; planners approve; safety rules locked",
-          "Checked in 6 weeks of shadow mode, then weekly on rehandles per box and overrides"
+          "MIP + CRAFT layout; weekly dynamic slotting; planners approve",
+          "2 AGVs piloted, maintained and measured before any scale-up"
         ]
       }
     ],
@@ -597,23 +601,23 @@
         "label": "Truck queue time",
         "unit": "min",
         "before": 40,
-        "after": 14,
+        "after": 15,
         "target": null,
-        "note": "appointments spread arrivals"
+        "note": "pickup windows for ready boxes"
       },
       {
         "label": "Time inside terminal",
         "unit": "min",
         "before": 32,
-        "after": 26,
+        "after": 22,
         "target": null,
-        "note": "fewer rehandles, pre-staged boxes"
+        "note": "fast movers near exits, no digging"
       },
       {
         "label": "Total truck turn",
         "unit": "min",
         "before": 72,
-        "after": 40,
+        "after": 37,
         "target": 45,
         "note": "objective < 45"
       },
@@ -638,221 +642,294 @@
       "months": 12,
       "phases": [
         {
-          "name": "Phase 1 \u00b7 Co-design & pilot",
+          "name": "Phase 1 \u00b7 Design & data",
           "start": 1,
           "end": 3
         },
         {
-          "name": "Phase 2 \u00b7 Scale without stopping operations",
+          "name": "Phase 2 \u00b7 Re-zone, go dynamic, pilot 2 AGVs",
           "start": 4,
           "end": 9
         },
         {
-          "name": "Phase 3 \u00b7 Stabilise & hand over",
+          "name": "Phase 3 \u00b7 Scale decision & hand over",
           "start": 10,
           "end": 12
         }
       ],
       "rows": [
         {
-          "stream": "Gate & appointments",
-          "task": "Co-design slot rules with trucking firms",
+          "id": "T1",
+          "stream": "Track it: data backbone",
+          "task": "Yard database design; clean container master data",
           "start": 1,
-          "end": 2,
-          "kind": "plan"
-        },
-        {
-          "stream": "Gate & appointments",
-          "task": "Pilot on 2 import lanes (walk-in lane kept)",
-          "start": 2,
           "end": 3,
-          "kind": "pilot"
+          "kind": "build",
+          "owner": "IT & Operations Mgr",
+          "deliverable": "One master record per container; data dictionary",
+          "depends": ""
         },
         {
-          "stream": "Gate & appointments",
-          "task": "Roll out lane by lane; add evening slots",
+          "id": "T2",
+          "stream": "Track it: data backbone",
+          "task": "OCR cameras and crane position sensors (off-peak installs)",
+          "start": 2,
+          "end": 6,
+          "kind": "build",
+          "owner": "IT & Operations Mgr",
+          "deliverable": "Every pick and drop logged with its slot; accuracy >= 99%",
+          "depends": "T1"
+        },
+        {
+          "id": "T3",
+          "stream": "Track it: data backbone",
+          "task": "Release status and pickup windows on pilot lanes",
           "start": 4,
           "end": 7,
-          "kind": "rollout"
+          "kind": "rollout",
+          "owner": "Commercial Director",
+          "deliverable": "2 lanes on windows; status shared within 1 hour",
+          "depends": "T1"
         },
         {
-          "stream": "Gate & appointments",
-          "task": "All trucks on appointments; OCR pre-advice",
+          "id": "T4",
+          "stream": "Track it: data backbone",
+          "task": "All trucks on pickup windows; partners connected",
           "start": 8,
           "end": 12,
-          "kind": "live"
+          "kind": "live",
+          "owner": "Gate & Landside Mgr",
+          "deliverable": "All lanes live; lines, rail, customers connected",
+          "depends": "T3"
         },
         {
-          "stream": "Release & ETA portal",
-          "task": "Portal MVP: release and hold status",
+          "id": "Z1",
+          "stream": "Zone it: MIP + CRAFT",
+          "task": "Collect 12 months of move data; demand by group",
+          "start": 1,
+          "end": 2,
+          "kind": "plan",
+          "owner": "Yard Planning Mgr",
+          "deliverable": "Flow matrix: moves by container group and exit",
+          "depends": ""
+        },
+        {
+          "id": "Z2",
+          "stream": "Zone it: MIP + CRAFT",
+          "task": "MIP block assignment + CRAFT swaps; simulate",
+          "start": 2,
+          "end": 4,
+          "kind": "build",
+          "owner": "Yard Planning Mgr",
+          "deliverable": "Layout with >= 20% less travel in simulation",
+          "depends": "Z1"
+        },
+        {
+          "id": "Z3",
+          "stream": "Zone it: MIP + CRAFT",
+          "task": "Re-zone block by block: fast movers near exits",
+          "start": 5,
+          "end": 8,
+          "kind": "rollout",
+          "owner": "Yard Planning + Ops",
+          "deliverable": "All blocks re-marked, one block per week",
+          "depends": "Z2, T2"
+        },
+        {
+          "id": "S1",
+          "stream": "Slot it: dynamic slotting",
+          "task": "Seasonal demand forecast (e.g. December peaks)",
+          "start": 3,
+          "end": 5,
+          "kind": "build",
+          "owner": "Yard Planning Mgr",
+          "deliverable": "Monthly forecast by group; error tracked",
+          "depends": "Z1"
+        },
+        {
+          "id": "S2",
+          "stream": "Slot it: dynamic slotting",
+          "task": "Slotting engine in shadow mode (6 weeks)",
+          "start": 6,
+          "end": 7,
+          "kind": "pilot",
+          "owner": "Yard Planning Mgr",
+          "deliverable": "Advice vs actual; acceptance >= 70%",
+          "depends": "S1, T2"
+        },
+        {
+          "id": "S3",
+          "stream": "Slot it: dynamic slotting",
+          "task": "Live weekly re-slotting; monthly zoning review",
+          "start": 8,
+          "end": 12,
+          "kind": "live",
+          "owner": "Yard Planning Mgr",
+          "deliverable": "Rehandles -30%; review minutes each month",
+          "depends": "S2, Z3"
+        },
+        {
+          "id": "A1",
+          "stream": "Move it: AI AGV pilot",
+          "task": "Market scan, 3 vendor quotes, total cost of ownership",
           "start": 1,
           "end": 3,
-          "kind": "build"
+          "kind": "plan",
+          "owner": "Engineering & Maint. Mgr",
+          "deliverable": "Fixed-price quote; cost per move model",
+          "depends": ""
         },
         {
-          "stream": "Release & ETA portal",
-          "task": "Container data clean-up and integration tests",
-          "start": 2,
-          "end": 3,
-          "kind": "build"
-        },
-        {
-          "stream": "Release & ETA portal",
-          "task": "Alerts and escalation contacts live",
+          "id": "A2",
+          "stream": "Move it: AI AGV pilot",
+          "task": "Fenced quay-to-block lane, charging point, safety case",
           "start": 3,
-          "end": 4,
-          "kind": "rollout"
+          "end": 5,
+          "kind": "build",
+          "owner": "Engineering + Safety lead",
+          "deliverable": "Signed safety case; lane fenced and marked",
+          "depends": "A1"
         },
         {
-          "stream": "Release & ETA portal",
-          "task": "Onboard truckers, rail and customers; comms plan",
-          "start": 3,
-          "end": 6,
-          "kind": "rollout"
-        },
-        {
-          "stream": "Release & ETA portal",
-          "task": "Line, rail and customer integrations",
-          "start": 4,
-          "end": 8,
-          "kind": "build"
-        },
-        {
-          "stream": "Yard positioning & AI",
-          "task": "RTG position sensors, 2 cranes per fortnight off-peak",
-          "start": 3,
-          "end": 7,
-          "kind": "build"
-        },
-        {
-          "stream": "Yard positioning & AI",
-          "task": "Encode hard safety rules; test on history data",
+          "id": "A3",
+          "stream": "Move it: AI AGV pilot",
+          "task": "Deliver and commission 2 AGVs; link to database",
           "start": 5,
-          "end": 6,
-          "kind": "build"
+          "end": 7,
+          "kind": "build",
+          "owner": "Engineering & Maint. Mgr",
+          "deliverable": "2 AGVs accepted; every move logged",
+          "depends": "A2, T1"
         },
         {
-          "stream": "Yard positioning & AI",
-          "task": "AI stacking in shadow mode (6 weeks)",
+          "id": "A4",
+          "stream": "Move it: AI AGV pilot",
+          "task": "Pilot run: AGVs move quay-to-block containers",
           "start": 7,
-          "end": 8,
-          "kind": "pilot"
+          "end": 11,
+          "kind": "pilot",
+          "owner": "AGV supervisors (each shift)",
+          "deliverable": "Uptime >= 90%; cost per move tracked weekly",
+          "depends": "A3"
         },
         {
-          "stream": "Yard positioning & AI",
-          "task": "AI advice live block by block; planner approves",
-          "start": 9,
+          "id": "A5",
+          "stream": "Move it: AI AGV pilot",
+          "task": "Preventive maintenance and sensor calibration",
+          "start": 7,
           "end": 12,
-          "kind": "live"
+          "kind": "live",
+          "owner": "Engineering & Maint. Mgr",
+          "deliverable": "Daily checks and monthly service logged",
+          "depends": "A3"
         },
         {
-          "stream": "Planning cell",
-          "task": "Set up one shared plan across teams",
-          "start": 2,
-          "end": 4,
-          "kind": "build"
-        },
-        {
-          "stream": "Planning cell",
-          "task": "Daily huddle; single re-plan on schedule changes",
-          "start": 5,
+          "id": "A6",
+          "stream": "Move it: AI AGV pilot",
+          "task": "Go / no-go on scaling the AGV fleet",
+          "start": 11,
           "end": 12,
-          "kind": "live"
+          "kind": "plan",
+          "owner": "Steering committee",
+          "deliverable": "Decision paper: scale, hold or stop",
+          "depends": "A4"
         },
         {
-          "stream": "Dwell rules",
-          "task": "Tariff design; 90-day notice to customers",
-          "start": 5,
-          "end": 7,
-          "kind": "plan"
-        },
-        {
-          "stream": "Dwell rules",
-          "task": "Free-time tariff and empties agreements live",
-          "start": 10,
-          "end": 12,
-          "kind": "live"
-        },
-        {
+          "id": "P1",
           "stream": "People & change",
-          "task": "Staff co-design workshops",
+          "task": "Staff co-design of zones and slotting rules",
           "start": 1,
           "end": 3,
-          "kind": "plan"
+          "kind": "plan",
+          "owner": "HR + Employee Rep",
+          "deliverable": "Rules signed off by operators",
+          "depends": ""
         },
         {
+          "id": "P2",
           "stream": "People & change",
-          "task": "Paid training; super-users on every shift",
+          "task": "Paid training; AGV supervisor and technician course",
           "start": 3,
           "end": 11,
-          "kind": "rollout"
+          "kind": "rollout",
+          "owner": "HR Director",
+          "deliverable": ">= 90% trained; 4+ certified AGV supervisors",
+          "depends": "P1"
         },
         {
+          "id": "P3",
           "stream": "People & change",
-          "task": "Roles move into planning and exception work",
+          "task": "Roles move into planning and AGV supervision",
           "start": 6,
           "end": 10,
-          "kind": "rollout"
+          "kind": "rollout",
+          "owner": "HR + Operations Mgr",
+          "deliverable": "RACI live; no layoffs",
+          "depends": "P2"
         },
         {
+          "id": "G1",
           "stream": "Safety & governance",
           "task": "Safety review before every go-live",
           "start": 2,
           "end": 12,
-          "kind": "plan"
+          "kind": "plan",
+          "owner": "Safety lead",
+          "deliverable": "Review signed before each block or lane goes live",
+          "depends": ""
         },
         {
+          "id": "G2",
           "stream": "Safety & governance",
           "task": "Monthly steering; savings tracked by owner",
           "start": 1,
           "end": 12,
-          "kind": "live"
+          "kind": "live",
+          "owner": "Steering committee",
+          "deliverable": "Monthly KPI and savings report",
+          "depends": ""
         }
       ],
       "milestones": [
         {
           "month": 3,
-          "label": "Gate 1: pilot lanes >= 80% slot adherence"
+          "label": "Gate 1: layout validated, AGV safety case signed"
         },
         {
-          "month": 9,
-          "label": "Gate 2: dwell <= 5.3 days; AI accepted >= 70%"
+          "month": 7,
+          "label": "Gate 2: AGVs commissioned; slotting accepted >= 70%"
         },
         {
           "month": 12,
-          "label": "Gate 3: savings confirmed by owners"
+          "label": "Gate 3: fleet scale decision; savings confirmed"
         }
       ],
       "continuity": [
-        "Lane by lane and block by block: never more than 2 gate lanes or 1 yard block changing at once",
-        "Go-lives scheduled outside vessel peak windows; sensors fitted on off-peak shifts",
-        "Parallel running: old rules stay available until the new process passes its gate",
-        "Rollback plan: if gate throughput drops below baseline for 2 shifts, revert that lane"
+        "Re-zone one block at a time, with housekeeping moves only overnight",
+        "AGVs run only in a fenced pilot lane; manual tractors keep running everywhere else",
+        "Go-lives outside vessel peak windows; sensors fitted on off-peak shifts",
+        "Rollback: if gate throughput drops below baseline for 2 shifts, revert that block or lane"
       ],
       "streams": {
-        "Gate & appointments": {
-          "owner": "Gate & Landside Mgr",
-          "budget": 2200000
+        "Track it: data backbone": {
+          "owner": "IT & Operations",
+          "budget": 3600000
         },
-        "Release & ETA portal": {
-          "owner": "Commercial Director",
-          "budget": 1400000
-        },
-        "Yard positioning & AI": {
+        "Zone it: MIP + CRAFT": {
           "owner": "Yard Planning Mgr",
-          "budget": 2900000
+          "budget": 1200000
         },
-        "Planning cell": {
-          "owner": "Operations Manager",
-          "budget": 800000
+        "Slot it: dynamic slotting": {
+          "owner": "Yard Planning Mgr",
+          "budget": 1600000
         },
-        "Dwell rules": {
-          "owner": "Commercial Director",
-          "budget": 200000
+        "Move it: AI AGV pilot": {
+          "owner": "Engineering & Maint.",
+          "budget": 1600000
         },
         "People & change": {
           "owner": "HR + Employee Rep",
-          "budget": 700000
+          "budget": 600000
         },
         "Safety & governance": {
           "owner": "Steering committee",
@@ -860,9 +937,9 @@
         }
       },
       "checkpoints": [
-        "Pilot lanes: queue -25%; status shared within 1 h; rehandle baseline",
-        "Dwell <= 5.3 days; turn <= 55 min; rehandles -20%",
-        "Dwell <= 4.8 days; turn < 45 min; savings confirmed"
+        "Layout model beats today's travel by >= 20% in simulation; AGV safety case signed",
+        "Dwell <= 5.3 days; turn <= 55 min; AGV uptime >= 90%",
+        "Dwell <= 4.8 days; turn < 45 min; AGV cost per move <= manual"
       ]
     },
     "problem": {
@@ -923,23 +1000,23 @@
       "objectives": "Year-5 objectives: yard utilization <= 85% and truck turn < 45 minutes. Today PortFlow meets neither."
     },
     "causes": {
-      "core": "Fragmented release and schedule information",
-      "core_detail": "Release status, vessel changes and pickup plans are not shared across teams, truckers, rail or customers; planning runs in separate systems on fixed rules.",
+      "core": "A static yard run on fixed rules and blind data",
+      "core_detail": "Blocks are not zoned by demand, stacks ignore pickup order and exact position, the layout never adapts as demand shifts by season, and release status is not shared.",
       "mechanisms": [
         {
-          "name": "Containers wait",
-          "effect": "Customers learn late that a box is released, so pickups slip",
-          "evidence": "Dwell 6 days"
-        },
-        {
-          "name": "Trucks bunch",
-          "effect": "No appointments or readiness signal, so arrivals cluster",
-          "evidence": "40 min queue"
-        },
-        {
-          "name": "Stacks get reshuffled",
-          "effect": "Exact position and pickup time unknown, so cranes dig",
+          "name": "Wrong place",
+          "effect": "Busy zones sit far from gate, rail and quay exits, so every move travels further",
           "evidence": "32 min inside"
+        },
+        {
+          "name": "Wrong order",
+          "effect": "Stacks ignore pickup order and exact position, so cranes dig and reshuffle",
+          "evidence": "$6M overtime"
+        },
+        {
+          "name": "Wrong time",
+          "effect": "Seasonal demand shifts but the layout does not; release news arrives late",
+          "evidence": "6-day dwell"
         }
       ],
       "symptoms": [
@@ -950,109 +1027,223 @@
         "Customers can't plan",
         "Staff anxiety"
       ],
-      "law": "Little's Law: inventory = throughput x dwell. 3,520 TEU/day x 6 days = 21,120 TEU. At 4,224 TEU/day the same dwell needs 25,344 TEU (106%). The 15-acre parcel only reaches 90.5%. Dwell must fall to 4.83 days or less."
+      "law": "What the case data shows: 21,120 of 24,000 TEU in use today (88%). Add 20% volume at today's 6-day stay and the yard needs about 25,300 TEU, more than it holds. Trucks take 72 minutes against a 45-minute objective, and overtime plus penalties cost $14M a year."
     },
     "savings": [
       {
         "label": "Overtime -40%",
         "value": 2400000,
-        "owner": "Operations Manager"
+        "owner": "Operations Manager",
+        "base": 6000000,
+        "pct": 40,
+        "mechanism": "Shorter travel (zoning), fewer rehandles (slotting), fewer re-plans (one database), smoother truck peaks (pickup windows)"
       },
       {
         "label": "Penalties -50%",
         "value": 4000000,
-        "owner": "Commercial Director"
+        "owner": "Commercial Director",
+        "base": 8000000,
+        "pct": 50,
+        "mechanism": "Reliable release status, containers staged before pickup, faster truck service; the other half is assumed to come from customs holds PortFlow cannot override"
       }
     ],
     "not_chosen": [
       "Expansion only: about $14.5M, over budget, and still 90.5% utilization",
-      "Full crane automation: far above $10M, labour and safety risk, and no fix for the information gap"
+      "Full AGV fleet now: replacing 45 tractors costs far above $10M before a pilot proves it works"
     ],
     "market": {
-      "headline": "Demand is rising across Canadian gateways, peers win on reliability rather than space, and automation is a labour flashpoint.",
+      "headline": "Volumes are rising, peers compete on reliability, and AI AGVs pay off only when design, maintenance and people line up.",
       "forces": [
         {
           "title": "Volumes are growing",
-          "fact": "The Port of Vancouver handled a record 3.8M TEU in 2025, about 9% above 2024, as Canada diversified trade. PortFlow's +20% over five years is in line with this.",
+          "fact": "The Port of Vancouver handled a record 3.8M TEU in 2025, about 9% above 2024. PortFlow's +20% over five years is in line.",
           "src": 1
         },
         {
-          "title": "Congestion is the industry's pain point",
-          "fact": "Container dwell at Canada's largest port was still a significant issue in early 2025, with rail capacity lagging the surge in boxes.",
+          "title": "Congestion is the pain point",
+          "fact": "Container dwell at Canada's largest port was still a significant issue in early 2025, with rail lagging the surge.",
           "src": 2
         },
         {
-          "title": "Customers buy reliability",
-          "fact": "Shippers and truckers plan around release certainty. Terminals that share status and keep appointment windows win repeat volume; uncertainty shows up as penalties.",
-          "src": 0
-        },
-        {
           "title": "Automation is a labour flashpoint",
-          "fact": "The November 2024 B.C. port lockout centred on automation and manpower; Ottawa ordered binding arbitration on both coasts.",
+          "fact": "The November 2024 B.C. port lockout centred on automation and manpower; Ottawa ordered binding arbitration.",
           "src": 5
         }
       ],
       "benchmarks": [
         {
-          "who": "GCT Bayonne (NY/NJ)",
-          "practice": "Truck appointment system, phased rollout with trucker outreach",
-          "result": "Turn times in appointment hours improved by more than 40%; over 90% of reservations kept",
-          "src": 3
+          "who": "Port of Felixstowe (UK)",
+          "practice": "Autonomous terminal tractors in mixed traffic since 2022",
+          "result": "Believed first in Europe; a small fleet, not a full roll-out",
+          "src": 7
         },
         {
-          "who": "LA / Long Beach terminals",
-          "practice": "Appointment systems introduced in 2015",
-          "result": "Mixed results: no clear turn-time gain without wider coordination",
-          "src": 4
-        },
-        {
-          "who": "Seattle, Houston, Tacoma",
-          "practice": "Extended-dwell fees after free time",
-          "result": "Escalating daily charges (e.g. Houston $50 to $150 per unit per day) push import boxes out of the yard",
-          "src": 6
+          "who": "Eurogate + Embotech (DE)",
+          "practice": "6-month autonomous tractor pilot, then a second in Hamburg (2026)",
+          "result": "Passed 18 test cases: mixed traffic, all weather, cm-level positioning",
+          "src": 8
         }
       ],
+      "agv_pros": [
+        "Runs around the clock with consistent cycle times",
+        "Battery AGVs need little maintenance (few moving parts)",
+        "Every move is logged to the yard database",
+        "Fewer people in crane and truck traffic zones",
+        "Successful automated terminals cut opex 25-55%"
+      ],
+      "agv_cons": [
+        "About EUR 150k per unit (2021, conservative) before navigation, charging and fencing",
+        "Needs a fenced lane or certified mixed-traffic safety",
+        "Waiting at crane handoffs can erode productivity",
+        "Fails without preventive maintenance and sensor upkeep",
+        "Some automated terminals lost 7-15% productivity"
+      ],
+      "agv_src": [
+        9,
+        10,
+        11
+      ],
       "implications": [
-        "Appointments work only with readiness information and partner buy-in, which is why PortFlow pairs them with the release portal and co-design.",
-        "Dwell pricing is standard practice, so a free-time tariff is defensible to customers.",
-        "Choose AI that assists people over crane automation, and pair it with a no-layoff commitment, to avoid the dispute seen at B.C. ports.",
-        "Reliability, not more space, is how PortFlow defends its share as rival gateways add capacity."
+        "Pilot 2 AGVs in a fenced lane; scale only if uptime, cost per move and safety beat manual tractors.",
+        "Every AGV weakness becomes a named risk with an owner, budget and early warning (slide 9).",
+        "Pair automation with a no-layoff commitment and retraining to avoid the B.C. dispute."
       ],
       "sources": [
         {
-          "id": 0,
-          "label": "Case brief: stakeholder perspectives (trucking, supply chain partner)"
-        },
-        {
           "id": 1,
-          "label": "Port Technology, Port of Vancouver posts record 170m metric tonnes in 2025",
+          "label": "Port Technology, Port of Vancouver record 2025",
           "url": "https://www.porttechnology.org/news/ports-and-terminals/port-of-vancouver-posts-record-170m-metric-tonnes-in-2025/"
         },
         {
           "id": 2,
-          "label": "Trains.com, CPKC container dwell still an issue at Canada's largest port",
+          "label": "Trains.com, CPKC container dwell at Canada's largest port",
           "url": "https://www.trains.com/?p=224969"
         },
         {
-          "id": 3,
-          "label": "US EPA Ports Initiative, GCT Bayonne drayage truck appointment system",
-          "url": "https://19january2025snapshot.epa.gov/ports-initiative/gct-bayonnes-drayage-truck-appointment-system/index.html"
-        },
-        {
-          "id": 4,
-          "label": "AJOT, Do truck appointment systems decrease turn times? Preliminary data shows no",
-          "url": "https://www.ajot.com/news/do-truck-appointment-systems-decrease-turn-times-preliminary-data-shows-no"
-        },
-        {
           "id": 5,
-          "label": "CBC, B.C. ports are frozen amid a labour dispute",
+          "label": "CBC, B.C. ports frozen amid a labour dispute",
           "url": "https://www.cbc.ca/lite/story/1.7373904"
         },
         {
-          "id": 6,
-          "label": "gCaptain, Port Houston to begin charging for long-dwelling import containers; Green Worldwide (Seattle); FreightWaves (Tacoma)",
-          "url": "https://gcaptain.com/port-houston-to-begin-charging-for-long-dwelling-import-containers"
+          "id": 7,
+          "label": "Maritime Executive, Port of Felixstowe deploys first autonomous trucks",
+          "url": "https://maritime-executive.com/corporate/port-of-felixstowe-deploys-first-autonomous-trucks"
+        },
+        {
+          "id": 8,
+          "label": "Cyprus Shipping News, Embotech and EUROGATE complete 6-month pilot",
+          "url": "https://cyprusshippingnews.com/2025/12/10/embotech-and-eurogate-complete-6-month-pilot-of-autonomous-terminal-truck-in-landside-and-waterside-operations/"
+        },
+        {
+          "id": 9,
+          "label": "McKinsey, container terminal automation executive summary",
+          "url": "https://mck.co/47nfYuN"
+        },
+        {
+          "id": 10,
+          "label": "US DOT ITS cost database, AGV unit cost study",
+          "url": "https://www.itskrs.its.dot.gov/2022-sc00520"
+        },
+        {
+          "id": 11,
+          "label": "TBA Group, AGV vs Lift-AGV vs ALV comparison",
+          "url": "https://tba.group/insights/agv-versus-lift-agv-versus-alv-qualitative-and-quantative-comparison"
         }
+      ]
+    },
+    "agv_plan": {
+      "steps": [
+        {
+          "when": "M1-3",
+          "step": "Specify and quote",
+          "detail": "3 vendor quotes, fixed price, cost per move model"
+        },
+        {
+          "when": "M3-5",
+          "step": "Fence and certify",
+          "detail": "Quay-to-block lane fenced, charging point, signed safety case"
+        },
+        {
+          "when": "M5-7",
+          "step": "Commission",
+          "detail": "2 battery AGVs accepted and linked to the yard database"
+        },
+        {
+          "when": "M7-11",
+          "step": "Pilot",
+          "detail": "Live moves in the fenced lane; uptime and cost per move weekly"
+        },
+        {
+          "when": "M11-12",
+          "step": "Decide",
+          "detail": "Scale, hold or stop, against the criteria below"
+        },
+        {
+          "when": "Year 2+",
+          "step": "Scale if it passes",
+          "detail": "Add units in phases, funded from verified savings"
+        }
+      ],
+      "maintenance": [
+        {
+          "cadence": "Every shift",
+          "task": "Pre-shift check: brakes, bumpers, sensors, battery state (AGV supervisor)"
+        },
+        {
+          "cadence": "Weekly",
+          "task": "Clean and test navigation sensors; review fault and stop logs"
+        },
+        {
+          "cadence": "Monthly",
+          "task": "Vendor service under SLA; battery health; software updates"
+        },
+        {
+          "cadence": "Quarterly",
+          "task": "Safety system test and calibration audit; update the safety case"
+        }
+      ],
+      "oversight": [
+        {
+          "role": "AGV supervisor (each shift)",
+          "duty": "Watches the fleet screen, stops and restarts, switches to manual tractors"
+        },
+        {
+          "role": "Engineering & Maintenance Mgr",
+          "duty": "Owns uptime, maintenance plan and the vendor SLA"
+        },
+        {
+          "role": "Yard Planning Mgr",
+          "duty": "Assigns AGV jobs through the yard database"
+        },
+        {
+          "role": "Safety lead",
+          "duty": "Safety case, incident and near-miss reviews"
+        },
+        {
+          "role": "Steering committee",
+          "duty": "Month-12 scale decision"
+        }
+      ],
+      "scale_criteria": [
+        "Uptime >= 90%",
+        "Cost per move <= manual tractor",
+        "Zero lost-time incidents",
+        "Database position accuracy >= 99%",
+        "Supervisors certified on every shift"
+      ]
+    },
+    "finance_notes": {
+      "not_counted": [
+        "AGV labour savings (pilot only; no layoffs)",
+        "Storage revenue",
+        "Avoided spend on the 15-acre parcel"
+      ],
+      "uncertainty": "How much of the $8M penalty bill comes from customs or documentation holds that PortFlow cannot override. If only a quarter of penalties disappear instead of half, savings drop to $4.4M a year.",
+      "script": [
+        "Start with the budget: $9.4M of the $10M, with $0.6M left unspent and $0.8M contingency inside.",
+        "Each year the package costs $1.3M to run and saves $6.4M: $2.4M of overtime and $4.0M of penalties, each with a named owner.",
+        "Plug it into the case formula: $9.4M plus 5 times ($1.3M minus $6.4M) gives minus $16.1M, a net saving.",
+        "Even if savings were cut in half, the plan still breaks even; it needs only $3.2M a year."
       ]
     }
   },
@@ -1062,52 +1253,52 @@
     "solution_model": "Baseline KPIs \u2192 bottleneck/root cause \u2192 optimize/simulate \u2192 pilot \u2192 ROI + KPIs",
     "family": "throughput",
     "family_label": "Throughput / capacity",
-    "what_the_case_tests": "This is a flow problem that looks like a space problem. Judges test whether you separate causes from symptoms with the case data (Little's Law on dwell), resist the obvious expansion, and still cover finance, operations and safety, supply chain, change management and AI within a $10M budget.",
+    "what_the_case_tests": "Judges test whether you separate causes from symptoms, resist the obvious expansion, and use analytics and automation responsibly, covering finance, operations and safety, supply chain, change management and AI within $10M.",
     "scqa": {
       "situation": "PortFlow is a Canadian container terminal linking shipping lines, trucking, rail and inland customers. Today the yard holds 21,120 TEU against 24,000 TEU effective capacity (88%), containers dwell 6 days, and trucks take 72 minutes per visit (40 queuing, 32 inside). Volume will grow 20% in five years. The terminal spends $6M a year on overtime and $8M on delay and service penalties. Release and schedule information is not shared consistently, planning runs across separate systems on fixed rules, and the yard system knows a container's stack but not its exact position. One 15-acre parcel (about 4,000 TEU) could be added, phased around live operations.",
-      "complication": "At +20% volume, the same 6-day dwell would need 106% of yard capacity, and trucks already take 72 minutes against a 45-minute objective. Overtime ($6M) and penalties ($8M) are rising, and the one expansion parcel would only bring utilization to 90.5%.",
+      "complication": "With +20% volume the yard passes capacity by year 5, trucks already take 72 minutes against a 45-minute objective, overtime ($6M) and penalties ($8M) keep rising, and the one expansion parcel would still leave the yard about 90% full.",
       "question": "Which package, within the $10M upfront budget, attacks PortFlow's core issue so that at +20% volume the yard runs at or below 85% utilization and trucks turn in under 45 minutes by year five?",
-      "answer": "Option B \u2014 Integrated flow package: shared visibility, appointments, AI-assisted yard planning \u2014 delivers 21.7% lower year-5 yard utilization (target 19.5%) for CAD $9,000,000 of the CAD $10,000,000 budget: NPV CAD $6,491,191 at 9.5%, payback 31.7 months. Five-year net financial impact (case formula): -CAD $16,500,000 (net savings)."
+      "answer": "Option B \u2014 Dynamic yard: demand zoning, MIP/CRAFT slotting, tracking database, AI AGV pilot \u2014 delivers 21.7% lower year-5 yard utilization (target 19.5%) for CAD $9,400,000 of the CAD $10,000,000 budget: NPV CAD $6,091,191 at 9.5%, payback 32.7 months. Five-year net financial impact (case formula): -CAD $16,100,000 (net savings)."
     },
     "issue_tree": {
       "root": "How does PortFlow reach <= 85% yard utilization and < 45-minute truck turns at +20% volume, within $10M?",
       "branches": [
         {
-          "name": "Yard inventory (dwell)",
+          "name": "Placement (where boxes sit)",
           "questions": [
-            "Why do containers stay 6 days: late release information, uncollected imports, early exports or empties?",
-            "What dwell meets 85%? (4.83 days on 24,000 TEU)"
+            "Which container groups move most, and how far are they from their exit?",
+            "Can MIP + CRAFT cut flow x distance?"
           ]
         },
         {
-          "name": "Yard handling (rehandles)",
+          "name": "Order and timing (when they leave)",
           "questions": [
-            "How many crane moves are reshuffles because exact positions and pickup times are unknown?",
-            "Can stacking by pickup time free RTG hours for the 20% growth?"
+            "Do stacks follow pickup order?",
+            "How does seasonal demand shift, and can slotting follow it?"
           ]
         },
         {
-          "name": "Gate and landside (arrivals)",
+          "name": "Information and movement",
           "questions": [
-            "Why do trucks bunch: no appointments, no readiness signal?",
-            "What cuts the 40-minute queue and the 32 minutes inside?"
+            "Do we know each box's exact slot and release status?",
+            "Can AGVs move boxes cheaper and safer than manual tractors?"
           ]
         }
       ]
     },
-    "hypothesis": "The core issue is fragmented release and schedule information, not a lack of space. Sharing it, booking trucks against ready containers and planning the yard around known pickups cuts dwell below 4.83 days and truck turn below 45 minutes without new land.",
+    "hypothesis": "PortFlow's yard is static and blind. Demand-based zoning (MIP + CRAFT), dynamic slotting on one tracked database, and shared release status cut handling time and dwell enough to meet both objectives without new land; AI AGVs are piloted, not bet on.",
     "toolkit": [
-      "Little's Law: inventory = throughput x dwell",
-      "Cause-versus-symptom tree (5 whys)",
-      "Queueing view of truck arrivals: peak-to-average ratio",
+      "MIP: container-group-to-block assignment",
+      "CRAFT: pairwise exchange layout improvement",
+      "Demand forecasting with seasonality",
       "Decision matrix with budget as a hard gate"
     ],
     "quick_math": [
-      "Today: 21,120 TEU / 6 days = 3,520 TEU/day; 21,120 / 24,000 = 88%",
-      "Year 5: 4,224 TEU/day x 6 days = 25,344 TEU = 106% of capacity",
-      "Expansion only: 25,344 / 28,000 = 90.5% (misses 85%)",
-      "Dwell needed: 0.85 x 24,000 / 4,224 = 4.83 days (-19.5%)",
-      "Truck turn: 40 + 32 = 72 min; target < 45 needs -27 min or more"
+      "Today: 21,120 / 24,000 TEU = 88% full",
+      "Year 5 at today's stay: about 25,300 TEU, over capacity",
+      "Expansion only: about 90% (misses 85%)",
+      "Truck turn: 72 min today; plan 15 queue + 22 inside = 37 min",
+      "Budget: $9.4M of $10M; five-year impact -$16.1M"
     ],
     "solution_ladder": [
       {
@@ -1115,56 +1306,56 @@
         "name": "Quick win",
         "rule": "Lowest capital: what a minimal move buys",
         "option": "A",
-        "option_name": "Gate quick win: truck appointments and release portal",
-        "capex_CAD": 4100000,
-        "improvement_percent": 10.0,
-        "npv_CAD": 4157625,
+        "option_name": "Static re-zoning only: one-off MIP and CRAFT layout",
+        "capex_CAD": 1600000,
+        "improvement_percent": 3.9,
+        "npv_CAD": 4032937,
         "meets_target": false,
         "within_budget": true,
         "selected": false,
-        "summary": "Option A: 10% for CAD $4,100,000 (misses target, in budget)"
+        "summary": "Option A: 3.9% for CAD $1,600,000 (misses target, in budget)"
       },
       {
         "level": "Level 2",
         "name": "Minimum compliant",
         "rule": "Cheapest option that meets the target within budget",
         "option": "B",
-        "option_name": "Integrated flow package: shared visibility, appointments, AI-assisted yard planning",
-        "capex_CAD": 9000000,
+        "option_name": "Dynamic yard: demand zoning, MIP/CRAFT slotting, tracking database, AI AGV pilot",
+        "capex_CAD": 9400000,
         "improvement_percent": 21.7,
-        "npv_CAD": 6491191,
+        "npv_CAD": 6091191,
         "meets_target": true,
         "within_budget": true,
         "selected": true,
-        "summary": "Option B: 21.7% for CAD $9,000,000 (meets target, in budget)"
+        "summary": "Option B: 21.7% for CAD $9,400,000 (meets target, in budget)"
       },
       {
         "level": "Level 3",
         "name": "Value maximiser",
         "rule": "Highest NPV within budget",
         "option": "B",
-        "option_name": "Integrated flow package: shared visibility, appointments, AI-assisted yard planning",
-        "capex_CAD": 9000000,
+        "option_name": "Dynamic yard: demand zoning, MIP/CRAFT slotting, tracking database, AI AGV pilot",
+        "capex_CAD": 9400000,
         "improvement_percent": 21.7,
-        "npv_CAD": 6491191,
+        "npv_CAD": 6091191,
         "meets_target": true,
         "within_budget": true,
         "selected": true,
-        "summary": "Option B: 21.7% for CAD $9,000,000 (meets target, in budget)"
+        "summary": "Option B: 21.7% for CAD $9,400,000 (meets target, in budget)"
       },
       {
         "level": "Level 4",
         "name": "Stretch",
         "rule": "Largest improvement regardless of budget",
         "option": "B",
-        "option_name": "Integrated flow package: shared visibility, appointments, AI-assisted yard planning",
-        "capex_CAD": 9000000,
+        "option_name": "Dynamic yard: demand zoning, MIP/CRAFT slotting, tracking database, AI AGV pilot",
+        "capex_CAD": 9400000,
         "improvement_percent": 21.7,
-        "npv_CAD": 6491191,
+        "npv_CAD": 6091191,
         "meets_target": true,
         "within_budget": true,
         "selected": true,
-        "summary": "Option B: 21.7% for CAD $9,000,000 (meets target, in budget)"
+        "summary": "Option B: 21.7% for CAD $9,400,000 (meets target, in budget)"
       }
     ],
     "ladder_rationale": "Option B is recommended. It is both the cheapest compliant option and the best value: a dominant choice.",
@@ -1182,7 +1373,7 @@
       {
         "kpi": "Truck turn time",
         "baseline": "72 min (40 queue + 32 inside)",
-        "target": "< 45 min (plan about 40)"
+        "target": "< 45 min (plan about 37)"
       },
       {
         "kpi": "Rehandles per container",
@@ -1190,14 +1381,14 @@
         "target": "-30%"
       },
       {
+        "kpi": "AGV pilot availability and cost per move",
+        "baseline": "manual tractors",
+        "target": ">= 90% uptime; cost per move <= manual"
+      },
+      {
         "kpi": "Overtime and penalties",
         "baseline": "$6M and $8M a year",
         "target": "$3.6M and $4.0M a year"
-      },
-      {
-        "kpi": "Yard and gate safety incidents",
-        "baseline": "current rate",
-        "target": "no increase; near-misses reviewed weekly"
       }
     ],
     "plan_30_60_90": [
@@ -1214,7 +1405,7 @@
         "window": "Days 31\u201360",
         "focus": "Prove & decide",
         "actions": [
-          "Pilot gate: Slot adherence >= 80% on pilot lanes and no safety incidents",
+          "Pilot gate: Layout model beats today's travel by >= 20% in simulation; AGV safety case signed",
           "Lock fixed-price packages for scale-up",
           "Train operators; write standard work"
         ]
@@ -1223,7 +1414,7 @@
         "window": "Days 61\u201390",
         "focus": "Scale & control",
         "actions": [
-          "Begin scale appointments, positioning and ai advice",
+          "Begin re-zone, go dynamic, pilot 2 agvs",
           "Control chart on the primary KPI",
           "Review vs target (19.5%) with sponsor"
         ]
@@ -1238,7 +1429,7 @@
       {
         "time": "0:25-0:55",
         "step": "Quick math",
-        "output": "Little's Law, dwell threshold, truck turn gap"
+        "output": "Case KPIs, budget check, truck turn gap"
       },
       {
         "time": "0:55-1:40",
@@ -1260,37 +1451,37 @@
       {
         "category": "Stress test",
         "question": "Why not just build on the 15-acre parcel?",
-        "rebuttal": "Space alone fails the objective: 25,344 TEU / 28,000 TEU = 90.5% at year 5. It costs about $14.5M, over the $10M budget, and must be phased around live operations. Cutting dwell to 4.7 days reaches about 83% on today's footprint. We keep the parcel as a phase-2 option if dwell stays above 5.6 days."
+        "rebuttal": "Space alone fails the objective: 25,344 / 28,000 TEU = 90.5% at year 5, for about $14.5M, over budget. Cutting dwell to 4.7 days reaches about 83% on today's footprint."
       },
       {
         "category": "Stress test",
-        "question": "What if dwell does not fall as much as you assume?",
-        "rebuttal": "The threshold is explicit: dwell at or below 4.83 days meets 85% without land. If dwell is above 5.3 days at month 9 (our gate trigger), we tighten the free-time tariff and start the parcel design. With dwell at 5.6 days or less, the parcel would then meet the objective."
+        "question": "Why only two AGVs?",
+        "rebuttal": "The evidence is mixed: successful automated terminals cut operating costs 25-55%, but some lose 7-15% productivity. Two units in a fenced lane prove uptime, cost per move and safety for $1.6M; the fleet grows only if the month-12 gate passes."
       },
       {
         "category": "Stress test",
-        "question": "How confident are you in the $6.4M of annual savings?",
-        "rebuttal": "Each saving has an owner and a mechanism. Break-even needs only $3.1M a year. If penalties fall 25% instead of 50%, the five-year impact is still -$6.5M."
+        "question": "How do the MIP and CRAFT work together?",
+        "rebuttal": "The MIP assigns container groups to blocks, minimising move frequency x distance to their exit within capacity and segregation rules. CRAFT then tries pairwise zone swaps and keeps any that lower total flow x distance, so the layout can be re-improved as demand shifts."
       },
       {
         "category": "Stress test",
-        "question": "Will the AI and automation cost jobs?",
-        "rebuttal": "No layoffs from this program. The AI recommends and planners decide. Roles shift from manual re-planning and overtime to planning-cell and exception work, with training in paid time."
+        "question": "What if the seasonal forecast is wrong?",
+        "rebuttal": "Slotting re-runs weekly on actual bookings, not only the forecast; planners approve every re-slot; zoning is reviewed monthly."
       },
       {
         "category": "Stress test",
-        "question": "How do you keep the terminal running during the rollout?",
-        "rebuttal": "Lane-by-lane appointments with a walk-in lane kept open, block-by-block positioning, 6 weeks of shadow mode for the AI, go-lives outside vessel peaks, and a rollback plan triggered if gate throughput drops below baseline for 2 shifts."
+        "question": "How do you know where every container is?",
+        "rebuttal": "OCR cameras read container numbers at the gate and quay, crane position sensors record the exact slot of every pick and drop, and RFID tags identify each AGV and truck. Every move writes to one yard database that the slotting engine, the AGVs and the customer portal all read."
       },
       {
         "category": "Stress test",
-        "question": "How will you get truckers to use appointments?",
-        "rebuttal": "We co-design slot rules with them, guarantee the container is ready when a slot is booked, give on-time trucks a priority lane, and keep grace windows. Slots exist only for released containers, so a booking is never wasted."
+        "question": "Will automation cost jobs, and who maintains the AGVs?",
+        "rebuttal": "No layoffs from this program. Drivers can retrain as AGV supervisors and technicians. AGVs follow a preventive maintenance plan with a vendor SLA, and manual tractors stay as the fallback."
       },
       {
         "category": "Alternatives",
         "question": "Why not Option A, the cheapest?",
-        "rebuttal": "It costs CAD $4,100,000 but delivers 10% (misses the 19.5% target); it scores 5.63/10 vs 7.0/10 for Option B."
+        "rebuttal": "It costs CAD $1,600,000 but delivers 3.9% (misses the 19.5% target); it scores 5.22/10 vs 6.92/10 for Option B."
       },
       {
         "category": "Assumptions",
@@ -1305,17 +1496,17 @@
       {
         "category": "Financials",
         "question": "What is the benefit-to-cost ratio?",
-        "rebuttal": "1.46 on a present-value basis at 9.5% WACC; levelized 128752.43 CAD per year per % point of improvement."
+        "rebuttal": "1.42 on a present-value basis at 9.5% WACC; levelized 134474.76 CAD per year per % point of improvement."
       },
       {
         "category": "Implementation",
         "question": "What if implementation takes 50% longer?",
-        "rebuttal": "NPV falls to CAD $4,623,006; the H1 pilot and fixed-price packages protect the schedule."
+        "rebuttal": "NPV falls to CAD $4,223,006; the H1 pilot and fixed-price packages protect the schedule."
       },
       {
         "category": "Implementation",
         "question": "How will you know it is working by day 30?",
-        "rebuttal": "Pilot KPI: Pilot lanes: queue time -25%; release status shared within 1 hour; baseline rehandles measured. Leading indicators: Constraint utilisation, OEE at the constraint."
+        "rebuttal": "Pilot KPI: Move data cleaned; MIP/CRAFT layout validated in simulation; AGV vendor and safety case approved. Leading indicators: Constraint utilisation, OEE at the constraint."
       },
       {
         "category": "Safety",
@@ -1364,7 +1555,7 @@
       {
         "item": "Answer-first executive summary (one sentence, three numbers)",
         "ok": true,
-        "evidence": "Option B \u2014 Integrated flow package: shared visibility, appointments, AI-assisted yard planning \u2014 delivers 21.7% lower ye\u2026"
+        "evidence": "Option B \u2014 Dynamic yard: demand zoning, MIP/CRAFT slotting, tracking database, AI AGV pilot \u2014 delivers 21.7% lower year-\u2026"
       },
       {
         "item": "Three options costed on the same basis",
@@ -1374,7 +1565,7 @@
       {
         "item": "Recommendation fits the budget",
         "ok": true,
-        "evidence": "CAD $9,000,000 of CAD $10,000,000"
+        "evidence": "CAD $9,400,000 of CAD $10,000,000"
       },
       {
         "item": "Recommendation meets the target",
@@ -1384,12 +1575,12 @@
       {
         "item": "Financials: NPV, payback, sensitivity",
         "ok": true,
-        "evidence": "NPV CAD $6,491,191, payback 31.7 months"
+        "evidence": "NPV CAD $6,091,191, payback 32.7 months"
       },
       {
         "item": "Bear case tested (-15% performance, +20% cost)",
         "ok": true,
-        "evidence": "bear NPV CAD $620,445"
+        "evidence": "bear NPV CAD $140,445"
       },
       {
         "item": "30/60/90 roadmap with owners and gates",
