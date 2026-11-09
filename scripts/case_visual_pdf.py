@@ -41,8 +41,12 @@ def _mo(x):
     return f"{x:.1f} mo" if x is not None else "> 60 mo"
 
 
+FOOTER = {"text": ""}
+
+
 class Page:
     def __init__(self, doc, n, total, case_id, section):
+        n = doc.page_count + 1  # numbered by position, so optional pages never break the sequence
         self.p = doc.new_page(width=W, height=H)
         self.fonts = {}
         for name, path in FONTS.items():
@@ -57,7 +61,7 @@ class Page:
             self.text(M, 17, section.upper(), 7.5, "bold", C["mint_l"])
             self.text_right(W - M, 17, f"CASE {case_id}", 7.5, "bold", C["white"])
             self.p.draw_line((M, H - 30), (W - M, H - 30), color=C["border"], width=0.7)
-            self.text(M, H - 17, "Strategy Consulting Hub · Executive Case Simulation Team · synthetic training case", 6.5, "reg", C["muted"])
+            self.text(M, H - 17, FOOTER["text"], 6.5, "reg", C["muted"])
             self.text_right(W - M, H - 17, f"{n:02d} / {total:02d}", 7, "bold", C["emerald"])
 
     def _f(self, font):
@@ -152,6 +156,9 @@ def _cover(doc, spec, total):
         pg.stat((M + i * (cw + 10), 440, M + i * (cw + 10) + cw, 506), v, l, s, C["mint"] if i < 3 else C["amber"])
     pg.text(M, 545, "INSIDE", 7.5, "bold", C["mint"])
     sections = ["01  The Challenge", "02  The Approach", "03  The Options", "04  The Results", "05  Execution", "06  Defence & Submission"]
+    if spec.get("case_pack"):
+        sections[3:3] = ["03b The Package"]
+        sections[6:6] = ["05b Required Analysis"]
     for i, s in enumerate(sections):
         pg.text(M + (i % 2) * 260, 568 + (i // 2) * 22, s, 11, "semi", C["ink"])
     pg.box((M, 650, W - M, 700), f"Archetype: {intel['archetype_name']} · Family: {intel['family_label']} · Model: {intel['solution_model']}",
@@ -224,7 +231,8 @@ def _approach(doc, spec, total):
     pg.text(M + half + 14, y, "QUICK MATH", 7.5, "bold", C["mint"])
     pg.box((M + half + 14, y + 6, W - M, y + 92), "\n".join(f"• {t}" for t in intel["quick_math"]), 8.5, "reg", C["body"], min_size=6.5)
     y += 104
-    pg.text(M, y, "TIME PLAN FOR A 5-HOUR CRACKING WINDOW", 7.5, "bold", C["mint"])
+    from case_videos import plan_hours
+    pg.text(M, y, f"TIME PLAN FOR A {plan_hours(intel['time_plan'])}-HOUR CRACKING WINDOW", 7.5, "bold", C["mint"])
     steps = intel["time_plan"]
     sw = (W - 2 * M) / len(steps)
     for i, s in enumerate(steps):
@@ -430,9 +438,83 @@ def _defence(doc, spec, total):
             x = pg.pill(x, yy, label, C["muted_bg"], C["navy"])
 
 
+def _package(doc, spec, total):
+    """Structured cases: the recommended package, budget check and the case's five-year formula."""
+    ci, fs, pack = spec["case_identification"], spec["financial_summary"], spec["case_pack"]
+    pg = Page(doc, 0, total, ci["id"], "03b · The Package")
+    y = pg.heading(52, "Recommended package", spec["approved_solution"]["name"],
+                   "Every initiative has an upfront cost, an ongoing cost and a named owner for its savings.")
+    cols = [(M, "INITIATIVE & PURPOSE"), (M + 300, "UPFRONT"), (M + 368, "PER YEAR"), (M + 436, "OWNER")]
+    for x, h in cols:
+        pg.text(x, y, h, 6.8, "bold", C["mint"])
+    y += 6
+    for p in pack.get("package", []):
+        pg.card((M, y, W - M, y + 37), stripe=C["emerald"])
+        pg.box((M + 12, y + 3, M + 292, y + 15), p["initiative"], 8.2, "semi", C["ink"], min_size=6)
+        pg.box((M + 12, y + 15, M + 292, y + 36), p["purpose"], 6.6, "reg", C["body"], min_size=5)
+        pg.text(M + 300, y + 22, _cad(p["capex"]), 9, "bold", C["emerald"])
+        pg.text(M + 368, y + 22, _cad(p["annual_opex"]), 9, "bold", C["amber"])
+        pg.box((M + 436, y + 6, W - M - 6, y + 35), p["owner"], 7, "reg", C["body"], min_size=5)
+        y += 40
+    y += 8
+    pg.text(M, y, "BUDGET CHECK", 7.5, "bold", C["mint"])
+    y += 10
+    bud, inv = fs["budget_CAD"], fs["initial_investment_CAD"]
+    pg.p.draw_rect(pymupdf.Rect(M, y, W - M, y + 16), fill=C["muted_bg"], width=0, radius=0.4)
+    pg.p.draw_rect(pymupdf.Rect(M, y, M + (W - 2 * M) * min(inv / bud, 1), y + 16), fill=C["mint"], width=0, radius=0.4)
+    pg.text(M, y + 28, f"{_cad(inv)} committed ({inv / bud:.0%})", 7.5, "bold", C["pine"])
+    pg.text_right(W - M, y + 28, f"{_cad(bud - inv)} headroom · budget {_cad(bud)}", 7.5, "bold", C["emerald"])
+    y += 42
+    pg.card((M, y, W - M, y + 92), fill=C["pine"], border=C["pine"])
+    pg.text(M + 16, y + 20, "FIVE-YEAR NET FINANCIAL IMPACT (CASE FORMULA)", 7.5, "bold", C["mint_l"])
+    pg.box((M + 16, y + 26, W - M - 16, y + 52),
+           f"{_cad(inv)} + 5 x ({_cad(fs['annual_om_CAD'])} - {_cad(fs['annual_run_rate_benefit_CAD'])}) = {_cad(fs['five_year_net_impact_CAD'])}",
+           17, "bold", C["white"], min_size=10)
+    pg.box((M + 16, y + 56, W - M - 16, y + 88), f"{fs['five_year_formula']}. Discounted cross-check: NPV {_cad(fs['npv_CAD'])} at "
+           f"{fs['wacc_percent']:.1f}%, payback {_mo(fs['payback_period_months'])}.", 8, "reg", C["mint_bd"], min_size=6)
+    y += 108
+    pg.text(M, y, "DIRECTIONS CONSIDERED · SAME FORMULA", 7.5, "bold", C["mint"])
+    y += 8
+    for o in spec["options_evaluation"]["options"]:
+        if y + 46 > H - 40:
+            break
+        sel = o["selected"]
+        pg.card((M, y, W - M, y + 42), fill=C["mint_bg"] if sel else C["white"], border=C["mint_bd"] if sel else C["border"],
+                stripe=C["mint"] if sel else C["muted"])
+        pg.box((M + 12, y + 4, M + 330, y + 17), f"Option {o['label']}: {o['name']}", 8, "semi", C["ink"], min_size=6)
+        pg.box((M + 12, y + 17, M + 330, y + 40), "Recommended." if sel else f"Set aside: {o.get('why_not') or 'lower score'}", 6.8, "reg",
+               C["body"], min_size=5)
+        pg.text_right(W - M - 10, y + 18, _cad(o["five_year_net_impact_CAD"]), 12, "bold", C["emerald"] if o["five_year_net_impact_CAD"] < 0 else C["red"])
+        pg.text_right(W - M - 10, y + 32, f"upfront {_cad(o['capex_CAD'])}" + ("" if o["within_budget"] else " · over budget"), 6.8, "reg", C["muted"])
+        y += 47
+
+
+def _analysis(doc, spec, total):
+    """Structured cases: each required-analysis area from the brief, answered."""
+    ci, secs = spec["case_identification"], spec["case_pack"].get("analysis_sections", [])
+    pg = Page(doc, 0, total, ci["id"], "05b · Required Analysis")
+    y = pg.heading(52, "What the brief asks for", "Required analysis, area by area",
+                   "Operations and safety, supply chain, change management, and AI and automation, each answered from the case data.")
+    rest = [s for s in secs if s["title"] != "Finance"]
+    half = (W - 2 * M - 12) / 2
+    rows = (len(rest) + 1) // 2
+    ch = (H - 50 - y - (rows - 1) * 10) / max(rows, 1)
+    for i, s in enumerate(rest):
+        x0, y0 = M + (i % 2) * (half + 12), y + (i // 2) * (ch + 10)
+        pg.card((x0, y0, x0 + half, y0 + ch), stripe=C["mint"])
+        pg.text(x0 + 14, y0 + 18, s["title"].upper(), 8, "bold", C["emerald"])
+        pg.box((x0 + 14, y0 + 26, x0 + half - 10, y0 + ch - 8), "\n".join(f"• {p}" for p in s["points"]), 10, "reg", C["body"], min_size=5, lh=1.35)
+
+
 def generate_case_study_booklet(spec: dict, out_path: Path) -> Path:
     doc = pymupdf.open()
+    structured = spec["case_identification"].get("source_type") == "structured_case"
+    FOOTER["text"] = ("Strategy Consulting Hub · Executive Case Simulation Team · "
+                      + ("competition brief; estimates are stated assumptions" if structured else "synthetic training case"))
     builders = [_cover, _challenge, _approach, _options, _results, _execution, _defence]
+    if spec.get("case_pack"):
+        builders.insert(4, _package)
+        builders.insert(7, _analysis)
     for b in builders:
         b(doc, spec, len(builders))
     doc.set_metadata({"title": spec["case_identification"]["title"], "author": "Strategy Consulting Hub",

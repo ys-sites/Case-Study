@@ -1,5 +1,5 @@
 # Selected Strategy
 
-Option C — Comprehensive architecture replacement for cold-chain fulfillment center — delivers 13% capacity scaling improvement (target 8.5%) for CAD $676,000 of the CAD $866,000 budget: NPV CAD $2,681,053 at 9.5%, payback 11.1 months.
+Option B — Integrated flow package: shared visibility, appointments, AI-assisted yard planning — delivers 21.7% lower year-5 yard utilization (target 19.5%) for CAD $9,000,000 of the CAD $10,000,000 budget: NPV CAD $6,491,191 at 9.5%, payback 31.7 months. Five-year net financial impact (case formula): -CAD $16,500,000 (net savings).
 
-Weighted score: 8.55/10.
+Weighted score: 7.0/10.

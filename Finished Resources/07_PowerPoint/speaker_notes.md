@@ -1,37 +1,28 @@
 # Speaker Notes
 
-### 1. Cold-Chain Fulfillment Center — Capacity Scaling (unexpected demand increase)
-Open with the answer, then prove it.
+### 1. PortFlow Container Terminal: Yard and Gate Flow
+Title slide (not counted). Open with the answer.
 
-### 2. 1. The answer
-State the recommendation and the three numbers judges remember.
+### 2. 1. Our answer
+Lead with the core issue in one line: containers stay too long and move blind. Then the package and the -$16.5M five-year impact.
 
-### 3. 2. The problem, quantified
-Capacity Scaling
+### 3. 2. The core issue: causes, not symptoms
+Separated using the case data
 
-### 4. 3. Root-cause hypotheses
-What we must prove before spending at scale
+### 4. 3. Recommended package
+CAD $9,000,000 upfront of CAD $10,000,000; owners named
 
-### 5. 4. Three alternatives
-Costed and compared on the same basis
-
-### 6. 5. Decision logic
+### 5. 4. Directions considered: decision matrix
 Weighted criteria; budget is a hard gate
 
-### 7. 6. Recommended: Option C
-Comprehensive architecture replacement for cold-chain fulfillment center
+### 6. 5. Budget check and five-year impact
+Investment + 5 x (additional annual costs - annual savings); undiscounted; negative = net savings
 
-### 8. 7. Five-year economics
-NPV CAD $2,681,053 at 9.5% WACC
+### 7. 6. Operations, safety and supply chain
+What changes as volume grows 20%
 
-### 9. 8. Stress test
-Scenarios and the assumption that matters most
+### 8. 7. Implementation, people and AI oversight
+12 months, three gated phases, no stop to operations
 
-### 10. 9. Implementation roadmap
-3 months, three gated horizons
-
-### 11. 10. Risks and mitigations
-Pre-mortem with early-warning triggers
-
-### 12. 11. Judge defence bank
-Bear case NPV CAD $1,996,871. Lead with the number, then the mitigation.
+### 9. 8. Key risks and mitigations
+Each risk has an owner and an early-warning trigger

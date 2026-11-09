@@ -1,5 +1,5 @@
 # All Ideas Considered
 
-- **Option A** — Instrumentation and operating procedure changes for cold-chain fulfillment center (CAD $232,000, 4.6%)
-- **Option B** — Selective retrofit of critical cold-chain fulfillment center subsystems (CAD $502,000, 6.9%)
-- **Option C** — Comprehensive architecture replacement for cold-chain fulfillment center (CAD $676,000, 13%)
+- **Option A** — Gate quick win: truck appointments and release portal (CAD $4,100,000, 10%)
+- **Option B** — Integrated flow package: shared visibility, appointments, AI-assisted yard planning (CAD $9,000,000, 21.7%)
+- **Option C** — Yard expansion on the 15-acre parcel with two added RTGs (CAD $14,500,000, 14.3%)

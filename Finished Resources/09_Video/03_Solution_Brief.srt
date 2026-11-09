@@ -1,123 +1,151 @@
 1
-00:00:00,350 --> 00:00:08,102
-The solution to case ENG1M-0000001, and everything to check before you submit.
+00:00:00,350 --> 00:00:05,006
+The solution to case PORTFLOW, and everything to check before you submit.
 
 2
-00:00:09,100 --> 00:00:16,245
-Our answer: option C, Comprehensive architecture replacement for cold-chain fulfillment center.
+00:00:06,010 --> 00:00:14,766
+Our answer: option B, Integrated flow package: shared visibility, appointments, AI-assisted yard planning.
 
 3
-00:00:16,245 --> 00:00:24,820
-It delivers 13 percent against a target of 8.5 percent, for 676 thousand dollars of a 866 thousand dollars budget.
+00:00:14,766 --> 00:00:24,514
+It delivers 21.7 percent against a target of 19.5 percent, for 9.00 million dollars of a 10.00 million dollars budget.
 
 4
-00:00:25,820 --> 00:00:27,604
-Option C is recommended.
+00:00:25,510 --> 00:00:27,277
+Option B is recommended.
 
 5
-00:00:27,604 --> 00:00:33,476
+00:00:27,277 --> 00:00:33,094
 It is both the cheapest compliant option and the best value: a dominant choice.
 
 6
-00:00:34,480 --> 00:00:44,872
-The economics: a run-rate benefit of 948 thousand dollars a year, net present value of 2.68 million dollars, and payback in 11 months.
+00:00:34,090 --> 00:00:45,400
+The package has 7 initiatives for 9.00 million dollars upfront, 1.30 million dollars a year to run, and 6.40 million dollars a year of savings.
 
 7
-00:00:45,870 --> 00:00:47,062
-Now stress it.
+00:00:45,400 --> 00:00:53,626
+Using the case formula, the five-year net financial impact is minus 16.50 million dollars, a net saving.
 
 8
-00:00:47,062 --> 00:00:57,105
-If performance falls fifteen percent and costs rise twenty, the gain is 11.05 percent and NPV is 2.00 million dollars.
+00:00:54,630 --> 00:01:23,406
+Operations & Safety: Storage: dwell 6.0 to 4.7 days keeps year-5 utilization near 83% with no new land Supply Chain: Lines, trucks, rail and customers share one release and ETA status Organizational Change Management: Staff co-design rules before tools arrive; training in paid time with super-users per shift AI & Automation: AI recommends stacking and overnight moves; planners approve; safety rules locked
 
 9
-00:00:57,105 --> 00:00:59,062
-The target still holds.
+00:01:24,410 --> 00:01:35,258
+The economics: a run-rate benefit of 6.40 million dollars a year, net present value of 6.49 million dollars, and payback in 32 months.
 
 10
-00:00:59,062 --> 00:01:05,190
-The most sensitive driver is annual benefit: achieved gain x unit value.
+00:01:36,260 --> 00:01:37,333
+Now stress it.
 
 11
-00:01:06,190 --> 00:01:08,913
-Days 1 to 30: Validate & pilot.
+00:01:37,333 --> 00:01:46,381
+If performance falls fifteen percent and costs rise twenty, the gain is 18.45 percent and NPV is 620 thousand dollars.
 
 12
-00:01:08,913 --> 00:01:13,217
-Confirm baseline data and the binding constraint.
+00:01:46,381 --> 00:01:51,595
+The target would be missed, which is why the pilot gate comes first.
 
 13
-00:01:13,217 --> 00:01:15,853
-Days 31 to 60: Prove & decide.
+00:01:51,595 --> 00:01:57,116
+The most sensitive driver is annual benefit: achieved gain x unit value.
 
 14
-00:01:15,853 --> 00:01:22,529
-Pilot gate: Go/no-go: pilot result within 20% of model, no safety incidents.
+00:01:58,120 --> 00:02:00,929
+Days 1 to 30: Validate & pilot.
 
 15
-00:01:22,529 --> 00:01:25,252
-Days 61 to 90: Scale & control.
+00:02:00,929 --> 00:02:05,369
+Confirm baseline data and the binding constraint.
 
 16
-00:01:25,252 --> 00:01:33,070
-Begin scale-up: comprehensive architecture replacement for cold-chain fulfillment center.
+00:02:05,369 --> 00:02:08,088
+Days 31 to 60: Prove & decide.
 
 17
-00:01:34,070 --> 00:01:40,990
-The three risks to manage: Delivered improvement below model, mitigated by stage-gated rollout.
+00:02:08,088 --> 00:02:15,247
+Pilot gate: Slot adherence at least 80% on pilot lanes and no safety incidents.
 
 18
-00:01:40,990 --> 00:01:46,088
-Capital overrun, mitigated by cad $190,000 headroom to budget ceiling.
+00:02:15,247 --> 00:02:18,056
+Days 61 to 90: Scale & control.
 
 19
-00:01:46,088 --> 00:01:52,862
-Schedule slip / installation window, mitigated by pre-fabrication and off-shift installation.
+00:02:18,056 --> 00:02:22,768
+Begin scale appointments, positioning and ai advice.
 
 20
-00:01:53,860 --> 00:02:04,273
-Question: What changes when unexpected demand increase persists and the selected design underperforms by 15%?
+00:02:23,770 --> 00:02:37,197
+The three risks to manage: Truckers do not adopt appointments, mitigated by slot rules co-designed with trucking firms, grace windows, priority lanes for on-time trucks, a walk-in lane kept during transition.
 
 21
-00:02:04,273 --> 00:02:15,163
-Answer: Bear case (performance -15%, capex +20%): 11.0% improvement, NPV 2.00 million dollars payback 14.9 months.
+00:02:37,197 --> 00:02:43,975
+Dwell does not fall enough, mitigated by free-time tariff, release alerts, empties evacuation agreements.
 
 22
-00:02:15,163 --> 00:02:17,073
-Target is still met.
+00:02:43,975 --> 00:02:53,722
+Cutover disrupts live operations, mitigated by lane-by-lane and block-by-block rollout, parallel running, go-lives outside vessel peaks, rollback plan.
 
 23
-00:02:17,073 --> 00:02:20,990
-Question: Why not Option A, the cheapest?
+00:02:54,720 --> 00:02:59,091
+Question: Why not just build on the 15-acre parcel?
 
 24
-00:02:20,990 --> 00:02:32,740
-Answer: It costs 232 thousand dollars but delivers 4.6% (misses the 8.5% target); it scores 4.6/10 vs 8.55/10 for Option C.
+00:02:59,091 --> 00:03:06,204
+Answer: Space alone fails the objective: 25,344 TEU / 28,000 TEU = 90.5% at year 5.
 
 25
-00:02:33,740 --> 00:02:36,495
-Before you submit, run the checklist.
+00:03:06,204 --> 00:03:13,660
+It costs about $14.5M, over the $10M budget, and must be phased around live operations.
 
 26
-00:02:36,495 --> 00:02:38,356
-10 of 11 items are ready.
+00:03:13,660 --> 00:03:19,230
+Cutting dwell to 4.7 days reaches about 83% on today's footprint.
 
 27
-00:02:38,356 --> 00:02:42,005
-Still open: assumptions validated with real data.
+00:03:19,230 --> 00:03:25,143
+We keep the parcel as a phase-2 option if dwell stays above 5.6 days.
 
 28
-00:02:42,005 --> 00:02:49,004
-Replace the assumptions with real data if you can, or state them clearly on an appendix slide.
+00:03:25,143 --> 00:03:30,285
+Question: What if dwell does not fall as much as you assume?
 
 29
-00:02:49,000 --> 00:02:55,495
-Lead with the answer, prove it with three numbers, and own the risks.
+00:03:30,285 --> 00:03:37,655
+Answer: The threshold is explicit: dwell at or below 4.83 days meets 85% without land.
 
 30
-00:02:55,495 --> 00:02:56,212
-Option C.
+00:03:37,655 --> 00:03:47,768
+If dwell is above 5.3 days at month 9 (our gate trigger), we tighten the free-time tariff and start the parcel design.
 
 31
-00:02:56,212 --> 00:02:57,008
+00:03:47,768 --> 00:03:54,024
+With dwell at 5.6 days or less, the parcel would then meet the objective.
+
+32
+00:03:55,020 --> 00:03:57,775
+Before you submit, run the checklist.
+
+33
+00:03:57,775 --> 00:03:59,636
+10 of 11 items are ready.
+
+34
+00:03:59,636 --> 00:04:03,285
+Still open: assumptions validated with real data.
+
+35
+00:04:03,285 --> 00:04:10,284
+Replace the assumptions with real data if you can, or state them clearly on an appendix slide.
+
+36
+00:04:11,280 --> 00:04:16,606
+Lead with the answer, prove it with three numbers, and own the risks.
+
+37
+00:04:16,606 --> 00:04:17,300
+Option B.
+
+38
+00:04:17,300 --> 00:04:18,072
 Good luck.

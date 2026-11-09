@@ -2,15 +2,15 @@
 
 | Scenario | Gain | Capex | NPV | IRR | Payback | Meets target |
 | --- | --- | --- | --- | --- | --- | --- |
-| Bear (-15% perf., +20% capex) | 11.05% | CAD $811,200 | CAD $1,996,871 | 81.7% | 14.9 months | yes |
-| Base (approved plan) | 13% | CAD $676,000 | CAD $2,681,053 | 119.2% | 11.1 months | yes |
-| Bull (+15% perf., -10% capex) | 14.95% | CAD $608,400 | CAD $3,284,656 | 153.5% | 9.1 months | yes |
+| Bear (-15% perf., +20% capex) | 18.45% | CAD $10,800,000 | CAD $620,445 | 11.3% | 45.2 months | no |
+| Base (approved plan) | 21.7% | CAD $9,000,000 | CAD $6,491,191 | 29.9% | 31.7 months | yes |
+| Bull (+15% perf., -10% capex) | 24.95% | CAD $8,100,000 | CAD $10,962,775 | 44.7% | 25.7 months | yes |
 
 ## NPV sensitivity (tornado)
 
 | Driver | Low NPV | High NPV | Swing |
 | --- | --- | --- | --- |
-| Annual benefit: achieved gain x unit value (+/-20%) | CAD $1,983,686 | CAD $3,378,420 | CAD $1,394,734 |
-| Capital cost (+20% / -20%) | CAD $2,519,897 | CAD $2,842,209 | CAD $322,313 |
-| O&M cost (x2 / x0.5) | CAD $2,551,271 | CAD $2,745,944 | CAD $194,673 |
-| Implementation duration (+50% / -25%) | CAD $2,630,575 | CAD $2,731,531 | CAD $100,955 |
+| Annual benefit: achieved gain x unit value (+/-20%) | CAD $2,394,628 | CAD $10,587,753 | CAD $8,193,125 |
+| O&M cost (x2 / x0.5) | CAD $1,499,569 | CAD $8,987,001 | CAD $7,487,432 |
+| Capital cost (+20% / -20%) | CAD $3,692,866 | CAD $9,289,515 | CAD $5,596,649 |
+| Implementation duration (+50% / -25%) | CAD $4,623,006 | CAD $7,514,022 | CAD $2,891,016 |

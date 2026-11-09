@@ -1,4 +1,4 @@
 # Rejected Options
 
-- **Option A — Instrumentation and operating procedure changes for cold-chain fulfillment center** (4.6/10): misses target; NPV CAD $957,263.
-- **Option B — Selective retrofit of critical cold-chain fulfillment center subsystems** (5.26/10): misses target; NPV CAD $1,252,328.
+- **Option A — Gate quick win: truck appointments and release portal** (5.63/10): misses target; NPV CAD $4,157,625.
+- **Option C — Yard expansion on the 15-acre parcel with two added RTGs** (2.9/10): exceeds budget; NPV -CAD $14,627,035.

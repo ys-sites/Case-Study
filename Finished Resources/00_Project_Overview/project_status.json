@@ -1,7 +1,7 @@
 {
   "status": "COMPLETED",
-  "timestamp": "2026-11-09T05:29:15+00:00",
-  "case_id": "ENG1M-0000001",
+  "timestamp": "2026-11-09T14:21:45+00:00",
+  "case_id": "PORTFLOW",
   "output_root": "Finished Resources",
   "deliverables": {
     "solution_spec_json": "solution_spec.json",
@@ -24,7 +24,7 @@
     {
       "gate": "1. Case comprehension",
       "status": "PASS",
-      "detail": "baseline 1,190 units/day, target 8.5%, budget CAD $866,000, 3 months"
+      "detail": "baseline 105.6 % of capacity, target 19.5%, budget CAD $10,000,000, 12 months"
     },
     {
       "gate": "2. Evidence & assumptions",
@@ -34,17 +34,17 @@
     {
       "gate": "3. Strategy comparison",
       "status": "PASS",
-      "detail": "Option C selected at 8.55/10, capex CAD $676,000 vs budget CAD $866,000"
+      "detail": "Option B selected at 7.0/10, capex CAD $9,000,000 vs budget CAD $10,000,000"
     },
     {
       "gate": "4. Target attainment",
       "status": "PASS",
-      "detail": "13% vs target 8.5%"
+      "detail": "21.7% vs target 19.5%"
     },
     {
       "gate": "5. Financial viability",
       "status": "PASS",
-      "detail": "base NPV CAD $2,681,053, bear NPV CAD $1,996,871, payback 11.1 months; 5.43 CAD per added unit (profit-driven)"
+      "detail": "base NPV CAD $6,491,191, bear NPV CAD $620,445, payback 31.7 months; 128752.43 CAD per year per % point of improvement (profit-driven)"
     },
     {
       "gate": "6. Deliverable integrity",

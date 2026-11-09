@@ -1,0 +1,240 @@
+{
+  "format": "structured_case_v1",
+  "id": "PORTFLOW",
+  "title": "PortFlow Container Terminal: Yard and Gate Flow",
+  "discipline": "Supply Chain and Logistics Engineering",
+  "difficulty": "Championship",
+  "context": "IISE case competition; container volume +20% over five years",
+  "brief": "PortFlow is a Canadian container terminal linking shipping lines, trucking, rail and inland customers. Today the yard holds 21,120 TEU against 24,000 TEU effective capacity (88%), containers dwell 6 days, and trucks take 72 minutes per visit (40 queuing, 32 inside). Volume will grow 20% in five years. The terminal spends $6M a year on overtime and $8M on delay and service penalties. Release and schedule information is not shared consistently, planning runs across separate systems on fixed rules, and the yard system knows a container's stack but not its exact position. One 15-acre parcel (about 4,000 TEU) could be added, phased around live operations.",
+  "decision_question": "Which package, within the $10M upfront budget, attacks PortFlow's core issue so that at +20% volume the yard runs at or below 85% utilization and trucks turn in under 45 minutes by year five?",
+  "objective": "Year 5 at +20% volume: average yard utilization <= 85% and average truck turn time < 45 minutes, within $10M upfront.",
+  "baseline_metric": "Year-5 yard utilization if nothing changes",
+  "baseline_value": 105.6,
+  "baseline_unit": "% of capacity",
+  "target_metric": "Lower year-5 yard utilization",
+  "target_pct": 19.5,
+  "budget": 10000000,
+  "timeline_months": 12,
+  "suggested_analysis": "Little's Law (inventory = throughput x dwell), cause-versus-symptom tree, truck arrival queue analysis",
+  "constraints": [
+    "Upfront investment at most $10M CAD; it does not need to be spent in full",
+    "Year-5 objectives: average yard utilization <= 85% and average truck turn time < 45 minutes",
+    "Vessel and truck operations cannot stop while changes are introduced",
+    "Customs holds and missing documentation cannot be overridden by PortFlow",
+    "Up to 8 content slides for a 10-minute presentation"
+  ],
+  "diagnosis": {
+    "core_bottleneck": "The yard problem is a dwell-time problem, not a space problem. Little's Law: 3,520 TEU/day x 6 days = 21,120 TEU (88% of 24,000). At +20% volume (4,224 TEU/day) the same 6-day dwell needs 25,344 TEU, 106% of capacity. Even with the 15-acre parcel (28,000 TEU) utilization would be 90.5%, so space alone cannot meet the 85% objective. Dwell must fall to 4.83 days or less (-19.5%).",
+    "root_causes": [
+      "Core issue (cause): fragmented release and schedule information. Release status, vessel changes and pickup plans are not shared across teams, truckers, rail or customers, and planning runs in separate systems on fixed rules.",
+      "It drives dwell: customers learn late that a container is released, so pickups slip and boxes sit in the yard.",
+      "It drives truck queues: with no appointments or readiness information, trucks arrive in concentrated windows and queue 40 minutes.",
+      "It drives rehandles: the system knows the stack but not the exact position, and stacks are not built around known pickup times, so crane time goes on reshuffles and trucks spend 32 minutes inside.",
+      "Symptoms, not causes: yard crowding, $6M overtime, $8M penalties, customers unable to plan and staff anxiety. More land or more overtime treats these without removing the cause."
+    ]
+  },
+  "options": [
+    {
+      "label": "A",
+      "name": "Gate quick win: truck appointments and release portal",
+      "capex": 4100000,
+      "improvement": 10.0,
+      "annual_benefit": 3300000,
+      "annual_opex": 600000,
+      "source": "assumption: estimate (overtime -15%, penalties -30%; dwell 6.0 to 5.4 days)",
+      "why_not": "fixes the gate queue but not the yard; dwell falls only about 10%, so year-5 utilization stays near 95% and rehandles keep trucks inside too long."
+    },
+    {
+      "label": "B",
+      "name": "Integrated flow package: shared visibility, appointments, AI-assisted yard planning",
+      "capex": 9000000,
+      "improvement": 21.7,
+      "annual_benefit": 6400000,
+      "annual_opex": 1300000,
+      "source": "assumption: estimate (overtime -40%, penalties -50%; dwell 6.0 to 4.7 days)",
+      "why_not": ""
+    },
+    {
+      "label": "C",
+      "name": "Yard expansion on the 15-acre parcel with two added RTGs",
+      "capex": 14500000,
+      "improvement": 14.3,
+      "annual_benefit": 1400000,
+      "annual_opex": 1200000,
+      "source": "assumption: estimate (site works $8.0M, 2 RTGs $5.0M, road and rail tie-in $1.5M; overtime -10%, penalties -10%)",
+      "why_not": "costs about $14.5M (over budget) and still misses the objective at 90.5% utilization; it treats the symptom while dwell keeps growing. Kept as a phase-2 option."
+    }
+  ],
+  "decrypt": {
+    "what_the_case_tests": "This is a flow problem that looks like a space problem. Judges test whether you separate causes from symptoms with the case data (Little's Law on dwell), resist the obvious expansion, and still cover finance, operations and safety, supply chain, change management and AI within a $10M budget.",
+    "scqa": {
+      "complication": "At +20% volume, the same 6-day dwell would need 106% of yard capacity, and trucks already take 72 minutes against a 45-minute objective. Overtime ($6M) and penalties ($8M) are rising, and the one expansion parcel would only bring utilization to 90.5%."
+    },
+    "issue_tree": {
+      "root": "How does PortFlow reach <= 85% yard utilization and < 45-minute truck turns at +20% volume, within $10M?",
+      "branches": [
+        {"name": "Yard inventory (dwell)", "questions": ["Why do containers stay 6 days: late release information, uncollected imports, early exports or empties?", "What dwell meets 85%? (4.83 days on 24,000 TEU)"]},
+        {"name": "Yard handling (rehandles)", "questions": ["How many crane moves are reshuffles because exact positions and pickup times are unknown?", "Can stacking by pickup time free RTG hours for the 20% growth?"]},
+        {"name": "Gate and landside (arrivals)", "questions": ["Why do trucks bunch: no appointments, no readiness signal?", "What cuts the 40-minute queue and the 32 minutes inside?"]}
+      ]
+    },
+    "hypothesis": "The core issue is fragmented release and schedule information, not a lack of space. Sharing it, booking trucks against ready containers and planning the yard around known pickups cuts dwell below 4.83 days and truck turn below 45 minutes without new land.",
+    "toolkit": [
+      "Little's Law: inventory = throughput x dwell",
+      "Cause-versus-symptom tree (5 whys)",
+      "Queueing view of truck arrivals: peak-to-average ratio",
+      "Decision matrix with budget as a hard gate"
+    ],
+    "time_plan": [
+      {"time": "0:00-0:25", "step": "Read & align", "output": "SCQA, cause-vs-symptom tree, first hypothesis"},
+      {"time": "0:25-0:55", "step": "Quick math", "output": "Little's Law, dwell threshold, truck turn gap"},
+      {"time": "0:55-1:40", "step": "Package & finance", "output": "Initiatives, costs, owners, 5-year formula"},
+      {"time": "1:40-2:30", "step": "Deck (8 slides)", "output": "Answer first, matrix, budget check, plan, risks"},
+      {"time": "2:30-3:00", "step": "Rehearse & Q&A", "output": "10-minute run, likely judge questions"}
+    ],
+    "quick_math": [
+      "Today: 21,120 TEU / 6 days = 3,520 TEU/day; 21,120 / 24,000 = 88%",
+      "Year 5: 4,224 TEU/day x 6 days = 25,344 TEU = 106% of capacity",
+      "Expansion only: 25,344 / 28,000 = 90.5% (misses 85%)",
+      "Dwell needed: 0.85 x 24,000 / 4,224 = 4.83 days (-19.5%)",
+      "Truck turn: 40 + 32 = 72 min; target < 45 needs -27 min or more"
+    ]
+  },
+  "pillars": [
+    {"name": "See it: shared release and slot-level visibility", "impact": "Release status, holds and exact container position visible to every party"},
+    {"name": "Schedule it: truck appointments and dwell rules", "impact": "Queue 40 to about 14 min; dwell 6.0 to 4.7 days"},
+    {"name": "Plan it together: AI-assisted yard plan and one operations cell", "impact": "Fewer rehandles; time inside 32 to about 26 min"}
+  ],
+  "package": [
+    {"initiative": "Truck appointment system with gate pre-advice and OCR", "purpose": "Spread arrivals into booked slots, only for released and ready containers; faster gate transactions.", "capex": 2200000, "annual_opex": 300000, "owner": "Gate and Landside Manager"},
+    {"initiative": "Release and ETA visibility portal", "purpose": "One shared status for lines, truckers, rail and customers, with customs-hold flags and a named escalation contact.", "capex": 1400000, "annual_opex": 250000, "owner": "Commercial Director"},
+    {"initiative": "Slot-level positioning and AI-assisted stacking", "purpose": "RTG position sensors plus a planning upgrade so boxes due out first sit on top; planners approve each recommendation.", "capex": 2900000, "annual_opex": 400000, "owner": "Yard Planning Manager"},
+    {"initiative": "Integrated operations planning cell", "purpose": "One shared plan across vessel, yard, gate and rail teams, so a schedule change is re-planned once, not in several systems.", "capex": 800000, "annual_opex": 200000, "owner": "Operations Manager"},
+    {"initiative": "Dwell-time rules: free-time tariff and empties evacuation", "purpose": "Storage charges after free days, early-pickup incentives and agreements with lines to remove empties.", "capex": 200000, "annual_opex": 0, "owner": "Commercial Director"},
+    {"initiative": "Change management and paid training", "purpose": "Co-design workshops, super-users per shift and training in paid working time.", "capex": 700000, "annual_opex": 150000, "owner": "HR Director with the Employee Representative"},
+    {"initiative": "Contingency (about 10%)", "purpose": "Released at the phase-3 gate if unused.", "capex": 800000, "annual_opex": 0, "owner": "Finance Director"}
+  ],
+  "horizons": [
+    {"horizon": "Phase 1", "timeline": "Months 1-3", "name": "Co-design and pilot", "budget_CAD": 2000000,
+     "kpi": "Pilot lanes: queue time -25%; release status shared within 1 hour; baseline rehandles measured",
+     "gate": "Slot adherence >= 80% on pilot lanes and no safety incidents"},
+    {"horizon": "Phase 2", "timeline": "Months 4-9", "name": "Scale appointments, positioning and AI advice", "budget_CAD": 5200000,
+     "kpi": "Dwell <= 5.3 days; truck turn <= 55 min; rehandles per box -20%",
+     "gate": "AI advice accepted >= 70% with every override logged; tariff announced with 90 days notice"},
+    {"horizon": "Phase 3", "timeline": "Months 10-12", "name": "Stabilise, connect rail and customers, hand over", "budget_CAD": 1800000,
+     "kpi": "Dwell <= 4.8 days; truck turn < 45 min; utilization on track for <= 85% at year 5",
+     "gate": "Finance confirms savings against each owner's target; contingency released"}
+  ],
+  "risks": [
+    {"risk": "Truckers do not adopt appointments", "likelihood": "Medium", "impact": "High",
+     "mitigation": "Slot rules co-designed with trucking firms, grace windows, priority lanes for on-time trucks, a walk-in lane kept during transition",
+     "trigger": "Slot adherence < 75% for 2 weeks"},
+    {"risk": "Dwell does not fall enough", "likelihood": "Medium", "impact": "High",
+     "mitigation": "Free-time tariff, release alerts, empties evacuation agreements; parcel design kept ready as phase 2",
+     "trigger": "Dwell > 5.3 days at month 9"},
+    {"risk": "Cutover disrupts live operations", "likelihood": "Medium", "impact": "High",
+     "mitigation": "Lane-by-lane and block-by-block rollout, parallel running, go-lives outside vessel peaks, rollback plan",
+     "trigger": "Gate throughput below baseline for 2 shifts"},
+    {"risk": "Staff resistance and role concerns", "likelihood": "Medium", "impact": "Medium",
+     "mitigation": "Staff involved before tools arrive, paid training, no layoffs from this program, redeployment into the planning cell",
+     "trigger": "Training completion < 90% or AI advice acceptance < 50%"},
+    {"risk": "AI advice wrong or data quality poor", "likelihood": "Low", "impact": "High",
+     "mitigation": "Advisory only, 6 weeks in shadow mode, hard safety rules locked, weekly model review",
+     "trigger": "Override rate > 30% or any near-miss linked to a recommendation"}
+  ],
+  "kpis": [
+    {"kpi": "Average yard dwell time", "baseline": "6.0 days", "target": "<= 4.8 days (plan 4.7)"},
+    {"kpi": "Year-5 yard utilization at +20% volume", "baseline": "88% today; 106% if nothing changes", "target": "<= 85% (plan about 83%)"},
+    {"kpi": "Truck turn time", "baseline": "72 min (40 queue + 32 inside)", "target": "< 45 min (plan about 40)"},
+    {"kpi": "Rehandles per container", "baseline": "measured in phase 1", "target": "-30%"},
+    {"kpi": "Overtime and penalties", "baseline": "$6M and $8M a year", "target": "$3.6M and $4.0M a year"},
+    {"kpi": "Yard and gate safety incidents", "baseline": "current rate", "target": "no increase; near-misses reviewed weekly"}
+  ],
+  "analysis_sections": [
+    {"title": "Finance",
+     "points": [
+       "Upfront $9.0M of the $10M budget, including $0.8M contingency; $1.0M left unspent.",
+       "Added annual costs $1.3M: software subscriptions, support and sensor maintenance ($0.95M), planning-cell analysts ($0.2M), ongoing training ($0.15M).",
+       "Annual savings $6.4M, each with an owner: overtime -40% ($2.4M, Operations Manager) from fewer rehandles, smoother truck peaks and fewer late re-plans; delay and service penalties -50% ($4.0M, Commercial Director) from reliable release information and on-time handovers.",
+       "Five-year net impact = $9.0M + 5 x ($1.3M - $6.4M) = -$16.5M (net savings).",
+       "Main uncertainty: the share of the $8M penalties caused by customs or documentation holds PortFlow cannot override. If penalties fall only 25% ($2.0M), savings are $4.4M and the impact is still -$6.5M. Break-even needs only $3.1M a year of savings.",
+       "Upside not counted: storage revenue from the dwell tariff, and the avoided cost of building on the parcel."
+     ],
+     "deck_points": [
+       "Savings owners: overtime -40% ($2.4M, Operations Manager); penalties -50% ($4.0M, Commercial Director)",
+       "Uncertainty: penalties caused by customs holds. If penalties fall only 25%, impact is still -$6.5M; break-even is $3.1M/yr"
+     ]},
+    {"title": "Operations & Safety",
+     "points": [
+       "Storage: dwell 6.0 to 4.7 days keeps year-5 inventory near 19,900 TEU (83% of 24,000) at +20% volume, without new land.",
+       "Container movement: exact slot positions and stacking by planned pickup time cut rehandles, so RTG hours go to productive moves and the 12 RTGs absorb the 20% growth.",
+       "Truck service: appointments spread arrivals (queue 40 to about 14 min); pre-advice and pre-staged containers shorten time inside (32 to about 26 min): about 40 minutes in total, below the 45-minute objective.",
+       "Safety: fewer rehandles and shorter queues reduce truck-crane interaction; hard rules for hazardous, reefer and weight segregation stay locked; every go-live has a safety review.",
+       "Measures, reviewed weekly: utilization, dwell, rehandles per box, queue and inside time, slot adherence, safety incidents and near-misses."
+     ],
+     "deck_points": [
+       "Storage: dwell 6.0 to 4.7 days keeps year-5 utilization near 83% with no new land",
+       "Trucks: queue 40 to ~14 min, inside 32 to ~26 min, about 40 min total (< 45)",
+       "Safety: fewer rehandles and queues; segregation rules locked; safety review at every go-live"
+     ]},
+    {"title": "Supply Chain",
+     "points": [
+       "Shipping lines: ETA changes feed one shared plan; export receiving windows and empty-container evacuation agreed.",
+       "Truckers: book pickup slots only when the container is released and ready; live status and a guaranteed window.",
+       "Rail: rail loads pre-staged by train departure; the rail operator sees release status through the same portal.",
+       "Customers: release, hold and ETA alerts to plan replenishment, plus a named contact and escalation process for urgent shipments.",
+       "Customs and documentation holds stay outside PortFlow's control, but they are flagged early so no truck is booked against a held container."
+     ],
+     "deck_points": [
+       "Lines, trucks, rail and customers share one release and ETA status",
+       "Slots are booked only for released, ready containers; holds flagged early with a named escalation contact"
+     ]},
+    {"title": "Organizational Change Management",
+     "points": [
+       "Stakeholders: yard operators, gate clerks, planners and supervisors, maintenance, trucking firms, rail, shipping lines, customers and finance.",
+       "Involve staff before tools arrive: operators and planners co-design stacking rules and appointment rules in phase 1.",
+       "Train in paid working time: super-users on every shift, simulator sessions, refresher training budgeted at $0.15M a year.",
+       "Clarify roles: no layoffs from this program; gate clerks and planners move into the planning cell and exception handling; one RACI per process.",
+       "Keep operations running: lane-by-lane and block-by-block rollout, parallel running, go-lives outside vessel peaks and a rollback plan."
+     ],
+     "deck_points": [
+       "Staff co-design rules before tools arrive; training in paid time with super-users per shift",
+       "No layoffs from this program; roles shift to planning and exception handling; phased go-lives"
+     ]},
+    {"title": "AI & Automation",
+     "points": [
+       "Use: AI-assisted stacking and housekeeping recommendations: where to place each incoming container and which overnight moves to make, so boxes due out first sit on top.",
+       "Information needed: exact slot positions (RTG sensors), appointment bookings, release and hold status, vessel and rail schedules, and container attributes (size, weight, reefer, hazardous).",
+       "Oversight: the yard planner reviews and approves every recommendation; hard safety rules cannot be overridden by the model; the Yard Planning Manager owns model performance.",
+       "Performance check: 6 weeks in shadow mode against the current rules, then weekly tracking of rehandles per box, acceptance rate and override reasons; retrain or roll back if rehandles do not fall.",
+       "Set aside: fully automated cranes cost far more than the $10M budget, add safety and labour risk, and do not fix the information gap."
+     ],
+     "deck_points": [
+       "AI recommends stacking and overnight moves; planners approve; safety rules locked",
+       "Checked in 6 weeks of shadow mode, then weekly on rehandles per box and overrides"
+     ]}
+  ],
+  "deck": {
+    "max_content_slides": 8,
+    "answer_note": "Lead with the core issue in one line: containers stay too long and move blind. Then the package and the -$16.5M five-year impact.",
+    "slides": [
+      {"title": "Operations, safety and supply chain", "subtitle": "What changes as volume grows 20%", "sections": ["Operations & Safety", "Supply Chain"]},
+      {"title": "Implementation, people and AI oversight", "subtitle": "12 months, three gated phases, no stop to operations",
+       "sections": ["Organizational Change Management", "AI & Automation"], "table": "horizons"}
+    ]
+  },
+  "judge_questions": [
+    {"question": "Why not just build on the 15-acre parcel?",
+     "answer": "Space alone fails the objective: 25,344 TEU / 28,000 TEU = 90.5% at year 5. It costs about $14.5M, over the $10M budget, and must be phased around live operations. Cutting dwell to 4.7 days reaches about 83% on today's footprint. We keep the parcel as a phase-2 option if dwell stays above 5.6 days."},
+    {"question": "What if dwell does not fall as much as you assume?",
+     "answer": "The threshold is explicit: dwell at or below 4.83 days meets 85% without land. If dwell is above 5.3 days at month 9 (our gate trigger), we tighten the free-time tariff and start the parcel design. With dwell at 5.6 days or less, the parcel would then meet the objective."},
+    {"question": "How confident are you in the $6.4M of annual savings?",
+     "answer": "Each saving has an owner and a mechanism. Break-even needs only $3.1M a year. If penalties fall 25% instead of 50%, the five-year impact is still -$6.5M."},
+    {"question": "Will the AI and automation cost jobs?",
+     "answer": "No layoffs from this program. The AI recommends and planners decide. Roles shift from manual re-planning and overtime to planning-cell and exception work, with training in paid time."},
+    {"question": "How do you keep the terminal running during the rollout?",
+     "answer": "Lane-by-lane appointments with a walk-in lane kept open, block-by-block positioning, 6 weeks of shadow mode for the AI, go-lives outside vessel peaks, and a rollback plan triggered if gate throughput drops below baseline for 2 shifts."},
+    {"question": "How will you get truckers to use appointments?",
+     "answer": "We co-design slot rules with them, guarantee the container is ready when a slot is booked, give on-time trucks a priority lane, and keep grace windows. Slots exist only for released containers, so a booking is never wasted."}
+  ]
+}

@@ -1,22 +1,22 @@
 # The Case
 
-**1. Cold-Chain Fulfillment Center — Capacity Scaling (unexpected demand increase)**
-Case ENG1M-0000001. Cold-Chain Fulfillment Center, Capacity Scaling (unexpected demand increase). In the next two minutes: the situation, what makes it hard, and what the judges are really testing.
+**1. PortFlow Container Terminal: Yard and Gate Flow**
+Case PORTFLOW. PortFlow Container Terminal: Yard and Gate Flow. In the next two minutes: the situation, what makes it hard, and what the judges are really testing.
 
 **2. Where we start**
-Cold-Chain Fulfillment Center, Capacity Scaling (unexpected demand increase). Metropolitan public agency; disruption: unexpected demand increase. Capacity Scaling today: 1,190.00 units/day.
+PortFlow is a Canadian container terminal linking shipping lines, trucking, rail and inland customers. Today the yard holds 21,120 TEU against 24,000 TEU effective capacity (88%), containers dwell 6 days, and trucks take 72 minutes per visit (40 queuing, 32 inside). Volume will grow 20% in five years. The terminal spends $6M a year on overtime and $8M on delay and service penalties. Release and schedule information is not shared…
 
 **3. The gap we have to close**
-Capacity Scaling is 1,190.00 units/day. The target is a 8.5 percent improvement, within 3 months and a capital ceiling of 866 thousand dollars.
+Year-5 yard utilization if nothing changes is 105.60 % of capacity. The target is a 19.5 percent improvement, within 12 months and a capital ceiling of 10.00 million dollars.
 
 **4. What limits the solution space**
-And there are hard limits. installation restricted to weekends. Minimum availability 98.0%.
+And there are hard limits. Upfront investment at most $10M CAD; it does not need to be spent in full. Year-5 objectives: average yard utilization <= 85% and average truck turn time < 45 minutes. Vessel and truck operations cannot stop while changes are introduced. Customs holds and missing documentation cannot be overridden by PortFlow.
 
 **5. What we must decide**
-For the cold-chain fulfillment center operated by a metropolitan public agency, plan a capacity upgrade while protecting service quality following unexpected demand increase. Baseline capacity: 1,190 units/day. Deliver at least 8.5% improvement within 3 months under 866 thousand dollars capital limit; installation restricted to weekends. Select a technically justified alternative and test what happens if performance falls 15%.
+Which package, within the $10M upfront budget, attacks PortFlow's core issue so that at +20% volume the yard runs at or below 85% utilization and trucks turn in under 45 minutes by year five?
 
 **6. Three alternatives**
-Three alternatives are on the table: option A, Instrumentation and operating procedure changes for cold-chain fulfillment center; option B, Selective retrofit of critical cold-chain fulfillment center subsystems; option C, Comprehensive architecture replacement for cold-chain fulfillment center. Video two shows how to compare them.
+Three alternatives are on the table: option A, Gate quick win: truck appointments and release portal; option B, Integrated flow package: shared visibility, appointments, AI-assisted yard planning; option C, Yard expansion on the 15-acre parcel with two added RTGs. Video two shows how to compare them.
 
 **7. Operations & engineering improvement**
-This is a throughput / capacity problem under a hard budget. Judges are testing whether you find the binding driver before spending, compare three options on the same basis, and show what happens when the numbers move. The scoring rewards diagnosis, rigour and a defensible recommendation.
+This is a flow problem that looks like a space problem. Judges test whether you separate causes from symptoms with the case data (Little's Law on dwell), resist the obvious expansion, and still cover finance, operations and safety, supply chain, change management and AI within a $10M budget. The scoring rewards diagnosis, rigour and a defensible recommendation.

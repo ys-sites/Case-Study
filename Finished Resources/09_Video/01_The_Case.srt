@@ -1,79 +1,83 @@
 1
-00:00:00,350 --> 00:00:01,980
-Case ENG1M-0000001.
+00:00:00,350 --> 00:00:01,375
+Case PORTFLOW.
 
 2
-00:00:01,980 --> 00:00:08,585
-Cold-Chain Fulfillment Center, Capacity Scaling (unexpected demand increase).
+00:00:01,375 --> 00:00:04,888
+PortFlow Container Terminal: Yard and Gate Flow.
 
 3
-00:00:08,585 --> 00:00:17,078
+00:00:04,888 --> 00:00:12,134
 In the next two minutes: the situation, what makes it hard, and what the judges are really testing.
 
 4
-00:00:18,080 --> 00:00:25,136
-Cold-Chain Fulfillment Center, Capacity Scaling (unexpected demand increase).
+00:00:13,130 --> 00:00:21,336
+PortFlow is a Canadian container terminal linking shipping lines, trucking, rail and inland customers.
 
 5
-00:00:25,136 --> 00:00:31,276
-Metropolitan public agency; disruption: unexpected demand increase.
+00:00:21,336 --> 00:00:34,449
+Today the yard holds 21,120 TEU against 24,000 TEU effective capacity (88%), containers dwell 6 days, and trucks take 72 minutes per visit (40 queuing, 32 inside).
 
 6
-00:00:31,276 --> 00:00:35,216
-Capacity Scaling today: 1,190.00 units/day.
+00:00:34,449 --> 00:00:37,264
+Volume will grow 20% in five years.
 
 7
-00:00:36,220 --> 00:00:39,984
-Capacity Scaling is 1,190.00 units/day.
+00:00:37,264 --> 00:00:43,861
+The terminal spends $6M a year on overtime and $8M on delay and service penalties.
 
 8
-00:00:39,984 --> 00:00:49,924
-The target is a 8.5 percent improvement, within 3 months and a capital ceiling of 866 thousand dollars.
+00:00:43,861 --> 00:00:47,642
+Release and schedule information is not shared…
 
 9
-00:00:50,920 --> 00:00:53,311
-And there are hard limits.
+00:00:48,640 --> 00:00:54,291
+Year-5 yard utilization if nothing changes is 105.60 % of capacity.
 
 10
-00:00:53,311 --> 00:00:56,621
-installation restricted to weekends.
+00:00:54,291 --> 00:01:03,232
+The target is a 19.5 percent improvement, within 12 months and a capital ceiling of 10.00 million dollars.
 
 11
-00:00:56,621 --> 00:00:59,104
-Minimum availability 98.0%.
+00:01:04,230 --> 00:01:06,261
+And there are hard limits.
 
 12
-00:01:00,100 --> 00:01:12,442
-For the cold-chain fulfillment center operated by a metropolitan public agency, plan a capacity upgrade while protecting service quality following unexpected demand increase.
+00:01:06,261 --> 00:01:12,041
+Upfront investment at most $10M CAD; it does not need to be spent in full.
 
 13
-00:01:12,442 --> 00:01:14,925
-Baseline capacity: 1,190 units/day.
+00:01:12,041 --> 00:01:19,227
+Year-5 objectives: average yard utilization <= 85% and average truck turn time < 45 minutes.
 
 14
-00:01:14,925 --> 00:01:24,004
-Deliver at least 8.5% improvement within 3 months under 866 thousand dollars capital limit; installation restricted to weekends.
+00:01:19,227 --> 00:01:24,616
+Vessel and truck operations cannot stop while changes are introduced.
 
 15
-00:01:24,004 --> 00:01:30,388
-Select a technically justified alternative and test what happens if performance falls 15%.
+00:01:24,616 --> 00:01:30,318
+Customs holds and missing documentation cannot be overridden by PortFlow.
 
 16
-00:01:31,390 --> 00:01:49,321
-Three alternatives are on the table: option A, Instrumentation and operating procedure changes for cold-chain fulfillment center; option B, Selective retrofit of critical cold-chain fulfillment center subsystems; option C, Comprehensive architecture replacement for cold-chain fulfillment center.
+00:01:31,320 --> 00:01:44,664
+Which package, within the $10M upfront budget, attacks PortFlow's core issue so that at +20% volume the yard runs at or below 85% utilization and trucks turn in under 45 minutes by year five?
 
 17
-00:01:49,321 --> 00:01:51,502
-Video two shows how to compare them.
+00:01:45,660 --> 00:02:02,000
+Three alternatives are on the table: option A, Gate quick win: truck appointments and release portal; option B, Integrated flow package: shared visibility, appointments, AI-assisted yard planning; option C, Yard expansion on the 15-acre parcel with two added RTGs.
 
 18
-00:01:52,500 --> 00:01:56,263
-This is a throughput / capacity problem under a hard budget.
+00:02:02,000 --> 00:02:05,364
+Video two shows how to compare them.
 
 19
-00:01:56,263 --> 00:02:06,110
-Judges are testing whether you find the binding driver before spending, compare three options on the same basis, and show what happens when the numbers move.
+00:02:06,360 --> 00:02:09,951
+This is a flow problem that looks like a space problem.
 
 20
-00:02:06,110 --> 00:02:10,500
+00:02:09,951 --> 00:02:25,358
+Judges test whether you separate causes from symptoms with the case data (Little's Law on dwell), resist the obvious expansion, and still cover finance, operations and safety, supply chain, change management and AI within a $10M budget.
+
+21
+00:02:25,358 --> 00:02:29,928
 The scoring rewards diagnosis, rigour and a defensible recommendation.

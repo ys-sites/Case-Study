@@ -1,7 +1,7 @@
 # Winning Solution
 
-Option C — Comprehensive architecture replacement for cold-chain fulfillment center — delivers 13% capacity scaling improvement (target 8.5%) for CAD $676,000 of the CAD $866,000 budget: NPV CAD $2,681,053 at 9.5%, payback 11.1 months.
+Option B — Integrated flow package: shared visibility, appointments, AI-assisted yard planning — delivers 21.7% lower year-5 yard utilization (target 19.5%) for CAD $9,000,000 of the CAD $10,000,000 budget: NPV CAD $6,491,191 at 9.5%, payback 31.7 months. Five-year net financial impact (case formula): -CAD $16,500,000 (net savings).
 
-- **Prove the constraint (H1 pilot)** — >= 2.5% in pilot area
-- **Scale Comprehensive architecture replacement for cold-** — +13% capacity scaling
-- **Lock in with control & KPIs** — CAD $947,537/yr run-rate benefit
+- **See it: shared release and slot-level visibility** — Release status, holds and exact container position visible to every party
+- **Schedule it: truck appointments and dwell rules** — Queue 40 to about 14 min; dwell 6.0 to 4.7 days
+- **Plan it together: AI-assisted yard plan and one operations cell** — Fewer rehandles; time inside 32 to about 26 min

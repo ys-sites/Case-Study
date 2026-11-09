@@ -108,6 +108,9 @@ def fit_text(draw, box, text, kind="reg", size=40, min_size=18, color=COL["white
 
 
 # ---------------------------------------------------------------------------- frame layouts
+FOOTER = {"text": "Strategy Consulting Hub · synthetic training case"}
+
+
 class Frame:
     def __init__(self, video_title, case_id, idx, total, kicker, heading):
         self.img = Image.new("RGB", (VW, VH), COL["pine"])
@@ -120,7 +123,7 @@ class Frame:
         seg = (VW - 240) / total
         for i in range(total):
             d.rectangle((120 + i * seg + 3, VH - 70, 120 + (i + 1) * seg - 3, VH - 64), fill=COL["mint"] if i <= idx else COL["card"])
-        d.text((120, VH - 120), "Strategy Consulting Hub · synthetic training case", font=font("reg", 24), fill=COL["muted"])
+        d.text((120, VH - 120), FOOTER["text"], font=font("reg", 24), fill=COL["muted"])
         self.top = 150
         if kicker:
             d.text((120, self.top), kicker.upper(), font=font("bold", 28), fill=COL["mint"])
@@ -289,6 +292,11 @@ def script_the_case(spec):
     ]
 
 
+def plan_hours(plan) -> str:
+    """Length of the cracking window, read from the last slot (e.g. '4:20-5:00' -> '5')."""
+    return re.split(r"[-–]", plan[-1]["time"])[-1].split(":")[0] if plan else "5"
+
+
 def script_how_to_tackle(spec):
     ci, inp, intel = spec["case_identification"], spec["case_inputs"], spec["intelligence"]
     tree = intel["issue_tree"]
@@ -317,8 +325,8 @@ def script_how_to_tackle(spec):
                "Then build a solution ladder. Level one, the quick win. Level two, the cheapest option that meets the target. "
                "Level three, the value maximiser. Level four, the stretch. Your recommendation should explain where it sits on this ladder.",
                rungs=intel["solution_ladder"], show_pick=False),
-        _scene("columns", "Time plan", "Five hours, five blocks",
-               "Finally, protect your time. " + ". ".join(f"{t['time'].replace('–', ' to ')}, {t['step']}" for t in intel["time_plan"]) +
+        _scene("columns", "Time plan", f"{plan_hours(intel['time_plan'])} hours, {len(intel['time_plan'])} blocks",
+               "Finally, protect your time. " + ". ".join(f"{re.sub(r'[-–]', ' to ', t['time'])}, {t['step']}" for t in intel["time_plan"]) +
                ". Video three shows the answer this method produces.",
                cols=[(t["time"], f"{t['step']}\n{t['output']}") for t in intel["time_plan"]]),
     ]
@@ -333,6 +341,20 @@ def script_solution(spec):
     top = spec["sensitivity"][0]
     warn = [c for c in intel["submission_checklist"] if not c["ok"]]
     qa = intel["qa_bank"][:3]
+    pack = spec.get("case_pack", {})
+    extra = []
+    if pack.get("package"):
+        extra.append(_scene("bullets", "The package", f"{short_cad(fs['initial_investment_CAD'])} upfront · five-year net {short_cad(fs['five_year_net_impact_CAD'])}",
+                            f"The package has {len(pack['package'])} initiatives for {say_cad(fs['initial_investment_CAD'])} upfront, "
+                            f"{say_cad(fs['annual_om_CAD'])} a year to run, and {say_cad(fs['annual_run_rate_benefit_CAD'])} a year of savings. "
+                            f"Using the case formula, the five-year net financial impact is {say_cad(fs['five_year_net_impact_CAD'])}"
+                            + (", a net saving." if fs["five_year_net_impact_CAD"] < 0 else "."),
+                            items=[f"{p['initiative']} · {short_cad(p['capex'])} · {p['owner']}" for p in pack["package"]]))
+    secs = [s for s in pack.get("analysis_sections", []) if s["title"] != "Finance"][:4]
+    if secs:
+        extra.append(_scene("columns", "Required analysis", "Operations, supply chain, people, AI",
+                            " ".join(f"{s['title']}: {s['deck_points'][0]}" for s in secs if s.get("deck_points")),
+                            cols=[(s["title"], "\n".join(f"• {p}" for p in s.get("deck_points", s["points"])[:3])) for s in secs]))
     return [
         _scene("title", None, None, f"The solution to case {ci['id']}, and everything to check before you submit.",
                big=f"Option {win['label']}: {win['name']}", sub="Video 3 of 3 · The answer and the pre-submission brief", tags=["Recommendation"]),
@@ -345,6 +367,7 @@ def script_solution(spec):
                       (f"{fs['payback_period_months']:.0f} mo" if fs["payback_period_months"] else "> 60 mo", "Payback", "monthly model", None)],
                caption=intel["ladder_rationale"]),
         _scene("ladder", "Why this option", "Where it sits on the solution ladder", intel["ladder_rationale"], rungs=intel["solution_ladder"], show_pick=True),
+        *extra,
         _scene("bars", "Economics", f"Five-year cash flow · NPV {short_cad(fs['npv_CAD'])}",
                f"The economics: a run-rate benefit of {say_cad(fs['annual_run_rate_benefit_CAD'])} a year, net present value of {say_cad(fs['npv_CAD'])}, "
                f"and payback in {say_months(fs['payback_period_months'])}. "
@@ -481,6 +504,8 @@ def render_video(spec: dict, out_dir: Path, slug: str, title: str, scenes: list[
 
 def render_all(spec: dict, out_dir: Path, tts: bool = True, render: bool = True) -> list[dict]:
     out_dir.mkdir(parents=True, exist_ok=True)
+    structured = spec["case_identification"].get("source_type") == "structured_case"
+    FOOTER["text"] = "Strategy Consulting Hub · " + ("competition brief; estimates are stated assumptions" if structured else "synthetic training case")
     results = []
     for slug, title, fn in VIDEOS:
         scenes = fn(spec)

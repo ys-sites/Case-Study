@@ -1,43 +1,47 @@
 {
   "version": "2.0.0",
-  "generated_at": "2026-11-09T05:29:15+00:00",
+  "generated_at": "2026-11-09T14:21:45+00:00",
   "case_identification": {
-    "id": "ENG1M-0000001",
-    "title": "Cold-Chain Fulfillment Center \u2014 Capacity Scaling (unexpected demand increase)",
-    "discipline": "Industrial Engineering",
-    "difficulty": "Beginner",
-    "source_type": "1m_preview_simulation"
+    "id": "PORTFLOW",
+    "title": "PortFlow Container Terminal: Yard and Gate Flow",
+    "discipline": "Supply Chain and Logistics Engineering",
+    "difficulty": "Championship",
+    "source_type": "structured_case"
   },
   "case_inputs": {
-    "brief": "For the cold-chain fulfillment center operated by a metropolitan public agency, plan a capacity upgrade while protecting service quality following unexpected demand increase. Baseline capacity: 1,190 units/day. Deliver at least 8.5% improvement within 3 months under CAD 866,000 capital limit; installation restricted to weekends. Select a technically justified alternative and test what happens if performance falls 15%.",
-    "decision_question": "For the cold-chain fulfillment center operated by a metropolitan public agency, plan a capacity upgrade while protecting service quality following unexpected demand increase. Baseline capacity: 1,190 units/day. Deliver at least 8.5% improvement within 3 months under CAD 866,000 capital limit; installation restricted to weekends. Select a technically justified alternative and test what happens if performance falls 15%.",
-    "objective": "At least 8.5% improvement in capacity scaling within 3 months.",
-    "baseline_metric": "Capacity Scaling",
-    "baseline_value": 1190.0,
-    "baseline_unit": "units/day",
-    "target_metric": "Capacity Scaling improvement",
-    "target_pct": 8.5,
-    "budget": 866000.0,
-    "timeline_months": 3,
+    "brief": "PortFlow is a Canadian container terminal linking shipping lines, trucking, rail and inland customers. Today the yard holds 21,120 TEU against 24,000 TEU effective capacity (88%), containers dwell 6 days, and trucks take 72 minutes per visit (40 queuing, 32 inside). Volume will grow 20% in five years. The terminal spends $6M a year on overtime and $8M on delay and service penalties. Release and schedule information is not shared consistently, planning runs across separate systems on fixed rules, and the yard system knows a container's stack but not its exact position. One 15-acre parcel (about 4,000 TEU) could be added, phased around live operations.",
+    "decision_question": "Which package, within the $10M upfront budget, attacks PortFlow's core issue so that at +20% volume the yard runs at or below 85% utilization and trucks turn in under 45 minutes by year five?",
+    "objective": "Year 5 at +20% volume: average yard utilization <= 85% and average truck turn time < 45 minutes, within $10M upfront.",
+    "baseline_metric": "Year-5 yard utilization if nothing changes",
+    "baseline_value": 105.6,
+    "baseline_unit": "% of capacity",
+    "target_metric": "Lower year-5 yard utilization",
+    "target_pct": 19.5,
+    "budget": 10000000,
+    "timeline_months": 12,
     "constraints": [
-      "installation restricted to weekends",
-      "Minimum availability 98.0%"
+      "Upfront investment at most $10M CAD; it does not need to be spent in full",
+      "Year-5 objectives: average yard utilization <= 85% and average truck turn time < 45 minutes",
+      "Vessel and truck operations cannot stop while changes are introduced",
+      "Customs holds and missing documentation cannot be overridden by PortFlow",
+      "Up to 8 content slides for a 10-minute presentation"
     ],
-    "suggested_analysis": "queueing, capacity calculation and bottleneck analysis",
+    "suggested_analysis": "Little's Law (inventory = throughput x dwell), cause-versus-symptom tree, truck arrival queue analysis",
     "rubric": {}
   },
   "problem_diagnosis": {
-    "core_bottleneck": "Capacity Scaling sits at 1,190 units/day and must move 8.5% within 3 months under CAD $866,000 (metropolitan public agency; disruption: unexpected demand increase).",
-    "baseline_value": 1190.0,
-    "baseline_unit": "units/day",
-    "baseline_metric": "Capacity Scaling",
-    "target_improvement_percent": 8.5,
-    "target_absolute_change": 101.15,
+    "core_bottleneck": "The yard problem is a dwell-time problem, not a space problem. Little's Law: 3,520 TEU/day x 6 days = 21,120 TEU (88% of 24,000). At +20% volume (4,224 TEU/day) the same 6-day dwell needs 25,344 TEU, 106% of capacity. Even with the 15-acre parcel (28,000 TEU) utilization would be 90.5%, so space alone cannot meet the 85% objective. Dwell must fall to 4.83 days or less (-19.5%).",
+    "baseline_value": 105.6,
+    "baseline_unit": "% of capacity",
+    "baseline_metric": "Year-5 yard utilization if nothing changes",
+    "target_improvement_percent": 19.5,
+    "target_absolute_change": 20.59,
     "root_causes": [
-      "Binding constraint hypothesis: one stage or subsystem limits capacity scaling; confirm with queueing, capacity calculation and bottleneck analysis before committing capital.",
-      "Variability, not average capacity, drives the gap: measure cycle/load variance and its share of lost performance.",
-      "Control and information gap: performance is managed on lagging data, so deviations are corrected late.",
-      "Delivery constraint shaping the solution space: installation restricted to weekends."
+      "Core issue (cause): fragmented release and schedule information. Release status, vessel changes and pickup plans are not shared across teams, truckers, rail or customers, and planning runs in separate systems on fixed rules.",
+      "It drives dwell: customers learn late that a container is released, so pickups slip and boxes sit in the yard.",
+      "It drives truck queues: with no appointments or readiness information, trucks arrive in concentrated windows and queue 40 minutes.",
+      "It drives rehandles: the system knows the stack but not the exact position, and stacks are not built around known pickup times, so crane time goes on reshuffles and trucks spend 32 minutes inside.",
+      "Symptoms, not causes: yard crowding, $6M overtime, $8M penalties, customers unable to plan and staff anxiety. More land or more overtime treats these without removing the cause."
     ]
   },
   "options_evaluation": {
@@ -66,193 +70,207 @@
     "options": [
       {
         "label": "A",
-        "name": "Instrumentation and operating procedure changes for cold-chain fulfillment center",
-        "capex_CAD": 232000,
-        "improvement_percent": 4.6,
-        "source": "case datum",
+        "name": "Gate quick win: truck appointments and release portal",
+        "capex_CAD": 4100000,
+        "improvement_percent": 10.0,
+        "source": "assumption: estimate (overtime -15%, penalties -30%; dwell 6.0 to 5.4 days)",
         "within_budget": true,
         "meets_target": false,
-        "npv_CAD": 957263,
-        "payback_months": 10.8,
+        "npv_CAD": 4157625,
+        "payback_months": 28.5,
+        "annual_benefit_CAD": 3300000,
+        "annual_opex_CAD": 600000,
+        "five_year_net_impact_CAD": -9400000,
+        "why_not": "fixes the gate queue but not the yard; dwell falls only about 10%, so year-5 utilization stays near 95% and rehandles keep trucks inside too long.",
         "scores": {
-          "Target attainment": 3.61,
-          "Financial return (NPV)": 2.0,
-          "Payback speed": 8.2,
-          "Downside resilience (-15% perf.)": 4.6,
-          "Budget headroom": 7.32
+          "Target attainment": 3.42,
+          "Financial return (NPV)": 9.12,
+          "Payback speed": 5.25,
+          "Downside resilience (-15% perf.)": 4.36,
+          "Budget headroom": 5.9
         },
-        "weighted_total": 4.6,
+        "weighted_total": 5.63,
         "selected": false
       },
       {
         "label": "B",
-        "name": "Selective retrofit of critical cold-chain fulfillment center subsystems",
-        "capex_CAD": 502000,
-        "improvement_percent": 6.9,
-        "source": "case datum",
+        "name": "Integrated flow package: shared visibility, appointments, AI-assisted yard planning",
+        "capex_CAD": 9000000,
+        "improvement_percent": 21.7,
+        "source": "assumption: estimate (overtime -40%, penalties -50%; dwell 6.0 to 4.7 days)",
         "within_budget": true,
-        "meets_target": false,
-        "npv_CAD": 1252328,
-        "payback_months": 14.8,
+        "meets_target": true,
+        "npv_CAD": 6491191,
+        "payback_months": 31.7,
+        "annual_benefit_CAD": 6400000,
+        "annual_opex_CAD": 1300000,
+        "five_year_net_impact_CAD": -16500000,
+        "why_not": "",
         "scores": {
-          "Target attainment": 5.41,
-          "Financial return (NPV)": 3.37,
-          "Payback speed": 7.53,
-          "Downside resilience (-15% perf.)": 6.9,
-          "Budget headroom": 4.2
+          "Target attainment": 7.42,
+          "Financial return (NPV)": 10.0,
+          "Payback speed": 4.71,
+          "Downside resilience (-15% perf.)": 9.46,
+          "Budget headroom": 1.0
         },
-        "weighted_total": 5.26,
-        "selected": false
+        "weighted_total": 7.0,
+        "selected": true
       },
       {
         "label": "C",
-        "name": "Comprehensive architecture replacement for cold-chain fulfillment center",
-        "capex_CAD": 676000,
-        "improvement_percent": 13.0,
-        "source": "case datum",
-        "within_budget": true,
-        "meets_target": true,
-        "npv_CAD": 2681053,
-        "payback_months": 11.1,
+        "name": "Yard expansion on the 15-acre parcel with two added RTGs",
+        "capex_CAD": 14500000,
+        "improvement_percent": 14.3,
+        "source": "assumption: estimate (site works $8.0M, 2 RTGs $5.0M, road and rail tie-in $1.5M; overtime -10%, penalties -10%)",
+        "within_budget": false,
+        "meets_target": false,
+        "npv_CAD": -14627035,
+        "payback_months": null,
+        "annual_benefit_CAD": 1400000,
+        "annual_opex_CAD": 1200000,
+        "five_year_net_impact_CAD": 13500000,
+        "why_not": "costs about $14.5M (over budget) and still misses the objective at 90.5% utilization; it treats the symptom while dwell keeps growing. Kept as a phase-2 option.",
         "scores": {
-          "Target attainment": 10.0,
-          "Financial return (NPV)": 10.0,
-          "Payback speed": 8.16,
-          "Downside resilience (-15% perf.)": 10.0,
-          "Budget headroom": 2.19
+          "Target attainment": 4.89,
+          "Financial return (NPV)": 2.0,
+          "Payback speed": 0,
+          "Downside resilience (-15% perf.)": 6.23,
+          "Budget headroom": 0.0
         },
-        "weighted_total": 8.55,
-        "selected": true
+        "weighted_total": 2.9,
+        "selected": false
       }
     ],
-    "winner": "C"
+    "winner": "B"
   },
   "approved_solution": {
-    "label": "C",
-    "name": "Comprehensive architecture replacement for cold-chain fulfillment center",
-    "value_proposition": "Option C \u2014 Comprehensive architecture replacement for cold-chain fulfillment center \u2014 delivers 13% capacity scaling improvement (target 8.5%) for CAD $676,000 of the CAD $866,000 budget: NPV CAD $2,681,053 at 9.5%, payback 11.1 months.",
+    "label": "B",
+    "name": "Integrated flow package: shared visibility, appointments, AI-assisted yard planning",
+    "value_proposition": "Option B \u2014 Integrated flow package: shared visibility, appointments, AI-assisted yard planning \u2014 delivers 21.7% lower year-5 yard utilization (target 19.5%) for CAD $9,000,000 of the CAD $10,000,000 budget: NPV CAD $6,491,191 at 9.5%, payback 31.7 months. Five-year net financial impact (case formula): -CAD $16,500,000 (net savings).",
     "pillars": [
       {
-        "name": "Prove the constraint (H1 pilot)",
-        "impact": ">= 2.5% in pilot area"
+        "name": "See it: shared release and slot-level visibility",
+        "impact": "Release status, holds and exact container position visible to every party"
       },
       {
-        "name": "Scale Comprehensive architecture replacement for cold-",
-        "impact": "+13% capacity scaling"
+        "name": "Schedule it: truck appointments and dwell rules",
+        "impact": "Queue 40 to about 14 min; dwell 6.0 to 4.7 days"
       },
       {
-        "name": "Lock in with control & KPIs",
-        "impact": "CAD $947,537/yr run-rate benefit"
+        "name": "Plan it together: AI-assisted yard plan and one operations cell",
+        "impact": "Fewer rehandles; time inside 32 to about 26 min"
       }
     ]
   },
   "financial_summary": {
-    "initial_investment_CAD": 676000,
-    "budget_CAD": 866000,
-    "annual_run_rate_benefit_CAD": 947537,
-    "annual_om_CAD": 33800,
-    "year_1_revenue_CAD": 781718,
-    "year_2_revenue_CAD": 947538,
-    "year_3_revenue_CAD": 947538,
-    "year_1_net_CAD": 747918,
-    "year_2_net_CAD": 913738,
-    "year_3_net_CAD": 913738,
-    "year_4_net_CAD": 913738,
-    "year_5_net_CAD": 913738,
-    "year_3_ebitda_CAD": 913738,
-    "npv_CAD": 2681053,
-    "npv_10yr_discount_CAD": 2681053,
-    "irr_percent": 119.2,
-    "payback_period_months": 11.1,
-    "benefit_cost_ratio": 4.33,
-    "levelized_cost": 5.43,
-    "levelized_cost_unit": "CAD per added unit",
+    "initial_investment_CAD": 9000000,
+    "budget_CAD": 10000000,
+    "annual_run_rate_benefit_CAD": 6400000,
+    "annual_om_CAD": 1300000,
+    "five_year_net_impact_CAD": -16500000,
+    "five_year_formula": "Investment + 5 x (additional annual costs - annual savings); undiscounted; negative = net savings",
+    "year_1_revenue_CAD": 1920000,
+    "year_2_revenue_CAD": 6400000,
+    "year_3_revenue_CAD": 6400000,
+    "year_1_net_CAD": 620000,
+    "year_2_net_CAD": 5100000,
+    "year_3_net_CAD": 5100000,
+    "year_4_net_CAD": 5100000,
+    "year_5_net_CAD": 5100000,
+    "year_3_ebitda_CAD": 5100000,
+    "npv_CAD": 6491191,
+    "npv_10yr_discount_CAD": 6491191,
+    "irr_percent": 29.9,
+    "payback_period_months": 31.7,
+    "benefit_cost_ratio": 1.46,
+    "levelized_cost": 128752.43,
+    "levelized_cost_unit": "CAD per year per % point of improvement",
     "economic_case": "profit-driven",
     "wacc_percent": 9.5,
     "horizon_years": 5,
     "cash_flows_CAD": [
-      -676000,
-      747918,
-      913738,
-      913738,
-      913738,
-      913738
+      -9000000,
+      620000,
+      5100000,
+      5100000,
+      5100000,
+      5100000
     ]
   },
   "scenarios": [
     {
       "name": "Bear (-15% perf., +20% capex)",
-      "improvement": 11.05,
-      "capex": 811200,
-      "npv": 1996871,
-      "irr": 81.7,
-      "payback_months": 14.9,
-      "meets_target": true
+      "improvement": 18.45,
+      "capex": 10800000,
+      "npv": 620445,
+      "irr": 11.3,
+      "payback_months": 45.2,
+      "meets_target": false
     },
     {
       "name": "Base (approved plan)",
-      "improvement": 13.0,
-      "capex": 676000,
-      "npv": 2681053,
-      "irr": 119.2,
-      "payback_months": 11.1,
+      "improvement": 21.7,
+      "capex": 9000000,
+      "npv": 6491191,
+      "irr": 29.9,
+      "payback_months": 31.7,
       "meets_target": true
     },
     {
       "name": "Bull (+15% perf., -10% capex)",
-      "improvement": 14.95,
-      "capex": 608400,
-      "npv": 3284656,
-      "irr": 153.5,
-      "payback_months": 9.1,
+      "improvement": 24.95,
+      "capex": 8100000,
+      "npv": 10962775,
+      "irr": 44.7,
+      "payback_months": 25.7,
       "meets_target": true
     }
   ],
   "sensitivity": [
     {
       "driver": "Annual benefit: achieved gain x unit value (+/-20%)",
-      "low_npv": 1983686,
-      "high_npv": 3378420,
-      "swing": 1394734
-    },
-    {
-      "driver": "Capital cost (+20% / -20%)",
-      "low_npv": 2519897,
-      "high_npv": 2842209,
-      "swing": 322313
+      "low_npv": 2394628,
+      "high_npv": 10587753,
+      "swing": 8193125
     },
     {
       "driver": "O&M cost (x2 / x0.5)",
-      "low_npv": 2551271,
-      "high_npv": 2745944,
-      "swing": 194673
+      "low_npv": 1499569,
+      "high_npv": 8987001,
+      "swing": 7487432
+    },
+    {
+      "driver": "Capital cost (+20% / -20%)",
+      "low_npv": 3692866,
+      "high_npv": 9289515,
+      "swing": 5596649
     },
     {
       "driver": "Implementation duration (+50% / -25%)",
-      "low_npv": 2630575,
-      "high_npv": 2731531,
-      "swing": 100955
+      "low_npv": 4623006,
+      "high_npv": 7514022,
+      "swing": 2891016
     }
   ],
   "assumptions": [
     {
       "parameter": "Baseline",
-      "value": "1,190 units/day",
+      "value": "105.6 % of capacity",
       "source": "case datum"
     },
     {
       "parameter": "Target improvement",
-      "value": "8.5%",
+      "value": "19.5%",
       "source": "case datum"
     },
     {
       "parameter": "Capital budget",
-      "value": "CAD $866,000",
+      "value": "CAD $10,000,000",
       "source": "case datum"
     },
     {
       "parameter": "Timeline",
-      "value": "3 months",
+      "value": "12 months",
       "source": "case datum"
     },
     {
@@ -262,8 +280,8 @@
     },
     {
       "parameter": "Monetisation",
-      "value": "CAD 24.50 contribution/unit x 250 operating days",
-      "source": "assumption"
+      "value": "option-level annual savings stated in the case pack",
+      "source": "assumption: estimate (overtime -40%, penalties -50%; dwell 6.0 to 4.7 days)"
     },
     {
       "parameter": "Discount rate (WACC)",
@@ -277,8 +295,8 @@
     },
     {
       "parameter": "Annual O&M",
-      "value": "5% of capex",
-      "source": "assumption"
+      "value": "CAD $1,300,000/yr (14% of capex)",
+      "source": "assumption: estimate (overtime -40%, penalties -50%; dwell 6.0 to 4.7 days)"
     },
     {
       "parameter": "Benefit during implementation",
@@ -295,127 +313,295 @@
   ],
   "implementation_horizons": [
     {
-      "horizon": "Horizon 1",
-      "timeline": "Month 1",
-      "name": "Baseline validation & pilot",
-      "budget_CAD": 135200,
-      "kpi": "Pilot reaches >= 2.5% improvement; data quality verified",
-      "gate": "Go/no-go: pilot result within 20% of model, no safety incidents"
+      "horizon": "Phase 1",
+      "timeline": "Months 1-3",
+      "name": "Co-design and pilot",
+      "budget_CAD": 2000000,
+      "kpi": "Pilot lanes: queue time -25%; release status shared within 1 hour; baseline rehandles measured",
+      "gate": "Slot adherence >= 80% on pilot lanes and no safety incidents"
     },
     {
-      "horizon": "Horizon 2",
-      "timeline": "Month 2",
-      "name": "Scale-up: Comprehensive architecture replacement for cold-chain fulfillment center",
-      "budget_CAD": 405600,
-      "kpi": ">= 6.8% improvement sustained for 4 weeks",
-      "gate": "Commissioning sign-off and availability at or above constraint"
+      "horizon": "Phase 2",
+      "timeline": "Months 4-9",
+      "name": "Scale appointments, positioning and AI advice",
+      "budget_CAD": 5200000,
+      "kpi": "Dwell <= 5.3 days; truck turn <= 55 min; rehandles per box -20%",
+      "gate": "AI advice accepted >= 70% with every override logged; tariff announced with 90 days notice"
     },
     {
-      "horizon": "Horizon 3",
-      "timeline": "Month 3",
-      "name": "Stabilise, optimise & hand over",
-      "budget_CAD": 135200,
-      "kpi": "Full target 8.5% reached; O&M within CAD $33,800/yr",
-      "gate": "Benefit-tracking dashboard owned by operations"
+      "horizon": "Phase 3",
+      "timeline": "Months 10-12",
+      "name": "Stabilise, connect rail and customers, hand over",
+      "budget_CAD": 1800000,
+      "kpi": "Dwell <= 4.8 days; truck turn < 45 min; utilization on track for <= 85% at year 5",
+      "gate": "Finance confirms savings against each owner's target; contingency released"
     }
   ],
   "risks": [
     {
-      "risk": "Delivered improvement below model",
+      "risk": "Truckers do not adopt appointments",
       "likelihood": "Medium",
       "impact": "High",
-      "mitigation": "Stage-gated rollout; bear case still yields 11.0% vs 8.5% target",
-      "trigger": "Pilot result < 80% of modelled gain"
+      "mitigation": "Slot rules co-designed with trucking firms, grace windows, priority lanes for on-time trucks, a walk-in lane kept during transition",
+      "trigger": "Slot adherence < 75% for 2 weeks"
     },
     {
-      "risk": "Capital overrun",
+      "risk": "Dwell does not fall enough",
+      "likelihood": "Medium",
+      "impact": "High",
+      "mitigation": "Free-time tariff, release alerts, empties evacuation agreements; parcel design kept ready as phase 2",
+      "trigger": "Dwell > 5.3 days at month 9"
+    },
+    {
+      "risk": "Cutover disrupts live operations",
+      "likelihood": "Medium",
+      "impact": "High",
+      "mitigation": "Lane-by-lane and block-by-block rollout, parallel running, go-lives outside vessel peaks, rollback plan",
+      "trigger": "Gate throughput below baseline for 2 shifts"
+    },
+    {
+      "risk": "Staff resistance and role concerns",
       "likelihood": "Medium",
       "impact": "Medium",
-      "mitigation": "CAD $190,000 headroom to budget ceiling; fixed-price packages for long-lead items",
-      "trigger": "Committed cost > 90% of H2 allocation"
+      "mitigation": "Staff involved before tools arrive, paid training, no layoffs from this program, redeployment into the planning cell",
+      "trigger": "Training completion < 90% or AI advice acceptance < 50%"
     },
     {
-      "risk": "Schedule slip / installation window",
-      "likelihood": "Medium",
-      "impact": "Medium",
-      "mitigation": "Pre-fabrication and off-shift installation; pilot proves method before scale-up",
-      "trigger": "Critical-path float < 2 weeks"
-    },
-    {
-      "risk": "Safety or compliance non-conformance",
+      "risk": "AI advice wrong or data quality poor",
       "likelihood": "Low",
-      "impact": "Critical",
-      "mitigation": "Management-of-change review and HAZOP before each commissioning step",
-      "trigger": "Any open MOC action at gate review"
-    },
-    {
-      "risk": "Adoption / operating discipline",
-      "likelihood": "Medium",
-      "impact": "Medium",
-      "mitigation": "Operators co-design standard work; KPI dashboard reviewed weekly",
-      "trigger": "Benefit decays > 10% after go-live"
+      "impact": "High",
+      "mitigation": "Advisory only, 6 weeks in shadow mode, hard safety rules locked, weekly model review",
+      "trigger": "Override rate > 30% or any near-miss linked to a recommendation"
     }
   ],
   "red_team_defense": [
     {
-      "question": "What changes when unexpected demand increase persists and the selected design underperforms by 15%?",
-      "rebuttal": "Bear case (performance -15%, capex +20%): 11.0% improvement, NPV CAD $1,996,871, payback 14.9 months. Target is still met."
+      "question": "Why not just build on the 15-acre parcel?",
+      "rebuttal": "Space alone fails the objective: 25,344 TEU / 28,000 TEU = 90.5% at year 5. It costs about $14.5M, over the $10M budget, and must be phased around live operations. Cutting dwell to 4.7 days reaches about 83% on today's footprint. We keep the parcel as a phase-2 option if dwell stays above 5.6 days."
     },
     {
-      "question": "How does your recommendation change if performance falls 15% and costs rise 20%?",
-      "rebuttal": "Bear case (performance -15%, capex +20%): 11.0% improvement, NPV CAD $1,996,871, payback 14.9 months. Target is still met."
+      "question": "What if dwell does not fall as much as you assume?",
+      "rebuttal": "The threshold is explicit: dwell at or below 4.83 days meets 85% without land. If dwell is above 5.3 days at month 9 (our gate trigger), we tighten the free-time tariff and start the parcel design. With dwell at 5.6 days or less, the parcel would then meet the objective."
+    },
+    {
+      "question": "How confident are you in the $6.4M of annual savings?",
+      "rebuttal": "Each saving has an owner and a mechanism. Break-even needs only $3.1M a year. If penalties fall 25% instead of 50%, the five-year impact is still -$6.5M."
+    },
+    {
+      "question": "Will the AI and automation cost jobs?",
+      "rebuttal": "No layoffs from this program. The AI recommends and planners decide. Roles shift from manual re-planning and overtime to planning-cell and exception work, with training in paid time."
+    },
+    {
+      "question": "How do you keep the terminal running during the rollout?",
+      "rebuttal": "Lane-by-lane appointments with a walk-in lane kept open, block-by-block positioning, 6 weeks of shadow mode for the AI, go-lives outside vessel peaks, and a rollback plan triggered if gate throughput drops below baseline for 2 shifts."
+    },
+    {
+      "question": "How will you get truckers to use appointments?",
+      "rebuttal": "We co-design slot rules with them, guarantee the container is ready when a slot is booked, give on-time trucks a priority lane, and keep grace windows. Slots exist only for released containers, so a booking is never wasted."
     }
   ],
+  "case_pack": {
+    "package": [
+      {
+        "initiative": "Truck appointment system with gate pre-advice and OCR",
+        "purpose": "Spread arrivals into booked slots, only for released and ready containers; faster gate transactions.",
+        "capex": 2200000,
+        "annual_opex": 300000,
+        "owner": "Gate and Landside Manager"
+      },
+      {
+        "initiative": "Release and ETA visibility portal",
+        "purpose": "One shared status for lines, truckers, rail and customers, with customs-hold flags and a named escalation contact.",
+        "capex": 1400000,
+        "annual_opex": 250000,
+        "owner": "Commercial Director"
+      },
+      {
+        "initiative": "Slot-level positioning and AI-assisted stacking",
+        "purpose": "RTG position sensors plus a planning upgrade so boxes due out first sit on top; planners approve each recommendation.",
+        "capex": 2900000,
+        "annual_opex": 400000,
+        "owner": "Yard Planning Manager"
+      },
+      {
+        "initiative": "Integrated operations planning cell",
+        "purpose": "One shared plan across vessel, yard, gate and rail teams, so a schedule change is re-planned once, not in several systems.",
+        "capex": 800000,
+        "annual_opex": 200000,
+        "owner": "Operations Manager"
+      },
+      {
+        "initiative": "Dwell-time rules: free-time tariff and empties evacuation",
+        "purpose": "Storage charges after free days, early-pickup incentives and agreements with lines to remove empties.",
+        "capex": 200000,
+        "annual_opex": 0,
+        "owner": "Commercial Director"
+      },
+      {
+        "initiative": "Change management and paid training",
+        "purpose": "Co-design workshops, super-users per shift and training in paid working time.",
+        "capex": 700000,
+        "annual_opex": 150000,
+        "owner": "HR Director with the Employee Representative"
+      },
+      {
+        "initiative": "Contingency (about 10%)",
+        "purpose": "Released at the phase-3 gate if unused.",
+        "capex": 800000,
+        "annual_opex": 0,
+        "owner": "Finance Director"
+      }
+    ],
+    "analysis_sections": [
+      {
+        "title": "Finance",
+        "points": [
+          "Upfront $9.0M of the $10M budget, including $0.8M contingency; $1.0M left unspent.",
+          "Added annual costs $1.3M: software subscriptions, support and sensor maintenance ($0.95M), planning-cell analysts ($0.2M), ongoing training ($0.15M).",
+          "Annual savings $6.4M, each with an owner: overtime -40% ($2.4M, Operations Manager) from fewer rehandles, smoother truck peaks and fewer late re-plans; delay and service penalties -50% ($4.0M, Commercial Director) from reliable release information and on-time handovers.",
+          "Five-year net impact = $9.0M + 5 x ($1.3M - $6.4M) = -$16.5M (net savings).",
+          "Main uncertainty: the share of the $8M penalties caused by customs or documentation holds PortFlow cannot override. If penalties fall only 25% ($2.0M), savings are $4.4M and the impact is still -$6.5M. Break-even needs only $3.1M a year of savings.",
+          "Upside not counted: storage revenue from the dwell tariff, and the avoided cost of building on the parcel."
+        ],
+        "deck_points": [
+          "Savings owners: overtime -40% ($2.4M, Operations Manager); penalties -50% ($4.0M, Commercial Director)",
+          "Uncertainty: penalties caused by customs holds. If penalties fall only 25%, impact is still -$6.5M; break-even is $3.1M/yr"
+        ]
+      },
+      {
+        "title": "Operations & Safety",
+        "points": [
+          "Storage: dwell 6.0 to 4.7 days keeps year-5 inventory near 19,900 TEU (83% of 24,000) at +20% volume, without new land.",
+          "Container movement: exact slot positions and stacking by planned pickup time cut rehandles, so RTG hours go to productive moves and the 12 RTGs absorb the 20% growth.",
+          "Truck service: appointments spread arrivals (queue 40 to about 14 min); pre-advice and pre-staged containers shorten time inside (32 to about 26 min): about 40 minutes in total, below the 45-minute objective.",
+          "Safety: fewer rehandles and shorter queues reduce truck-crane interaction; hard rules for hazardous, reefer and weight segregation stay locked; every go-live has a safety review.",
+          "Measures, reviewed weekly: utilization, dwell, rehandles per box, queue and inside time, slot adherence, safety incidents and near-misses."
+        ],
+        "deck_points": [
+          "Storage: dwell 6.0 to 4.7 days keeps year-5 utilization near 83% with no new land",
+          "Trucks: queue 40 to ~14 min, inside 32 to ~26 min, about 40 min total (< 45)",
+          "Safety: fewer rehandles and queues; segregation rules locked; safety review at every go-live"
+        ]
+      },
+      {
+        "title": "Supply Chain",
+        "points": [
+          "Shipping lines: ETA changes feed one shared plan; export receiving windows and empty-container evacuation agreed.",
+          "Truckers: book pickup slots only when the container is released and ready; live status and a guaranteed window.",
+          "Rail: rail loads pre-staged by train departure; the rail operator sees release status through the same portal.",
+          "Customers: release, hold and ETA alerts to plan replenishment, plus a named contact and escalation process for urgent shipments.",
+          "Customs and documentation holds stay outside PortFlow's control, but they are flagged early so no truck is booked against a held container."
+        ],
+        "deck_points": [
+          "Lines, trucks, rail and customers share one release and ETA status",
+          "Slots are booked only for released, ready containers; holds flagged early with a named escalation contact"
+        ]
+      },
+      {
+        "title": "Organizational Change Management",
+        "points": [
+          "Stakeholders: yard operators, gate clerks, planners and supervisors, maintenance, trucking firms, rail, shipping lines, customers and finance.",
+          "Involve staff before tools arrive: operators and planners co-design stacking rules and appointment rules in phase 1.",
+          "Train in paid working time: super-users on every shift, simulator sessions, refresher training budgeted at $0.15M a year.",
+          "Clarify roles: no layoffs from this program; gate clerks and planners move into the planning cell and exception handling; one RACI per process.",
+          "Keep operations running: lane-by-lane and block-by-block rollout, parallel running, go-lives outside vessel peaks and a rollback plan."
+        ],
+        "deck_points": [
+          "Staff co-design rules before tools arrive; training in paid time with super-users per shift",
+          "No layoffs from this program; roles shift to planning and exception handling; phased go-lives"
+        ]
+      },
+      {
+        "title": "AI & Automation",
+        "points": [
+          "Use: AI-assisted stacking and housekeeping recommendations: where to place each incoming container and which overnight moves to make, so boxes due out first sit on top.",
+          "Information needed: exact slot positions (RTG sensors), appointment bookings, release and hold status, vessel and rail schedules, and container attributes (size, weight, reefer, hazardous).",
+          "Oversight: the yard planner reviews and approves every recommendation; hard safety rules cannot be overridden by the model; the Yard Planning Manager owns model performance.",
+          "Performance check: 6 weeks in shadow mode against the current rules, then weekly tracking of rehandles per box, acceptance rate and override reasons; retrain or roll back if rehandles do not fall.",
+          "Set aside: fully automated cranes cost far more than the $10M budget, add safety and labour risk, and do not fix the information gap."
+        ],
+        "deck_points": [
+          "AI recommends stacking and overnight moves; planners approve; safety rules locked",
+          "Checked in 6 weeks of shadow mode, then weekly on rehandles per box and overrides"
+        ]
+      }
+    ],
+    "deck": {
+      "max_content_slides": 8,
+      "answer_note": "Lead with the core issue in one line: containers stay too long and move blind. Then the package and the -$16.5M five-year impact.",
+      "slides": [
+        {
+          "title": "Operations, safety and supply chain",
+          "subtitle": "What changes as volume grows 20%",
+          "sections": [
+            "Operations & Safety",
+            "Supply Chain"
+          ]
+        },
+        {
+          "title": "Implementation, people and AI oversight",
+          "subtitle": "12 months, three gated phases, no stop to operations",
+          "sections": [
+            "Organizational Change Management",
+            "AI & Automation"
+          ],
+          "table": "horizons"
+        }
+      ]
+    }
+  },
   "intelligence": {
     "archetype": "operations",
     "archetype_name": "Operations & engineering improvement",
     "solution_model": "Baseline KPIs \u2192 bottleneck/root cause \u2192 optimize/simulate \u2192 pilot \u2192 ROI + KPIs",
     "family": "throughput",
     "family_label": "Throughput / capacity",
-    "what_the_case_tests": "This is a throughput / capacity problem under a hard budget. Judges are testing whether you find the binding driver before spending, compare three options on the same basis, and show what happens when the numbers move.",
+    "what_the_case_tests": "This is a flow problem that looks like a space problem. Judges test whether you separate causes from symptoms with the case data (Little's Law on dwell), resist the obvious expansion, and still cover finance, operations and safety, supply chain, change management and AI within a $10M budget.",
     "scqa": {
-      "situation": "Cold-Chain Fulfillment Center \u2014 Capacity Scaling (unexpected demand increase). Metropolitan public agency; disruption: unexpected demand increase. Capacity Scaling today: 1,190.00 units/day.",
-      "complication": "Capacity Scaling must move from 1,190.00 units/day to 1,291.15 units/day (8.5%) within 3 months and CAD $866,000, while: installation restricted to weekends; Minimum availability 98.0%.",
-      "question": "For the cold-chain fulfillment center operated by a metropolitan public agency, plan a capacity upgrade while protecting service quality following unexpected demand increase. Baseline capacity: 1,190 units/day. Deliver at least 8.5% improvement within 3 months under CAD 866,000 capital limit; installation restricted to weekends. Select a technically justified alternative and test what happens if performance falls 15%.",
-      "answer": "Option C \u2014 Comprehensive architecture replacement for cold-chain fulfillment center \u2014 delivers 13% capacity scaling improvement (target 8.5%) for CAD $676,000 of the CAD $866,000 budget: NPV CAD $2,681,053 at 9.5%, payback 11.1 months."
+      "situation": "PortFlow is a Canadian container terminal linking shipping lines, trucking, rail and inland customers. Today the yard holds 21,120 TEU against 24,000 TEU effective capacity (88%), containers dwell 6 days, and trucks take 72 minutes per visit (40 queuing, 32 inside). Volume will grow 20% in five years. The terminal spends $6M a year on overtime and $8M on delay and service penalties. Release and schedule information is not shared consistently, planning runs across separate systems on fixed rules, and the yard system knows a container's stack but not its exact position. One 15-acre parcel (about 4,000 TEU) could be added, phased around live operations.",
+      "complication": "At +20% volume, the same 6-day dwell would need 106% of yard capacity, and trucks already take 72 minutes against a 45-minute objective. Overtime ($6M) and penalties ($8M) are rising, and the one expansion parcel would only bring utilization to 90.5%.",
+      "question": "Which package, within the $10M upfront budget, attacks PortFlow's core issue so that at +20% volume the yard runs at or below 85% utilization and trucks turn in under 45 minutes by year five?",
+      "answer": "Option B \u2014 Integrated flow package: shared visibility, appointments, AI-assisted yard planning \u2014 delivers 21.7% lower year-5 yard utilization (target 19.5%) for CAD $9,000,000 of the CAD $10,000,000 budget: NPV CAD $6,491,191 at 9.5%, payback 31.7 months. Five-year net financial impact (case formula): -CAD $16,500,000 (net savings)."
     },
     "issue_tree": {
-      "root": "How do we achieve 8.5% capacity scaling improvement within 3 months and CAD $866,000?",
+      "root": "How does PortFlow reach <= 85% yard utilization and < 45-minute truck turns at +20% volume, within $10M?",
       "branches": [
         {
-          "name": "Demand & mix",
+          "name": "Yard inventory (dwell)",
           "questions": [
-            "Is the demand real and sustained?",
-            "Does product mix drive changeovers?"
+            "Why do containers stay 6 days: late release information, uncollected imports, early exports or empties?",
+            "What dwell meets 85%? (4.83 days on 24,000 TEU)"
           ]
         },
         {
-          "name": "Capacity at the constraint",
+          "name": "Yard handling (rehandles)",
           "questions": [
-            "Which stage runs at the highest utilisation?",
-            "Where are OEE losses: availability, speed or quality?"
+            "How many crane moves are reshuffles because exact positions and pickup times are unknown?",
+            "Can stacking by pickup time free RTG hours for the 20% growth?"
           ]
         },
         {
-          "name": "Flow between stages",
+          "name": "Gate and landside (arrivals)",
           "questions": [
-            "Where does WIP pile up or starve?",
-            "Are batch sizes and buffers sized to variability?"
+            "Why do trucks bunch: no appointments, no readiness signal?",
+            "What cuts the 40-minute queue and the 32 minutes inside?"
           ]
         }
       ]
     },
-    "hypothesis": "The gap is one binding constraint, not total capacity: relieving it delivers the target without rebuilding the whole system.",
+    "hypothesis": "The core issue is fragmented release and schedule information, not a lack of space. Sharing it, booking trucks against ready containers and planning the yard around known pickups cuts dwell below 4.83 days and truck turn below 45 minutes without new land.",
     "toolkit": [
-      "Theory of Constraints (5 focusing steps)",
-      "OEE = Availability \u00d7 Performance \u00d7 Quality",
-      "Little's Law: WIP = Throughput \u00d7 Flow time",
-      "Discrete-event simulation"
+      "Little's Law: inventory = throughput x dwell",
+      "Cause-versus-symptom tree (5 whys)",
+      "Queueing view of truck arrivals: peak-to-average ratio",
+      "Decision matrix with budget as a hard gate"
     ],
     "quick_math": [
-      "Gap: 1,190.00 \u2192 1,291.15 units/day",
-      "Budget per % point of target: CAD $101,882",
-      "Winner cost per % point delivered: CAD $52,000"
+      "Today: 21,120 TEU / 6 days = 3,520 TEU/day; 21,120 / 24,000 = 88%",
+      "Year 5: 4,224 TEU/day x 6 days = 25,344 TEU = 106% of capacity",
+      "Expansion only: 25,344 / 28,000 = 90.5% (misses 85%)",
+      "Dwell needed: 0.85 x 24,000 / 4,224 = 4.83 days (-19.5%)",
+      "Truck turn: 40 + 32 = 72 min; target < 45 needs -27 min or more"
     ],
     "solution_ladder": [
       {
@@ -423,79 +609,89 @@
         "name": "Quick win",
         "rule": "Lowest capital: what a minimal move buys",
         "option": "A",
-        "option_name": "Instrumentation and operating procedure changes for cold-chain fulfillment center",
-        "capex_CAD": 232000,
-        "improvement_percent": 4.6,
-        "npv_CAD": 957263,
+        "option_name": "Gate quick win: truck appointments and release portal",
+        "capex_CAD": 4100000,
+        "improvement_percent": 10.0,
+        "npv_CAD": 4157625,
         "meets_target": false,
         "within_budget": true,
         "selected": false,
-        "summary": "Option A: 4.6% for CAD $232,000 (misses target, in budget)"
+        "summary": "Option A: 10% for CAD $4,100,000 (misses target, in budget)"
       },
       {
         "level": "Level 2",
         "name": "Minimum compliant",
         "rule": "Cheapest option that meets the target within budget",
-        "option": "C",
-        "option_name": "Comprehensive architecture replacement for cold-chain fulfillment center",
-        "capex_CAD": 676000,
-        "improvement_percent": 13.0,
-        "npv_CAD": 2681053,
+        "option": "B",
+        "option_name": "Integrated flow package: shared visibility, appointments, AI-assisted yard planning",
+        "capex_CAD": 9000000,
+        "improvement_percent": 21.7,
+        "npv_CAD": 6491191,
         "meets_target": true,
         "within_budget": true,
         "selected": true,
-        "summary": "Option C: 13% for CAD $676,000 (meets target, in budget)"
+        "summary": "Option B: 21.7% for CAD $9,000,000 (meets target, in budget)"
       },
       {
         "level": "Level 3",
         "name": "Value maximiser",
         "rule": "Highest NPV within budget",
-        "option": "C",
-        "option_name": "Comprehensive architecture replacement for cold-chain fulfillment center",
-        "capex_CAD": 676000,
-        "improvement_percent": 13.0,
-        "npv_CAD": 2681053,
+        "option": "B",
+        "option_name": "Integrated flow package: shared visibility, appointments, AI-assisted yard planning",
+        "capex_CAD": 9000000,
+        "improvement_percent": 21.7,
+        "npv_CAD": 6491191,
         "meets_target": true,
         "within_budget": true,
         "selected": true,
-        "summary": "Option C: 13% for CAD $676,000 (meets target, in budget)"
+        "summary": "Option B: 21.7% for CAD $9,000,000 (meets target, in budget)"
       },
       {
         "level": "Level 4",
         "name": "Stretch",
         "rule": "Largest improvement regardless of budget",
-        "option": "C",
-        "option_name": "Comprehensive architecture replacement for cold-chain fulfillment center",
-        "capex_CAD": 676000,
-        "improvement_percent": 13.0,
-        "npv_CAD": 2681053,
+        "option": "B",
+        "option_name": "Integrated flow package: shared visibility, appointments, AI-assisted yard planning",
+        "capex_CAD": 9000000,
+        "improvement_percent": 21.7,
+        "npv_CAD": 6491191,
         "meets_target": true,
         "within_budget": true,
         "selected": true,
-        "summary": "Option C: 13% for CAD $676,000 (meets target, in budget)"
+        "summary": "Option B: 21.7% for CAD $9,000,000 (meets target, in budget)"
       }
     ],
-    "ladder_rationale": "Option C is recommended. It is both the cheapest compliant option and the best value: a dominant choice.",
+    "ladder_rationale": "Option B is recommended. It is both the cheapest compliant option and the best value: a dominant choice.",
     "kpis": [
       {
-        "kpi": "Daily output",
-        "baseline": "1,190.00 units/day",
-        "target": "1,291.15 units/day"
+        "kpi": "Average yard dwell time",
+        "baseline": "6.0 days",
+        "target": "<= 4.8 days (plan 4.7)"
       },
       {
-        "kpi": "Constraint utilisation",
-        "baseline": "measure in week 1",
-        "target": "set from pilot"
+        "kpi": "Year-5 yard utilization at +20% volume",
+        "baseline": "88% today; 106% if nothing changes",
+        "target": "<= 85% (plan about 83%)"
       },
       {
-        "kpi": "OEE at the constraint",
-        "baseline": "measure in week 1",
-        "target": "set from pilot"
+        "kpi": "Truck turn time",
+        "baseline": "72 min (40 queue + 32 inside)",
+        "target": "< 45 min (plan about 40)"
       },
       {
-        "kpi": "WIP",
-        "baseline": "measure in week 1",
-        "target": "set from pilot"
+        "kpi": "Rehandles per container",
+        "baseline": "measured in phase 1",
+        "target": "-30%"
+      },
+      {
+        "kpi": "Overtime and penalties",
+        "baseline": "$6M and $8M a year",
+        "target": "$3.6M and $4.0M a year"
+      },
+      {
+        "kpi": "Yard and gate safety incidents",
+        "baseline": "current rate",
+        "target": "no increase; near-misses reviewed weekly"
       }
     ],
     "plan_30_60_90": [
@@ -504,7 +700,7 @@
         "focus": "Validate & pilot",
         "actions": [
           "Confirm baseline data and the binding constraint",
-          "Launch pilot of Option C at the constraint",
+          "Launch pilot of Option B at the constraint",
           "Name owners; start KPI dashboard"
         ]
       },
@@ -512,7 +708,7 @@
         "window": "Days 31\u201360",
         "focus": "Prove & decide",
         "actions": [
-          "Pilot gate: Go/no-go: pilot result within 20% of model, no safety incidents",
+          "Pilot gate: Slot adherence >= 80% on pilot lanes and no safety incidents",
           "Lock fixed-price packages for scale-up",
           "Train operators; write standard work"
         ]
@@ -521,74 +717,99 @@
         "window": "Days 61\u201390",
         "focus": "Scale & control",
         "actions": [
-          "Begin scale-up: comprehensive architecture replacement for cold-chain fulfillment center",
+          "Begin scale appointments, positioning and ai advice",
           "Control chart on the primary KPI",
-          "Review vs target (8.5%) with sponsor"
+          "Review vs target (19.5%) with sponsor"
         ]
       }
     ],
     "time_plan": [
       {
-        "time": "0:00\u20130:40",
+        "time": "0:00-0:25",
         "step": "Read & align",
-        "output": "SCQA, issue tree, first hypothesis"
+        "output": "SCQA, cause-vs-symptom tree, first hypothesis"
       },
       {
-        "time": "0:40\u20131:50",
-        "step": "Data & quick math",
-        "output": "Baseline, gap, vital-few drivers (80/20)"
+        "time": "0:25-0:55",
+        "step": "Quick math",
+        "output": "Little's Law, dwell threshold, truck turn gap"
       },
       {
-        "time": "1:50\u20133:20",
-        "step": "Options & decision",
-        "output": "3 costed options, matrix, NPV, sensitivity"
+        "time": "0:55-1:40",
+        "step": "Package & finance",
+        "output": "Initiatives, costs, owners, 5-year formula"
       },
       {
-        "time": "3:20\u20134:20",
-        "step": "Deck",
-        "output": "Answer-first storyline, action titles"
+        "time": "1:40-2:30",
+        "step": "Deck (8 slides)",
+        "output": "Answer first, matrix, budget check, plan, risks"
       },
       {
-        "time": "4:20\u20135:00",
+        "time": "2:30-3:00",
         "step": "Rehearse & Q&A",
-        "output": "Timed run-through, 20+ questions"
+        "output": "10-minute run, likely judge questions"
       }
     ],
     "qa_bank": [
       {
         "category": "Stress test",
-        "question": "What changes when unexpected demand increase persists and the selected design underperforms by 15%?",
-        "rebuttal": "Bear case (performance -15%, capex +20%): 11.0% improvement, NPV CAD $1,996,871, payback 14.9 months. Target is still met."
+        "question": "Why not just build on the 15-acre parcel?",
+        "rebuttal": "Space alone fails the objective: 25,344 TEU / 28,000 TEU = 90.5% at year 5. It costs about $14.5M, over the $10M budget, and must be phased around live operations. Cutting dwell to 4.7 days reaches about 83% on today's footprint. We keep the parcel as a phase-2 option if dwell stays above 5.6 days."
+      },
+      {
+        "category": "Stress test",
+        "question": "What if dwell does not fall as much as you assume?",
+        "rebuttal": "The threshold is explicit: dwell at or below 4.83 days meets 85% without land. If dwell is above 5.3 days at month 9 (our gate trigger), we tighten the free-time tariff and start the parcel design. With dwell at 5.6 days or less, the parcel would then meet the objective."
+      },
+      {
+        "category": "Stress test",
+        "question": "How confident are you in the $6.4M of annual savings?",
+        "rebuttal": "Each saving has an owner and a mechanism. Break-even needs only $3.1M a year. If penalties fall 25% instead of 50%, the five-year impact is still -$6.5M."
+      },
+      {
+        "category": "Stress test",
+        "question": "Will the AI and automation cost jobs?",
+        "rebuttal": "No layoffs from this program. The AI recommends and planners decide. Roles shift from manual re-planning and overtime to planning-cell and exception work, with training in paid time."
+      },
+      {
+        "category": "Stress test",
+        "question": "How do you keep the terminal running during the rollout?",
+        "rebuttal": "Lane-by-lane appointments with a walk-in lane kept open, block-by-block positioning, 6 weeks of shadow mode for the AI, go-lives outside vessel peaks, and a rollback plan triggered if gate throughput drops below baseline for 2 shifts."
+      },
+      {
+        "category": "Stress test",
+        "question": "How will you get truckers to use appointments?",
+        "rebuttal": "We co-design slot rules with them, guarantee the container is ready when a slot is booked, give on-time trucks a priority lane, and keep grace windows. Slots exist only for released containers, so a booking is never wasted."
       },
       {
         "category": "Alternatives",
         "question": "Why not Option A, the cheapest?",
-        "rebuttal": "It costs CAD $232,000 but delivers 4.6% (misses the 8.5% target); it scores 4.6/10 vs 8.55/10 for Option C."
+        "rebuttal": "It costs CAD $4,100,000 but delivers 10% (misses the 19.5% target); it scores 5.63/10 vs 7.0/10 for Option B."
       },
       {
         "category": "Assumptions",
         "question": "How confident are you in the option estimates?",
-        "rebuttal": "Source: case datum. We treat them as hypotheses: the Horizon 1 pilot must reach 80% of the modelled gain before scale-up spend."
+        "rebuttal": "Source: assumption: estimate (overtime -40%, penalties -50%; dwell 6.0 to 4.7 days). We treat them as hypotheses: the Horizon 1 pilot must reach 80% of the modelled gain before scale-up spend."
       },
       {
         "category": "Financials",
         "question": "What does it cost to run every year?",
-        "rebuttal": "O&M of CAD $33,800/yr is already netted out of the CAD $947,537/yr benefit."
+        "rebuttal": "O&M of CAD $1,300,000/yr is already netted out of the CAD $6,400,000/yr benefit."
       },
       {
         "category": "Financials",
         "question": "What is the benefit-to-cost ratio?",
-        "rebuttal": "4.33 on a present-value basis at 9.5% WACC; levelized 5.43 CAD per added unit."
+        "rebuttal": "1.46 on a present-value basis at 9.5% WACC; levelized 128752.43 CAD per year per % point of improvement."
       },
       {
         "category": "Implementation",
         "question": "What if implementation takes 50% longer?",
-        "rebuttal": "NPV falls to CAD $2,630,575; the H1 pilot and fixed-price packages protect the schedule."
+        "rebuttal": "NPV falls to CAD $4,623,006; the H1 pilot and fixed-price packages protect the schedule."
       },
       {
         "category": "Implementation",
         "question": "How will you know it is working by day 30?",
-        "rebuttal": "Pilot KPI: Pilot reaches >= 2.5% improvement; data quality verified. Leading indicators: Constraint utilisation, OEE at the constraint."
+        "rebuttal": "Pilot KPI: Pilot lanes: queue time -25%; release status shared within 1 hour; baseline rehandles measured. Leading indicators: Constraint utilisation, OEE at the constraint."
       },
       {
         "category": "Safety",
@@ -637,7 +858,7 @@
       {
         "item": "Answer-first executive summary (one sentence, three numbers)",
         "ok": true,
-        "evidence": "Option C \u2014 Comprehensive architecture replacement for cold-chain fulfillment center \u2014 delivers 13% capacity scaling impr\u2026"
+        "evidence": "Option B \u2014 Integrated flow package: shared visibility, appointments, AI-assisted yard planning \u2014 delivers 21.7% lower ye\u2026"
       },
       {
         "item": "Three options costed on the same basis",
@@ -647,22 +868,22 @@
       {
         "item": "Recommendation fits the budget",
         "ok": true,
-        "evidence": "CAD $676,000 of CAD $866,000"
+        "evidence": "CAD $9,000,000 of CAD $10,000,000"
       },
       {
         "item": "Recommendation meets the target",
         "ok": true,
-        "evidence": "13% vs 8.5%"
+        "evidence": "21.7% vs 19.5%"
       },
       {
         "item": "Financials: NPV, payback, sensitivity",
         "ok": true,
-        "evidence": "NPV CAD $2,681,053, payback 11.1 months"
+        "evidence": "NPV CAD $6,491,191, payback 31.7 months"
       },
       {
         "item": "Bear case tested (-15% performance, +20% cost)",
         "ok": true,
-        "evidence": "bear NPV CAD $1,996,871"
+        "evidence": "bear NPV CAD $620,445"
       },
       {
         "item": "30/60/90 roadmap with owners and gates",

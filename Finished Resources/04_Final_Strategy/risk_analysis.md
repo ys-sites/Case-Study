@@ -2,8 +2,8 @@
 
 | Risk | Likelihood | Impact | Mitigation | Trigger |
 | --- | --- | --- | --- | --- |
-| Delivered improvement below model | Medium | High | Stage-gated rollout; bear case still yields 11.0% vs 8.5% target | Pilot result < 80% of modelled gain |
-| Capital overrun | Medium | Medium | CAD $190,000 headroom to budget ceiling; fixed-price packages for long-lead items | Committed cost > 90% of H2 allocation |
-| Schedule slip / installation window | Medium | Medium | Pre-fabrication and off-shift installation; pilot proves method before scale-up | Critical-path float < 2 weeks |
-| Safety or compliance non-conformance | Low | Critical | Management-of-change review and HAZOP before each commissioning step | Any open MOC action at gate review |
-| Adoption / operating discipline | Medium | Medium | Operators co-design standard work; KPI dashboard reviewed weekly | Benefit decays > 10% after go-live |
+| Truckers do not adopt appointments | Medium | High | Slot rules co-designed with trucking firms, grace windows, priority lanes for on-time trucks, a walk-in lane kept during transition | Slot adherence < 75% for 2 weeks |
+| Dwell does not fall enough | Medium | High | Free-time tariff, release alerts, empties evacuation agreements; parcel design kept ready as phase 2 | Dwell > 5.3 days at month 9 |
+| Cutover disrupts live operations | Medium | High | Lane-by-lane and block-by-block rollout, parallel running, go-lives outside vessel peaks, rollback plan | Gate throughput below baseline for 2 shifts |
+| Staff resistance and role concerns | Medium | Medium | Staff involved before tools arrive, paid training, no layoffs from this program, redeployment into the planning cell | Training completion < 90% or AI advice acceptance < 50% |
+| AI advice wrong or data quality poor | Low | High | Advisory only, 6 weeks in shadow mode, hard safety rules locked, weekly model review | Override rate > 30% or any near-miss linked to a recommendation |

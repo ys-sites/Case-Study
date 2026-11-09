@@ -189,6 +189,21 @@ def _from_json_case(c: dict, source: str) -> dict:
     )
 
 
+PACK_KEYS = ("diagnosis", "risks", "horizons", "kpis", "pillars", "package", "analysis_sections", "deck", "secondary_targets")
+
+
+def _from_structured(c: dict) -> dict:
+    """structured_case_v1: a real brief transcribed with costed options (capex, gain, annual savings, annual opex)
+    and the case's required-analysis content. Option figures carry their own `source` (case datum or stated assumption)."""
+    rec = _case(**{k: v for k, v in c.items() if k not in ("format", "options")})
+    rec["options"] = [{"label": o["label"], "name": o["name"], "capex": float(o["capex"]), "improvement": float(o["improvement"]),
+                       "annual_benefit": float(o["annual_benefit"]) if "annual_benefit" in o else None,
+                       "annual_opex": float(o["annual_opex"]) if "annual_opex" in o else None,
+                       "source": o.get("source", "case datum"), "why_not": o.get("why_not", "")} for o in c["options"]]
+    rec["source_type"] = "structured_case"
+    return rec
+
+
 def _csv_lookup(path: Path, key_col: str, case_id: str) -> dict | None:
     if not path.exists():
         return None
@@ -304,6 +319,8 @@ def load_case_data(case_identifier: str = "ENG-0001") -> dict:
             raw = json.loads(p.read_text(encoding="utf-8"))
             if isinstance(raw, dict) and "cases" in raw:
                 raw = raw["cases"][0]
+            if raw.get("format") == "structured_case_v1":
+                return _from_structured(raw)
             return _from_json_case(raw, "file_json")
         if suffix == ".pdf":
             import pymupdf
@@ -349,6 +366,23 @@ def annual_benefit(case: dict, improvement_pct: float, uv: float | None) -> floa
     if uv is None:  # non-monetary metric: value scales with share of target achieved
         return ANCHOR_SHARE * case["budget"] * (improvement_pct / case["target_pct"] if case["target_pct"] else 0)
     return case["baseline_value"] * improvement_pct / 100 * uv
+
+
+def option_benefit(case: dict, o: dict, improvement_pct: float, uv: float | None) -> float:
+    """Annual benefit of an option; a stated option-level saving scales with delivered gain."""
+    if o.get("annual_benefit") is not None:
+        return o["annual_benefit"] * (improvement_pct / o["improvement"] if o["improvement"] else 1.0)
+    return annual_benefit(case, improvement_pct, uv)
+
+
+def option_om_rate(o: dict) -> float:
+    """Annual operating cost as a share of capex: stated option opex, else the default O&M rate."""
+    return o["annual_opex"] / o["capex"] if o.get("annual_opex") is not None and o["capex"] else OM_RATE
+
+
+def five_year_net(capex: float, opex: float, benefit: float) -> float:
+    """Undiscounted case-competition formula: Investment + 5 x (added annual costs - annual savings); negative = net savings."""
+    return capex + HORIZON_YEARS * (opex - benefit)
 
 
 def levelized_cost(case: dict, capex: float, improvement_pct: float) -> tuple[float | None, str]:
@@ -413,9 +447,11 @@ def evaluate_options(case: dict, uv: float | None) -> list[dict]:
     target, budget = case["target_pct"], case["budget"]
     opts = []
     for o in case["options"]:
-        base = cash_model(o["capex"], annual_benefit(case, o["improvement"], uv), case["timeline_months"])
+        ben, omr = option_benefit(case, o, o["improvement"], uv), option_om_rate(o)
+        base = cash_model(o["capex"], ben, case["timeline_months"], omr)
         opts.append({**o, "model": base, "within_budget": o["capex"] <= budget,
-                     "meets_target": o["improvement"] >= target})
+                     "meets_target": o["improvement"] >= target,
+                     "five_year_net": five_year_net(o["capex"], o["capex"] * omr, ben)})
     npvs = [o["model"]["npv"] for o in opts]
     lo, hi = min(npvs), max(npvs)
     for o in opts:
@@ -439,8 +475,8 @@ def evaluate_options(case: dict, uv: float | None) -> list[dict]:
 def sensitivity(case: dict, win: dict, uv: float | None) -> list[dict]:
     """Tornado: NPV swing for +/-20 % on each driver, holding the others at base."""
     def npv_with(capex=1.0, ben=1.0, timeline=1.0, om=1.0):
-        b = annual_benefit(case, win["improvement"], uv) * ben
-        return cash_model(win["capex"] * capex, b, max(1, round(case["timeline_months"] * timeline)), OM_RATE * om)["npv"]
+        b = option_benefit(case, win, win["improvement"], uv) * ben
+        return cash_model(win["capex"] * capex, b, max(1, round(case["timeline_months"] * timeline)), option_om_rate(win) * om)["npv"]
     rows = [
         ("Annual benefit: achieved gain x unit value (+/-20%)", npv_with(ben=0.8), npv_with(ben=1.2)),
         ("O&M cost (x2 / x0.5)", npv_with(om=2.0), npv_with(om=0.5)),
@@ -455,6 +491,8 @@ def sensitivity(case: dict, win: dict, uv: float | None) -> list[dict]:
 # Agents 03, 08, 09: diagnosis, roadmap, red team
 # --------------------------------------------------------------------------------------
 def diagnose(case: dict) -> tuple[str, list[str]]:
+    if case.get("diagnosis"):  # structured case: cause-vs-symptom analysis written from the case data
+        return case["diagnosis"]["core_bottleneck"], case["diagnosis"]["root_causes"]
     metric = case["baseline_metric"].lower()
     bottleneck = (f"{case['baseline_metric']} sits at {num(case['baseline_value'])} {case['baseline_unit']} and must move "
                   f"{case['target_pct']:g}% within {case['timeline_months']} months under {cad(case['budget'])}"
@@ -470,6 +508,8 @@ def diagnose(case: dict) -> tuple[str, list[str]]:
 
 
 def build_horizons(case: dict, win: dict) -> list[dict]:
+    if case.get("horizons"):
+        return case["horizons"]
     T, capex, tgt = case["timeline_months"], win["capex"], case["target_pct"]
     cut1, cut2 = max(1, round(T * 0.25)), max(2, round(T * 0.75))
     if cut2 <= cut1:
@@ -491,6 +531,8 @@ def build_horizons(case: dict, win: dict) -> list[dict]:
 
 
 def build_risks(case: dict, win: dict, scen: list[dict]) -> list[dict]:
+    if case.get("risks"):
+        return case["risks"]
     bear = next(s for s in scen if s["name"].startswith("Bear"))
     return [
         {"risk": "Delivered improvement below model", "likelihood": "Medium", "impact": "High",
@@ -539,7 +581,9 @@ def build_red_team(case: dict, opts: list[dict], win: dict, scen: list[dict], to
         return (f"{win['name']} scores {win['weighted']}/10 and is the best option within budget; NPV {cad(win['model']['npv'])}, "
                 f"payback {months(win['model']['payback_months'])}. Stage gates limit downside.")
 
+    qtext = lambda q: q["question"] if isinstance(q, dict) else q  # noqa: E731
     qs = list(case["judge_questions"]) or []
+    n_max = max(5, len(qs))
     defaults = [
         "How does your recommendation change if performance falls 15% and costs rise 20%?",
         "What is the most sensitive assumption, and what would make you reject the chosen option?",
@@ -549,9 +593,9 @@ def build_red_team(case: dict, opts: list[dict], win: dict, scen: list[dict], to
     for d in defaults:
         if len(qs) >= 5:
             break
-        if not any(k in " ".join(qs).lower() for k in d.lower().split()[2:4]):
+        if not any(k in " ".join(map(qtext, qs)).lower() for k in d.lower().split()[2:4]):
             qs.append(d)
-    return [{"question": q, "rebuttal": answer(q)} for q in qs[:5]]
+    return [{"question": qtext(q), "rebuttal": q["answer"] if isinstance(q, dict) else answer(q)} for q in qs[:n_max]]
 
 
 # --------------------------------------------------------------------------------------
@@ -561,19 +605,21 @@ def build_solution_spec(case: dict, unit_value_override: float | None = None) ->
     uv, uv_src = unit_value(case, unit_value_override)
     opts = evaluate_options(case, uv)
     win = next(o for o in opts if o["selected"])
-    benefit = annual_benefit(case, win["improvement"], uv)
+    benefit = option_benefit(case, win, win["improvement"], uv)
+    omr = option_om_rate(win)
+    stated = win.get("annual_benefit") is not None
     m = win["model"]
 
     scen = []
     for name, f in [("Bear (-15% perf., +20% capex)", BEAR), ("Base (approved plan)", {"perf": 1, "capex": 1}),
                     ("Bull (+15% perf., -10% capex)", BULL)]:
         imp = win["improvement"] * f["perf"]
-        sm = cash_model(win["capex"] * f["capex"], annual_benefit(case, imp, uv), case["timeline_months"])
+        sm = cash_model(win["capex"] * f["capex"], option_benefit(case, win, imp, uv), case["timeline_months"], omr)
         scen.append({"name": name, "improvement": imp, "capex": win["capex"] * f["capex"], "npv": sm["npv"],
                      "irr": sm["irr"], "payback_months": sm["payback_months"], "meets_target": imp >= case["target_pct"]})
     tornado = sensitivity(case, win, uv)
     lc, lc_label = levelized_cost(case, win["capex"], win["improvement"])
-    economic = case["baseline_unit"].strip().lower() in ECONOMIC_UNITS
+    economic = case["baseline_unit"].strip().lower() in ECONOMIC_UNITS or stated  # stated cash savings = profit-driven
     bottleneck, causes = diagnose(case)
     target_abs = case["baseline_value"] * case["target_pct"] / 100
 
@@ -583,11 +629,12 @@ def build_solution_spec(case: dict, unit_value_override: float | None = None) ->
         ("Capital budget", cad(case["budget"]), case["provenance"].get("budget", "case datum")),
         ("Timeline", f"{case['timeline_months']} months", case["provenance"].get("timeline_months", "case datum")),
         ("Option costs & gains", "see options table", case["provenance"].get("options", "case datum")),
-        ("Monetisation", uv_src if uv is not None else f"non-monetary metric: full target valued at {ANCHOR_SHARE:.0%} of budget per year",
-         "case datum" if "case datum" in uv_src else "assumption"),
+        ("Monetisation", "option-level annual savings stated in the case pack" if stated else
+         uv_src if uv is not None else f"non-monetary metric: full target valued at {ANCHOR_SHARE:.0%} of budget per year",
+         win["source"] if stated else "case datum" if "case datum" in uv_src else "assumption"),
         ("Discount rate (WACC)", f"{WACC:.1%}", "assumption (mid-cap industrial hurdle)"),
         ("Appraisal horizon", f"{HORIZON_YEARS} years", "assumption"),
-        ("Annual O&M", f"{OM_RATE:.0%} of capex", "assumption"),
+        ("Annual O&M", f"{cad(win['capex'] * omr)}/yr ({omr:.0%} of capex)", win["source"] if win.get("annual_opex") is not None else "assumption"),
         ("Benefit during implementation", f"{PILOT_SHARE:.0%} of full run-rate", "assumption (pilot ramp)"),
     ]
     if not win["meets_target"]:
@@ -619,6 +666,9 @@ def build_solution_spec(case: dict, unit_value_override: float | None = None) ->
                          "improvement_percent": o["improvement"], "source": o["source"],
                          "within_budget": o["within_budget"], "meets_target": o["meets_target"],
                          "npv_CAD": round(o["model"]["npv"]), "payback_months": _r(o["model"]["payback_months"]),
+                         "annual_benefit_CAD": round(option_benefit(case, o, o["improvement"], uv)),
+                         "annual_opex_CAD": round(o["capex"] * option_om_rate(o)),
+                         "five_year_net_impact_CAD": round(o["five_year_net"]), "why_not": o.get("why_not", ""),
                          "scores": o["scores"], "weighted_total": o["weighted"], "selected": o["selected"]} for o in opts],
             "winner": win["label"],
         },
@@ -626,8 +676,10 @@ def build_solution_spec(case: dict, unit_value_override: float | None = None) ->
             "label": win["label"], "name": win["name"],
             "value_proposition": (f"Option {win['label']} — {win['name']} — delivers {win['improvement']:g}% {case['target_metric'].lower()} "
                                   f"(target {case['target_pct']:g}%) for {cad(win['capex'])} of the {cad(case['budget'])} budget: "
-                                  f"NPV {cad(m['npv'])} at {WACC:.1%}, payback {months(m['payback_months'])}." + gap_note),
-            "pillars": [
+                                  f"NPV {cad(m['npv'])} at {WACC:.1%}, payback {months(m['payback_months'])}." + gap_note
+                                  + (f" Five-year net financial impact (case formula): {cad(win['five_year_net'])}"
+                                     f"{' (net savings)' if win['five_year_net'] < 0 else ''}." if stated else "")),
+            "pillars": case.get("pillars") or [
                 {"name": "Prove the constraint (H1 pilot)", "impact": f">= {case['target_pct'] * 0.3:.1f}% in pilot area"},
                 {"name": f"Scale {win['name'][:48]}", "impact": f"+{win['improvement']:g}% {case['baseline_metric'].lower()}"},
                 {"name": "Lock in with control & KPIs", "impact": f"{cad(benefit)}/yr run-rate benefit"},
@@ -635,7 +687,9 @@ def build_solution_spec(case: dict, unit_value_override: float | None = None) ->
         },
         "financial_summary": {
             "initial_investment_CAD": round(win["capex"]), "budget_CAD": round(case["budget"]),
-            "annual_run_rate_benefit_CAD": round(benefit), "annual_om_CAD": round(win["capex"] * OM_RATE),
+            "annual_run_rate_benefit_CAD": round(benefit), "annual_om_CAD": round(win["capex"] * omr),
+            "five_year_net_impact_CAD": round(win["five_year_net"]),
+            "five_year_formula": "Investment + 5 x (additional annual costs - annual savings); undiscounted; negative = net savings",
             **{f"year_{y['year']}_revenue_CAD": round(y["gross_benefit"]) for y in m["years"][:3]},
             **{f"year_{y['year']}_net_CAD": round(y["net"]) for y in m["years"]},
             "year_3_ebitda_CAD": round(m["years"][2]["net"]),
@@ -656,7 +710,15 @@ def build_solution_spec(case: dict, unit_value_override: float | None = None) ->
         "risks": build_risks(case, win, scen),
         "red_team_defense": build_red_team(case, opts, win, scen, tornado),
     }
+    pack = {k: case[k] for k in ("package", "analysis_sections", "deck", "secondary_targets") if case.get(k)}
+    if pack:
+        spec["case_pack"] = pack
     spec["intelligence"] = build_intelligence(case, spec)
+    if case.get("kpis"):
+        spec["intelligence"]["kpis"] = case["kpis"]
+    intel = spec["intelligence"]
+    for k, v in (case.get("decrypt") or {}).items():  # case-specific issue tree, hypothesis, toolkit, SCQA lines
+        intel[k] = {**intel[k], **v} if isinstance(v, dict) and isinstance(intel.get(k), dict) else v
     return spec
 
 
@@ -832,7 +894,7 @@ Cost-effectiveness: {fs['levelized_cost']} {fs['levelized_cost_unit']} — this 
         + f"\n\n**Why the recommendation:** {it['ladder_rationale']}\n\n## KPIs\n"
         + md_table(["KPI", "Baseline", "Target"], [[k["kpi"], k["baseline"], k["target"]] for k in it["kpis"]])
         + "\n\n## 30 / 60 / 90 days\n" + "\n".join(f"- **{p['window']} — {p['focus']}:** " + "; ".join(p["actions"]) for p in it["plan_30_60_90"])
-        + "\n\n## Time plan (5-hour window)\n" + md_table(["Time", "Step", "Output"], [[t["time"], t["step"], t["output"]] for t in it["time_plan"]])
+        + f"\n\n## Time plan ({case_videos.plan_hours(it['time_plan'])}-hour window)\n" + md_table(["Time", "Step", "Output"], [[t["time"], t["step"], t["output"]] for t in it["time_plan"]])
         + "\n\n## Similar competitions (directory-listed; winners not verified)\n"
         + "\n".join(f"- {c['competition']} ({c['region']}, {c['focus']})" for c in it["similar_competitions"]))
 
@@ -841,6 +903,30 @@ Cost-effectiveness: {fs['levelized_cost']} {fs['levelized_cost_unit']} — this 
         f"### [{qa.get('category', 'Q&A')}] {qa['question']}\n**A:** {qa['rebuttal']}" for qa in spec["intelligence"]["qa_bank"]))
     write_text(R / "11_Final_Quality_Control/submission_checklist.md", "# Pre-Submission Checklist\n\n" + "\n".join(
         f"- [{'x' if c['ok'] else ' '}] **{c['item']}** — {c['evidence']}" for c in spec["intelligence"]["submission_checklist"]))
+
+    pack = spec.get("case_pack")
+    if pack:  # structured case: the brief's required-analysis areas, answered
+        parts = [f"# Required Analysis — {ci['title']}\n\n> {sol['value_proposition']}"]
+        if pack.get("package"):
+            parts.append("## Recommended package\n" + md_table(
+                ["Initiative", "Purpose", "Upfront", "Annual cost", "Owner"],
+                [[p["initiative"], p["purpose"], cad(p["capex"]), cad(p["annual_opex"]), p["owner"]] for p in pack["package"]]))
+        parts.append("## Budget check and five-year net financial impact\n" + md_table(["Item", "Value"], [
+            ["Upfront investment", f"{cad(fs['initial_investment_CAD'])} of {cad(fs['budget_CAD'])} budget "
+                                   f"({cad(fs['budget_CAD'] - fs['initial_investment_CAD'])} headroom)"],
+            ["Additional annual costs", cad(fs["annual_om_CAD"])], ["Annual savings", cad(fs["annual_run_rate_benefit_CAD"])],
+            ["Formula", fs["five_year_formula"]],
+            ["Result", f"{cad(fs['initial_investment_CAD'])} + 5 x ({cad(fs['annual_om_CAD'])} - {cad(fs['annual_run_rate_benefit_CAD'])})"
+                       f" = **{cad(fs['five_year_net_impact_CAD'])}**"],
+            ["Cross-check (discounted)", f"NPV {cad(fs['npv_CAD'])} at {fs['wacc_percent']:.1f}%, payback {months(fs['payback_period_months'])}"]]))
+        parts.append("## Directions considered\n" + md_table(
+            ["Opt", "Direction", "Upfront", "Gain", "Meets target", "5-yr net impact", "Score /10"],
+            [[o["label"] + (" ✔" if o["selected"] else ""), o["name"], cad(o["capex_CAD"]), f"{o['improvement_percent']:g}%",
+              "yes" if o["meets_target"] else "no", cad(o["five_year_net_impact_CAD"]), o["weighted_total"]]
+             for o in spec["options_evaluation"]["options"]]))
+        for s in pack.get("analysis_sections", []):
+            parts.append(f"## {s['title']}\n" + "\n".join(f"- {p}" for p in s["points"]))
+        write_text(R / "04_Final_Strategy/required_analysis.md", "\n\n".join(parts))
 
 
 # --------------------------------------------------------------------------------------
@@ -1103,10 +1189,11 @@ def generate_powerpoint_deck(spec: dict) -> None:
         if bullets:
             bf = s.shapes.add_textbox(Inches(0.9), top, Inches(11.6), Inches(7.0) - top).text_frame
             bf.word_wrap = True
+            size = (17 if not table else 15) - (3 if sum(map(len, bullets)) > (700 if not table else 350) else 0)
             for i, b in enumerate(bullets):
                 p = bf.paragraphs[0] if i == 0 else bf.add_paragraph()
                 p.text = f"• {b}"
-                p.font.size, p.space_after = Pt(17 if not table else 15), Pt(8)
+                p.font.size, p.space_after = Pt(size), Pt(8)
                 p.font.color.rgb = WHITE if dark else INK
         s.notes_slide.notes_text_frame.text = note or subtitle
         notes_md.append(f"### {len(prs.slides)}. {title}\n{note or subtitle}\n")
@@ -1114,6 +1201,46 @@ def generate_powerpoint_deck(spec: dict) -> None:
     opt_rows = [[f"{o['label']}{' ✔' if o['selected'] else ''}", o["name"][:44], cad(o["capex_CAD"]), f"{o['improvement_percent']:g}%",
                  cad(o["npv_CAD"]), months(o["payback_months"]), o["weighted_total"]] for o in spec["options_evaluation"]["options"]]
     bear = spec["scenarios"][0]
+    pack = spec.get("case_pack", {})
+    if pack.get("deck"):  # the brief caps the deck: answer-first content slides built around its required areas
+        sections = {s["title"]: s for s in pack.get("analysis_sections", [])}
+        slide(ci["title"], f"Recommended package · Executive Case Simulation Team", dark=True,
+              bullets=[sol["value_proposition"]], note="Title slide (not counted). Open with the answer.")
+        slide("1. Our answer", sol["name"], dark=True, bullets=[sol["value_proposition"]]
+              + [f"{p['name']}: {p['impact']}" for p in sol["pillars"]], note=pack["deck"].get("answer_note", ""))
+        slide("2. The core issue: causes, not symptoms", "Separated using the case data", bullets=[pdg["core_bottleneck"]] + pdg["root_causes"])
+        slide("3. Recommended package", f"{cad(fs['initial_investment_CAD'])} upfront of {cad(fs['budget_CAD'])}; owners named", table=(
+            ["Initiative", "Upfront", "Annual cost", "Owner"],
+            [[p["initiative"], cad(p["capex"]), cad(p["annual_opex"]), p["owner"]] for p in pack.get("package", [])]))
+        slide("4. Directions considered: decision matrix", "Weighted criteria; budget is a hard gate", table=(
+            ["Direction", "Upfront", "Gain", "Meets target", "5-yr net", "Score /10"],
+            [[f"{o['label']}{' ✔' if o['selected'] else ''} {o['name'][:38]}", cad(o["capex_CAD"]), f"{o['improvement_percent']:g}%",
+              "yes" if o["meets_target"] else "no", cad(o["five_year_net_impact_CAD"]), o["weighted_total"]]
+             for o in spec["options_evaluation"]["options"]]),
+              bullets=[f"Option {o['label']} set aside: {o['why_not']}" for o in spec["options_evaluation"]["options"]
+                       if not o["selected"] and o["why_not"]])
+        slide("5. Budget check and five-year impact", fs["five_year_formula"], table=(
+            ["Upfront", "Added annual cost", "Annual savings", "Five-year net impact"],
+            [[f"{cad(fs['initial_investment_CAD'])} / {cad(fs['budget_CAD'])}", cad(fs["annual_om_CAD"]), cad(fs["annual_run_rate_benefit_CAD"]),
+              cad(fs["five_year_net_impact_CAD"])]]),
+              bullets=[f"{cad(fs['initial_investment_CAD'])} + 5 x ({cad(fs['annual_om_CAD'])} - {cad(fs['annual_run_rate_benefit_CAD'])}) = "
+                       f"{cad(fs['five_year_net_impact_CAD'])}"] + sections.get("Finance", {}).get("deck_points", []))
+        n = 6
+        for g in pack["deck"].get("slides", []):
+            pts = [f"{t}: {p}" if len(g["sections"]) > 1 else p for t in g["sections"] for p in sections.get(t, {}).get("deck_points", [])]
+            tbl = (["Phase", "Timing", "Focus", "Gate"], [[h["horizon"], h["timeline"], h["name"][:42], h["gate"][:55]]
+                                                         for h in spec["implementation_horizons"]]) if g.get("table") == "horizons" else None
+            slide(f"{n}. {g['title']}", g.get("subtitle", ""), bullets=pts, table=tbl, note=g.get("note", ""))
+            n += 1
+        slide(f"{n}. Key risks and mitigations", "Each risk has an owner and an early-warning trigger", table=(
+            ["Risk", "L / I", "Mitigation", "Trigger"],
+            [[r["risk"], f"{r['likelihood']} / {r['impact']}", r["mitigation"][:90], r["trigger"][:50]] for r in spec["risks"][:5]]))
+        cap = pack["deck"].get("max_content_slides")
+        if cap and n > cap:
+            raise ValueError(f"deck has {n} content slides; the case allows {cap}")
+        prs.save(str(OUTPUT_ROOT / "07_PowerPoint/Final_Presentation.pptx"))
+        write_text(OUTPUT_ROOT / "07_PowerPoint/speaker_notes.md", "\n".join(notes_md))
+        return
     slide(ci["title"], f"{ci['id']} · {ci['discipline']} · Executive Case Simulation Team", dark=True,
           bullets=[sol["value_proposition"]], note="Open with the answer, then prove it.")
     slide("1. The answer", "Recommendation in one sentence", bullets=[

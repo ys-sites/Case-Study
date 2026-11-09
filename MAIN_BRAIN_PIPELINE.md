@@ -17,9 +17,27 @@ the submission pack (booklet PDF, deck, models, three videos) → tell the user 
 | The user gives… | Input to pass |
 | :--- | :--- |
 | A case ID (`ENG-0001`…`ENG-1000`, `ENG100K-000001`…, `ENG1M-0000001`…) | the ID |
-| A file (PDF, MD, TXT, JSON) | the path |
+| A **real competition brief** (attached PDF, pasted case) | **Preferred:** transcribe it to `cases/<Short_Name>/case.json` in `structured_case_v1` format, then pass that path (template: `cases/PortFlow_Container_Terminal/case.json`) |
+| A file (PDF, MD, TXT, JSON) | the path (free text only guesses budget/target and uses parametric options: use for quick looks) |
 | A folder of case material | the folder path |
-| Pasted text only | save it to `cases/<Short_Name>/brief.md`, then pass that path |
+| Pasted text only, no time to structure it | save it to `cases/<Short_Name>/brief.md`, then pass that path |
+
+**`structured_case_v1` (how to transcribe a real brief).** The free-text parser cannot read option costs, savings or
+the brief's own formulas, so for a real case the agent does the decrypt thinking and writes it into the JSON:
+- Core fields: `id`, `title`, `brief` (condensed, no personal names), `decision_question`, `objective`, `constraints`,
+  `budget`, `timeline_months`; the primary metric as `baseline_metric/value/unit`, `target_metric`, `target_pct`
+  (express two-target cases as the binding one, e.g. year-5 utilization; keep the other in `kpis`).
+- `options` (A/B/C): `capex`, `improvement`, `annual_benefit`, `annual_opex`, `source` (`case datum` or
+  `assumption: …`), `why_not` (one line for the rejected ones).
+- `diagnosis` (cause vs symptom, with the case's own math), `pillars`, `package` (initiative, purpose, capex,
+  annual_opex, owner), `horizons`, `risks`, `kpis`, `judge_questions` (`{question, answer}`).
+- `analysis_sections`: one per required area in the brief (`title`, `points`, `deck_points`), e.g. Finance,
+  Operations & Safety, Supply Chain, Organizational Change Management, AI & Automation.
+- `decrypt`: case-specific `issue_tree`, `hypothesis`, `toolkit`, `quick_math`, `time_plan`, `scqa.complication`,
+  `what_the_case_tests` (override the generic family templates).
+- `deck`: `max_content_slides` and grouped `slides` when the brief caps the deck.
+The engine then adds the undiscounted five-year net impact (`Investment + 5 x (added annual costs - annual savings)`),
+a Package page and a Required Analysis page to the booklet, a capped answer-first deck, and both scenes to video 3.
 
 | The user wants… | Mode |
 | :--- | :--- |

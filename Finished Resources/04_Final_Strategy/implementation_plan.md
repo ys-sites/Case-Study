@@ -2,6 +2,6 @@
 
 | Horizon | Timing | Workstream | Budget | KPI | Gate |
 | --- | --- | --- | --- | --- | --- |
-| Horizon 1 | Month 1 | Baseline validation & pilot | CAD $135,200 | Pilot reaches >= 2.5% improvement; data quality verified | Go/no-go: pilot result within 20% of model, no safety incidents |
-| Horizon 2 | Month 2 | Scale-up: Comprehensive architecture replacement for cold-chain fulfillment center | CAD $405,600 | >= 6.8% improvement sustained for 4 weeks | Commissioning sign-off and availability at or above constraint |
-| Horizon 3 | Month 3 | Stabilise, optimise & hand over | CAD $135,200 | Full target 8.5% reached; O&M within CAD $33,800/yr | Benefit-tracking dashboard owned by operations |
+| Phase 1 | Months 1-3 | Co-design and pilot | CAD $2,000,000 | Pilot lanes: queue time -25%; release status shared within 1 hour; baseline rehandles measured | Slot adherence >= 80% on pilot lanes and no safety incidents |
+| Phase 2 | Months 4-9 | Scale appointments, positioning and AI advice | CAD $5,200,000 | Dwell <= 5.3 days; truck turn <= 55 min; rehandles per box -20% | AI advice accepted >= 70% with every override logged; tariff announced with 90 days notice |
+| Phase 3 | Months 10-12 | Stabilise, connect rail and customers, hand over | CAD $1,800,000 | Dwell <= 4.8 days; truck turn < 45 min; utilization on track for <= 85% at year 5 | Finance confirms savings against each owner's target; contingency released |
