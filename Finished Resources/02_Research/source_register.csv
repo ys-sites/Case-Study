@@ -1,0 +1,5 @@
+Claim ID,Metric / Claim,Primary Source,Confidence Level,Verification Status
+CLM-001,"Baseline Daily Output: 1,042.83 units/day",Case Brief Dataset,100%,Verified Case Datum
+CLM-002,Target Output: +20.7% to +24.5%,Engineering Optimization Model,95%,Calculated Model
+CLM-003,"Max CapEx: CAD $1,625,000",Official Budget Constraint,100%,Verified Case Datum
+CLM-004,Payback Period: 8.4 Months,Proforma Cash Flow Schedule,92%,Validated Proforma

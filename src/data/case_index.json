@@ -1,0 +1,702 @@
+[
+  {
+    "id": "ENG-0001",
+    "title": "Factory bottleneck redesign \u2014 Baseline improvement",
+    "discipline": "Industrial Engineering",
+    "difficulty": "Beginner",
+    "scenario_type": "Baseline improvement"
+  },
+  {
+    "id": "ENG-0002",
+    "title": "Factory bottleneck redesign \u2014 Growth surge",
+    "discipline": "Industrial Engineering",
+    "difficulty": "Intermediate",
+    "scenario_type": "Growth surge"
+  },
+  {
+    "id": "ENG-0003",
+    "title": "Factory bottleneck redesign \u2014 Budget-constrained",
+    "discipline": "Industrial Engineering",
+    "difficulty": "Intermediate",
+    "scenario_type": "Budget-constrained"
+  },
+  {
+    "id": "ENG-0004",
+    "title": "Factory bottleneck redesign \u2014 Reliability crisis",
+    "discipline": "Industrial Engineering",
+    "difficulty": "Advanced",
+    "scenario_type": "Reliability crisis"
+  },
+  {
+    "id": "ENG-0005",
+    "title": "Factory bottleneck redesign \u2014 Low-carbon transition",
+    "discipline": "Industrial Engineering",
+    "difficulty": "Expert",
+    "scenario_type": "Low-carbon transition"
+  },
+  {
+    "id": "ENG-0006",
+    "title": "Warehouse picking redesign \u2014 Baseline improvement",
+    "discipline": "Industrial Engineering",
+    "difficulty": "Beginner",
+    "scenario_type": "Baseline improvement"
+  },
+  {
+    "id": "ENG-0007",
+    "title": "Warehouse picking redesign \u2014 Growth surge",
+    "discipline": "Industrial Engineering",
+    "difficulty": "Intermediate",
+    "scenario_type": "Growth surge"
+  },
+  {
+    "id": "ENG-0008",
+    "title": "Warehouse picking redesign \u2014 Budget-constrained",
+    "discipline": "Industrial Engineering",
+    "difficulty": "Intermediate",
+    "scenario_type": "Budget-constrained"
+  },
+  {
+    "id": "ENG-0009",
+    "title": "Warehouse picking redesign \u2014 Reliability crisis",
+    "discipline": "Industrial Engineering",
+    "difficulty": "Advanced",
+    "scenario_type": "Reliability crisis"
+  },
+  {
+    "id": "ENG-0010",
+    "title": "Warehouse picking redesign \u2014 Low-carbon transition",
+    "discipline": "Industrial Engineering",
+    "difficulty": "Expert",
+    "scenario_type": "Low-carbon transition"
+  },
+  {
+    "id": "ENG-0011",
+    "title": "Hospital emergency department flow \u2014 Baseline improvement",
+    "discipline": "Industrial Engineering",
+    "difficulty": "Beginner",
+    "scenario_type": "Baseline improvement"
+  },
+  {
+    "id": "ENG-0012",
+    "title": "Hospital emergency department flow \u2014 Growth surge",
+    "discipline": "Industrial Engineering",
+    "difficulty": "Intermediate",
+    "scenario_type": "Growth surge"
+  },
+  {
+    "id": "ENG-0013",
+    "title": "Hospital emergency department flow \u2014 Budget-constrained",
+    "discipline": "Industrial Engineering",
+    "difficulty": "Intermediate",
+    "scenario_type": "Budget-constrained"
+  },
+  {
+    "id": "ENG-0014",
+    "title": "Hospital emergency department flow \u2014 Reliability crisis",
+    "discipline": "Industrial Engineering",
+    "difficulty": "Advanced",
+    "scenario_type": "Reliability crisis"
+  },
+  {
+    "id": "ENG-0015",
+    "title": "Hospital emergency department flow \u2014 Low-carbon transition",
+    "discipline": "Industrial Engineering",
+    "difficulty": "Expert",
+    "scenario_type": "Low-carbon transition"
+  },
+  {
+    "id": "ENG-0016",
+    "title": "Automotive assembly line balancing \u2014 Baseline improvement",
+    "discipline": "Industrial Engineering",
+    "difficulty": "Beginner",
+    "scenario_type": "Baseline improvement"
+  },
+  {
+    "id": "ENG-0017",
+    "title": "Automotive assembly line balancing \u2014 Growth surge",
+    "discipline": "Industrial Engineering",
+    "difficulty": "Intermediate",
+    "scenario_type": "Growth surge"
+  },
+  {
+    "id": "ENG-0018",
+    "title": "Automotive assembly line balancing \u2014 Budget-constrained",
+    "discipline": "Industrial Engineering",
+    "difficulty": "Intermediate",
+    "scenario_type": "Budget-constrained"
+  },
+  {
+    "id": "ENG-0019",
+    "title": "Automotive assembly line balancing \u2014 Reliability crisis",
+    "discipline": "Industrial Engineering",
+    "difficulty": "Advanced",
+    "scenario_type": "Reliability crisis"
+  },
+  {
+    "id": "ENG-0020",
+    "title": "Automotive assembly line balancing \u2014 Low-carbon transition",
+    "discipline": "Industrial Engineering",
+    "difficulty": "Expert",
+    "scenario_type": "Low-carbon transition"
+  },
+  {
+    "id": "ENG-0021",
+    "title": "Distribution fleet routing \u2014 Baseline improvement",
+    "discipline": "Industrial Engineering",
+    "difficulty": "Beginner",
+    "scenario_type": "Baseline improvement"
+  },
+  {
+    "id": "ENG-0022",
+    "title": "Distribution fleet routing \u2014 Growth surge",
+    "discipline": "Industrial Engineering",
+    "difficulty": "Intermediate",
+    "scenario_type": "Growth surge"
+  },
+  {
+    "id": "ENG-0023",
+    "title": "Distribution fleet routing \u2014 Budget-constrained",
+    "discipline": "Industrial Engineering",
+    "difficulty": "Intermediate",
+    "scenario_type": "Budget-constrained"
+  },
+  {
+    "id": "ENG-0024",
+    "title": "Distribution fleet routing \u2014 Reliability crisis",
+    "discipline": "Industrial Engineering",
+    "difficulty": "Advanced",
+    "scenario_type": "Reliability crisis"
+  },
+  {
+    "id": "ENG-0025",
+    "title": "Distribution fleet routing \u2014 Low-carbon transition",
+    "discipline": "Industrial Engineering",
+    "difficulty": "Expert",
+    "scenario_type": "Low-carbon transition"
+  },
+  {
+    "id": "ENG-0026",
+    "title": "Semiconductor production scheduling \u2014 Baseline improvement",
+    "discipline": "Industrial Engineering",
+    "difficulty": "Beginner",
+    "scenario_type": "Baseline improvement"
+  },
+  {
+    "id": "ENG-0027",
+    "title": "Semiconductor production scheduling \u2014 Growth surge",
+    "discipline": "Industrial Engineering",
+    "difficulty": "Intermediate",
+    "scenario_type": "Growth surge"
+  },
+  {
+    "id": "ENG-0028",
+    "title": "Semiconductor production scheduling \u2014 Budget-constrained",
+    "discipline": "Industrial Engineering",
+    "difficulty": "Intermediate",
+    "scenario_type": "Budget-constrained"
+  },
+  {
+    "id": "ENG-0029",
+    "title": "Semiconductor production scheduling \u2014 Reliability crisis",
+    "discipline": "Industrial Engineering",
+    "difficulty": "Advanced",
+    "scenario_type": "Reliability crisis"
+  },
+  {
+    "id": "ENG-0030",
+    "title": "Semiconductor production scheduling \u2014 Low-carbon transition",
+    "discipline": "Industrial Engineering",
+    "difficulty": "Expert",
+    "scenario_type": "Low-carbon transition"
+  },
+  {
+    "id": "ENG-0031",
+    "title": "Food processing waste reduction \u2014 Baseline improvement",
+    "discipline": "Industrial Engineering",
+    "difficulty": "Beginner",
+    "scenario_type": "Baseline improvement"
+  },
+  {
+    "id": "ENG-0032",
+    "title": "Food processing waste reduction \u2014 Growth surge",
+    "discipline": "Industrial Engineering",
+    "difficulty": "Intermediate",
+    "scenario_type": "Growth surge"
+  },
+  {
+    "id": "ENG-0033",
+    "title": "Food processing waste reduction \u2014 Budget-constrained",
+    "discipline": "Industrial Engineering",
+    "difficulty": "Intermediate",
+    "scenario_type": "Budget-constrained"
+  },
+  {
+    "id": "ENG-0034",
+    "title": "Food processing waste reduction \u2014 Reliability crisis",
+    "discipline": "Industrial Engineering",
+    "difficulty": "Advanced",
+    "scenario_type": "Reliability crisis"
+  },
+  {
+    "id": "ENG-0035",
+    "title": "Food processing waste reduction \u2014 Low-carbon transition",
+    "discipline": "Industrial Engineering",
+    "difficulty": "Expert",
+    "scenario_type": "Low-carbon transition"
+  },
+  {
+    "id": "ENG-0036",
+    "title": "Call center staffing optimization \u2014 Baseline improvement",
+    "discipline": "Industrial Engineering",
+    "difficulty": "Beginner",
+    "scenario_type": "Baseline improvement"
+  },
+  {
+    "id": "ENG-0037",
+    "title": "Call center staffing optimization \u2014 Growth surge",
+    "discipline": "Industrial Engineering",
+    "difficulty": "Intermediate",
+    "scenario_type": "Growth surge"
+  },
+  {
+    "id": "ENG-0038",
+    "title": "Call center staffing optimization \u2014 Budget-constrained",
+    "discipline": "Industrial Engineering",
+    "difficulty": "Intermediate",
+    "scenario_type": "Budget-constrained"
+  },
+  {
+    "id": "ENG-0039",
+    "title": "Call center staffing optimization \u2014 Reliability crisis",
+    "discipline": "Industrial Engineering",
+    "difficulty": "Advanced",
+    "scenario_type": "Reliability crisis"
+  },
+  {
+    "id": "ENG-0040",
+    "title": "Call center staffing optimization \u2014 Low-carbon transition",
+    "discipline": "Industrial Engineering",
+    "difficulty": "Expert",
+    "scenario_type": "Low-carbon transition"
+  },
+  {
+    "id": "ENG-0041",
+    "title": "Cold chain inventory redesign \u2014 Baseline improvement",
+    "discipline": "Industrial Engineering",
+    "difficulty": "Beginner",
+    "scenario_type": "Baseline improvement"
+  },
+  {
+    "id": "ENG-0042",
+    "title": "Cold chain inventory redesign \u2014 Growth surge",
+    "discipline": "Industrial Engineering",
+    "difficulty": "Intermediate",
+    "scenario_type": "Growth surge"
+  },
+  {
+    "id": "ENG-0043",
+    "title": "Cold chain inventory redesign \u2014 Budget-constrained",
+    "discipline": "Industrial Engineering",
+    "difficulty": "Intermediate",
+    "scenario_type": "Budget-constrained"
+  },
+  {
+    "id": "ENG-0044",
+    "title": "Cold chain inventory redesign \u2014 Reliability crisis",
+    "discipline": "Industrial Engineering",
+    "difficulty": "Advanced",
+    "scenario_type": "Reliability crisis"
+  },
+  {
+    "id": "ENG-0045",
+    "title": "Cold chain inventory redesign \u2014 Low-carbon transition",
+    "discipline": "Industrial Engineering",
+    "difficulty": "Expert",
+    "scenario_type": "Low-carbon transition"
+  },
+  {
+    "id": "ENG-0046",
+    "title": "Airport baggage handling capacity \u2014 Baseline improvement",
+    "discipline": "Industrial Engineering",
+    "difficulty": "Beginner",
+    "scenario_type": "Baseline improvement"
+  },
+  {
+    "id": "ENG-0047",
+    "title": "Airport baggage handling capacity \u2014 Growth surge",
+    "discipline": "Industrial Engineering",
+    "difficulty": "Intermediate",
+    "scenario_type": "Growth surge"
+  },
+  {
+    "id": "ENG-0048",
+    "title": "Airport baggage handling capacity \u2014 Budget-constrained",
+    "discipline": "Industrial Engineering",
+    "difficulty": "Intermediate",
+    "scenario_type": "Budget-constrained"
+  },
+  {
+    "id": "ENG-0049",
+    "title": "Airport baggage handling capacity \u2014 Reliability crisis",
+    "discipline": "Industrial Engineering",
+    "difficulty": "Advanced",
+    "scenario_type": "Reliability crisis"
+  },
+  {
+    "id": "ENG-0050",
+    "title": "Airport baggage handling capacity \u2014 Low-carbon transition",
+    "discipline": "Industrial Engineering",
+    "difficulty": "Expert",
+    "scenario_type": "Low-carbon transition"
+  },
+  {
+    "id": "ENG-0051",
+    "title": "Heat exchanger efficiency upgrade \u2014 Baseline improvement",
+    "discipline": "Mechanical Engineering",
+    "difficulty": "Beginner",
+    "scenario_type": "Baseline improvement"
+  },
+  {
+    "id": "ENG-0052",
+    "title": "Heat exchanger efficiency upgrade \u2014 Growth surge",
+    "discipline": "Mechanical Engineering",
+    "difficulty": "Intermediate",
+    "scenario_type": "Growth surge"
+  },
+  {
+    "id": "ENG-0053",
+    "title": "Heat exchanger efficiency upgrade \u2014 Budget-constrained",
+    "discipline": "Mechanical Engineering",
+    "difficulty": "Intermediate",
+    "scenario_type": "Budget-constrained"
+  },
+  {
+    "id": "ENG-0054",
+    "title": "Heat exchanger efficiency upgrade \u2014 Reliability crisis",
+    "discipline": "Mechanical Engineering",
+    "difficulty": "Advanced",
+    "scenario_type": "Reliability crisis"
+  },
+  {
+    "id": "ENG-0055",
+    "title": "Heat exchanger efficiency upgrade \u2014 Low-carbon transition",
+    "discipline": "Mechanical Engineering",
+    "difficulty": "Expert",
+    "scenario_type": "Low-carbon transition"
+  },
+  {
+    "id": "ENG-0056",
+    "title": "Wind turbine gearbox reliability \u2014 Baseline improvement",
+    "discipline": "Mechanical Engineering",
+    "difficulty": "Beginner",
+    "scenario_type": "Baseline improvement"
+  },
+  {
+    "id": "ENG-0057",
+    "title": "Wind turbine gearbox reliability \u2014 Growth surge",
+    "discipline": "Mechanical Engineering",
+    "difficulty": "Intermediate",
+    "scenario_type": "Growth surge"
+  },
+  {
+    "id": "ENG-0058",
+    "title": "Wind turbine gearbox reliability \u2014 Budget-constrained",
+    "discipline": "Mechanical Engineering",
+    "difficulty": "Intermediate",
+    "scenario_type": "Budget-constrained"
+  },
+  {
+    "id": "ENG-0059",
+    "title": "Wind turbine gearbox reliability \u2014 Reliability crisis",
+    "discipline": "Mechanical Engineering",
+    "difficulty": "Advanced",
+    "scenario_type": "Reliability crisis"
+  },
+  {
+    "id": "ENG-0060",
+    "title": "Wind turbine gearbox reliability \u2014 Low-carbon transition",
+    "discipline": "Mechanical Engineering",
+    "difficulty": "Expert",
+    "scenario_type": "Low-carbon transition"
+  },
+  {
+    "id": "ENG-0061",
+    "title": "HVAC air handling redesign \u2014 Baseline improvement",
+    "discipline": "Mechanical Engineering",
+    "difficulty": "Beginner",
+    "scenario_type": "Baseline improvement"
+  },
+  {
+    "id": "ENG-0062",
+    "title": "HVAC air handling redesign \u2014 Growth surge",
+    "discipline": "Mechanical Engineering",
+    "difficulty": "Intermediate",
+    "scenario_type": "Growth surge"
+  },
+  {
+    "id": "ENG-0063",
+    "title": "HVAC air handling redesign \u2014 Budget-constrained",
+    "discipline": "Mechanical Engineering",
+    "difficulty": "Intermediate",
+    "scenario_type": "Budget-constrained"
+  },
+  {
+    "id": "ENG-0064",
+    "title": "HVAC air handling redesign \u2014 Reliability crisis",
+    "discipline": "Mechanical Engineering",
+    "difficulty": "Advanced",
+    "scenario_type": "Reliability crisis"
+  },
+  {
+    "id": "ENG-0065",
+    "title": "HVAC air handling redesign \u2014 Low-carbon transition",
+    "discipline": "Mechanical Engineering",
+    "difficulty": "Expert",
+    "scenario_type": "Low-carbon transition"
+  },
+  {
+    "id": "ENG-0066",
+    "title": "Hydraulic press energy reduction \u2014 Baseline improvement",
+    "discipline": "Mechanical Engineering",
+    "difficulty": "Beginner",
+    "scenario_type": "Baseline improvement"
+  },
+  {
+    "id": "ENG-0067",
+    "title": "Hydraulic press energy reduction \u2014 Growth surge",
+    "discipline": "Mechanical Engineering",
+    "difficulty": "Intermediate",
+    "scenario_type": "Growth surge"
+  },
+  {
+    "id": "ENG-0068",
+    "title": "Hydraulic press energy reduction \u2014 Budget-constrained",
+    "discipline": "Mechanical Engineering",
+    "difficulty": "Intermediate",
+    "scenario_type": "Budget-constrained"
+  },
+  {
+    "id": "ENG-0069",
+    "title": "Hydraulic press energy reduction \u2014 Reliability crisis",
+    "discipline": "Mechanical Engineering",
+    "difficulty": "Advanced",
+    "scenario_type": "Reliability crisis"
+  },
+  {
+    "id": "ENG-0070",
+    "title": "Hydraulic press energy reduction \u2014 Low-carbon transition",
+    "discipline": "Mechanical Engineering",
+    "difficulty": "Expert",
+    "scenario_type": "Low-carbon transition"
+  },
+  {
+    "id": "ENG-0071",
+    "title": "Compressor vibration mitigation \u2014 Baseline improvement",
+    "discipline": "Mechanical Engineering",
+    "difficulty": "Beginner",
+    "scenario_type": "Baseline improvement"
+  },
+  {
+    "id": "ENG-0072",
+    "title": "Compressor vibration mitigation \u2014 Growth surge",
+    "discipline": "Mechanical Engineering",
+    "difficulty": "Intermediate",
+    "scenario_type": "Growth surge"
+  },
+  {
+    "id": "ENG-0073",
+    "title": "Compressor vibration mitigation \u2014 Budget-constrained",
+    "discipline": "Mechanical Engineering",
+    "difficulty": "Intermediate",
+    "scenario_type": "Budget-constrained"
+  },
+  {
+    "id": "ENG-0074",
+    "title": "Compressor vibration mitigation \u2014 Reliability crisis",
+    "discipline": "Mechanical Engineering",
+    "difficulty": "Advanced",
+    "scenario_type": "Reliability crisis"
+  },
+  {
+    "id": "ENG-0075",
+    "title": "Compressor vibration mitigation \u2014 Low-carbon transition",
+    "discipline": "Mechanical Engineering",
+    "difficulty": "Expert",
+    "scenario_type": "Low-carbon transition"
+  },
+  {
+    "id": "ENG-0076",
+    "title": "Automotive braking thermal design \u2014 Baseline improvement",
+    "discipline": "Mechanical Engineering",
+    "difficulty": "Beginner",
+    "scenario_type": "Baseline improvement"
+  },
+  {
+    "id": "ENG-0077",
+    "title": "Automotive braking thermal design \u2014 Growth surge",
+    "discipline": "Mechanical Engineering",
+    "difficulty": "Intermediate",
+    "scenario_type": "Growth surge"
+  },
+  {
+    "id": "ENG-0078",
+    "title": "Automotive braking thermal design \u2014 Budget-constrained",
+    "discipline": "Mechanical Engineering",
+    "difficulty": "Intermediate",
+    "scenario_type": "Budget-constrained"
+  },
+  {
+    "id": "ENG-0079",
+    "title": "Automotive braking thermal design \u2014 Reliability crisis",
+    "discipline": "Mechanical Engineering",
+    "difficulty": "Advanced",
+    "scenario_type": "Reliability crisis"
+  },
+  {
+    "id": "ENG-0080",
+    "title": "Automotive braking thermal design \u2014 Low-carbon transition",
+    "discipline": "Mechanical Engineering",
+    "difficulty": "Expert",
+    "scenario_type": "Low-carbon transition"
+  },
+  {
+    "id": "ENG-0081",
+    "title": "Pump impeller optimization \u2014 Baseline improvement",
+    "discipline": "Mechanical Engineering",
+    "difficulty": "Beginner",
+    "scenario_type": "Baseline improvement"
+  },
+  {
+    "id": "ENG-0082",
+    "title": "Pump impeller optimization \u2014 Growth surge",
+    "discipline": "Mechanical Engineering",
+    "difficulty": "Intermediate",
+    "scenario_type": "Growth surge"
+  },
+  {
+    "id": "ENG-0083",
+    "title": "Pump impeller optimization \u2014 Budget-constrained",
+    "discipline": "Mechanical Engineering",
+    "difficulty": "Intermediate",
+    "scenario_type": "Budget-constrained"
+  },
+  {
+    "id": "ENG-0084",
+    "title": "Pump impeller optimization \u2014 Reliability crisis",
+    "discipline": "Mechanical Engineering",
+    "difficulty": "Advanced",
+    "scenario_type": "Reliability crisis"
+  },
+  {
+    "id": "ENG-0085",
+    "title": "Pump impeller optimization \u2014 Low-carbon transition",
+    "discipline": "Mechanical Engineering",
+    "difficulty": "Expert",
+    "scenario_type": "Low-carbon transition"
+  },
+  {
+    "id": "ENG-0086",
+    "title": "Industrial robot gripper redesign \u2014 Baseline improvement",
+    "discipline": "Mechanical Engineering",
+    "difficulty": "Beginner",
+    "scenario_type": "Baseline improvement"
+  },
+  {
+    "id": "ENG-0087",
+    "title": "Industrial robot gripper redesign \u2014 Growth surge",
+    "discipline": "Mechanical Engineering",
+    "difficulty": "Intermediate",
+    "scenario_type": "Growth surge"
+  },
+  {
+    "id": "ENG-0088",
+    "title": "Industrial robot gripper redesign \u2014 Budget-constrained",
+    "discipline": "Mechanical Engineering",
+    "difficulty": "Intermediate",
+    "scenario_type": "Budget-constrained"
+  },
+  {
+    "id": "ENG-0089",
+    "title": "Industrial robot gripper redesign \u2014 Reliability crisis",
+    "discipline": "Mechanical Engineering",
+    "difficulty": "Advanced",
+    "scenario_type": "Reliability crisis"
+  },
+  {
+    "id": "ENG-0090",
+    "title": "Industrial robot gripper redesign \u2014 Low-carbon transition",
+    "discipline": "Mechanical Engineering",
+    "difficulty": "Expert",
+    "scenario_type": "Low-carbon transition"
+  },
+  {
+    "id": "ENG-0091",
+    "title": "Refrigeration system retrofit \u2014 Baseline improvement",
+    "discipline": "Mechanical Engineering",
+    "difficulty": "Beginner",
+    "scenario_type": "Baseline improvement"
+  },
+  {
+    "id": "ENG-0092",
+    "title": "Refrigeration system retrofit \u2014 Growth surge",
+    "discipline": "Mechanical Engineering",
+    "difficulty": "Intermediate",
+    "scenario_type": "Growth surge"
+  },
+  {
+    "id": "ENG-0093",
+    "title": "Refrigeration system retrofit \u2014 Budget-constrained",
+    "discipline": "Mechanical Engineering",
+    "difficulty": "Intermediate",
+    "scenario_type": "Budget-constrained"
+  },
+  {
+    "id": "ENG-0094",
+    "title": "Refrigeration system retrofit \u2014 Reliability crisis",
+    "discipline": "Mechanical Engineering",
+    "difficulty": "Advanced",
+    "scenario_type": "Reliability crisis"
+  },
+  {
+    "id": "ENG-0095",
+    "title": "Refrigeration system retrofit \u2014 Low-carbon transition",
+    "discipline": "Mechanical Engineering",
+    "difficulty": "Expert",
+    "scenario_type": "Low-carbon transition"
+  },
+  {
+    "id": "ENG-0096",
+    "title": "Conveyor drive life extension \u2014 Baseline improvement",
+    "discipline": "Mechanical Engineering",
+    "difficulty": "Beginner",
+    "scenario_type": "Baseline improvement"
+  },
+  {
+    "id": "ENG-0097",
+    "title": "Conveyor drive life extension \u2014 Growth surge",
+    "discipline": "Mechanical Engineering",
+    "difficulty": "Intermediate",
+    "scenario_type": "Growth surge"
+  },
+  {
+    "id": "ENG-0098",
+    "title": "Conveyor drive life extension \u2014 Budget-constrained",
+    "discipline": "Mechanical Engineering",
+    "difficulty": "Intermediate",
+    "scenario_type": "Budget-constrained"
+  },
+  {
+    "id": "ENG-0099",
+    "title": "Conveyor drive life extension \u2014 Reliability crisis",
+    "discipline": "Mechanical Engineering",
+    "difficulty": "Advanced",
+    "scenario_type": "Reliability crisis"
+  },
+  {
+    "id": "ENG-0100",
+    "title": "Conveyor drive life extension \u2014 Low-carbon transition",
+    "discipline": "Mechanical Engineering",
+    "difficulty": "Expert",
+    "scenario_type": "Low-carbon transition"
+  }
+]

@@ -15,6 +15,8 @@ import {
   Sun,
   Moon,
   Menu,
+  Trophy,
+  Cpu,
 } from 'lucide-react';
 import { ViewMode, EditorSettings } from '../types';
 
@@ -40,6 +42,8 @@ interface HeaderProps {
   onOpenTimer: () => void;
   isTimerRunning: boolean;
   timerFormatted: string;
+  onOpenCaseSimulator?: () => void;
+  onOpenGlobalCompetitions?: () => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -64,6 +68,8 @@ export const Header: React.FC<HeaderProps> = ({
   onOpenTimer,
   isTimerRunning,
   timerFormatted,
+  onOpenCaseSimulator,
+  onOpenGlobalCompetitions,
 }) => {
   // If in Zen Mode, header is minimal floating or hidden unless hovered
   if (zenMode) {
@@ -232,6 +238,30 @@ export const Header: React.FC<HeaderProps> = ({
         >
           {isDark ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
         </button>
+
+        {/* Global Competitions Directory */}
+        {onOpenGlobalCompetitions && (
+          <button
+            onClick={onOpenGlobalCompetitions}
+            className="flex items-center gap-1.5 px-2.5 py-1 text-xs font-medium rounded-md border border-amber-500/30 bg-amber-500/10 text-amber-700 dark:text-amber-400 hover:bg-amber-500/20 transition-colors whitespace-nowrap"
+            title="Browse 132+ Global Case Competitions"
+          >
+            <Trophy className="w-3.5 h-3.5" />
+            <span className="hidden sm:inline">Competitions</span>
+          </button>
+        )}
+
+        {/* Case Simulator & 14-Agent System */}
+        {onOpenCaseSimulator && (
+          <button
+            onClick={onOpenCaseSimulator}
+            className="flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold rounded-md bg-amber-500 hover:bg-amber-600 text-white shadow-xs transition-colors whitespace-nowrap"
+            title="Open Case Simulator & 14-Agent Solution Factory"
+          >
+            <Cpu className="w-3.5 h-3.5" />
+            <span>Simulator</span>
+          </button>
+        )}
 
         {/* Zen Mode Button */}
         <button

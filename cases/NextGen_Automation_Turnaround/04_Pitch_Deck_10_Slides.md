@@ -90,3 +90,4 @@
   2. Finalize IoT gateway hardware specs with contract manufacturer.
   3. Secure commitments from top 5 pilot enterprise accounts.
 - **Final Ask**: Board approval for the initial \$14.2M capital allocation.
+

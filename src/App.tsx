@@ -20,6 +20,8 @@ import { ExportModal } from './components/ExportModal';
 import { TemplatesModal } from './components/TemplatesModal';
 import { SnapshotDrawer } from './components/SnapshotDrawer';
 import { ShortcutsModal } from './components/ShortcutsModal';
+import { CaseSimulatorModal } from './components/CaseSimulatorModal';
+import { GlobalCompetitionsModal } from './components/GlobalCompetitionsModal';
 
 const DEFAULT_SETTINGS: EditorSettings = {
   fontFamily: 'editorial',
@@ -96,6 +98,8 @@ export default function App() {
   const [templatesOpen, setTemplatesOpen] = useState(false);
   const [snapshotsOpen, setSnapshotsOpen] = useState(false);
   const [shortcutsOpen, setShortcutsOpen] = useState(false);
+  const [caseSimulatorOpen, setCaseSimulatorOpen] = useState(false);
+  const [globalCompetitionsOpen, setGlobalCompetitionsOpen] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
   // Focus Timer state
@@ -375,6 +379,8 @@ export default function App() {
         onOpenTimer={() => setTimerModalOpen(true)}
         isTimerRunning={isTimerRunning}
         timerFormatted={formattedTimer}
+        onOpenCaseSimulator={() => setCaseSimulatorOpen(true)}
+        onOpenGlobalCompetitions={() => setGlobalCompetitionsOpen(true)}
       />
 
       {/* Main Workspace Frame */}
@@ -484,6 +490,22 @@ export default function App() {
       <ShortcutsModal
         isOpen={shortcutsOpen}
         onClose={() => setShortcutsOpen(false)}
+      />
+
+      <CaseSimulatorModal
+        isOpen={caseSimulatorOpen}
+        onClose={() => setCaseSimulatorOpen(false)}
+        onLoadCaseIntoEditor={(markdown) => {
+          handleUpdateContent(markdown);
+          handleUpdateTitle('Championship Strategy Proposal');
+          setToastMessage('Case solution loaded into editor');
+          setTimeout(() => setToastMessage(null), 3000);
+        }}
+      />
+
+      <GlobalCompetitionsModal
+        isOpen={globalCompetitionsOpen}
+        onClose={() => setGlobalCompetitionsOpen(false)}
       />
 
       {/* Floating Status / Keyboard Help Pill on Desktop */}

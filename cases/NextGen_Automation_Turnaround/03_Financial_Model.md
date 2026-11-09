@@ -66,3 +66,4 @@ $$\text{Breakeven Installed Accounts} = \frac{\text{Fixed Program Investment}}{\
 | **Net Present Value (NPV @ 9.5%)** | \$18.4M | \$44.8M | \$79.1M |
 | **Internal Rate of Return (IRR)** | 16.4% | **28.4%** | 41.2% |
 | **Payback Period** | 26.2 months | **18.4 months** | 13.8 months |
+

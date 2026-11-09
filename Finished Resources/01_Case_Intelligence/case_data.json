@@ -1,0 +1,13 @@
+{
+  "baseline_metric": "Current daily output",
+  "baseline_value": 1042.83,
+  "baseline_unit": "units/day",
+  "target_metric": "Target output improvement",
+  "target_value": 20.7,
+  "target_unit": "%",
+  "indicative_demand_index": 3065,
+  "capital_budget_CAD": 1625000,
+  "timeline_months": 12,
+  "demand_growth_if_applicable_percent": 0,
+  "carbon_cut_requirement_if_applicable_percent": 0
+}

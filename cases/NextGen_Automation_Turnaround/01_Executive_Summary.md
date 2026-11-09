@@ -56,3 +56,4 @@ We recommend a decisive operational pivot from one-off transactional machinery s
 - **Month 07 - 12**: General commercial availability across North American market; initiate distributor annuity sharing.
 - **Month 13 - 24**: Scale installed base to 500 active telemetry contracts; reach financial breakeven.
 - **Month 25 - 36**: Expand into European and Mexican assembly plants; reach \$42.5M run-rate EBITDA.
+

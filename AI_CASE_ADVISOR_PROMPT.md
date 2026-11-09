@@ -26,3 +26,4 @@ When presented with case materials, execute in this exact sequence:
 3. **Financials**: Build the 3-year proforma P&L, CapEx schedule, and 3-scenario sensitivity table.
 4. **Operations**: Map the 3-horizon implementation roadmap, leading/lagging KPIs, and 2x2 risk matrix.
 5. **Presentation & Defense**: Structure the 10-slide deck and formulate the top 5 adversarial judge questions with data-backed rebuttals.
+

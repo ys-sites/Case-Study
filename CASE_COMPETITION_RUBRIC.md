@@ -22,3 +22,4 @@ This rubric reflects the unified judging standards of top-tier collegiate, natio
 - **80 – 89 (Finalist Tier)**: Solid strategic analysis, sound financial modeling with minor gaps in unit economics, structured implementation plan, and good presentation flow.
 - **70 – 79 (Competitor Tier)**: Competent understanding of the case; identifiable strategy but lacks quantitative depth or relies on optimistic financial assumptions.
 - **< 70 (Elimination Tier)**: Superficial diagnosis, critical arithmetic errors, generic recommendations, or failure to address core board mandates.
+
