@@ -32,7 +32,7 @@ export const CaseSimulatorModal: React.FC<CaseSimulatorModalProps> = ({
   onClose,
   onLoadCaseIntoEditor,
 }) => {
-  const [activeTab, setActiveTab] = useState<'solution' | 'financials' | 'defense' | 'video' | 'agents' | 'architecture'>('solution');
+  const [activeTab, setActiveTab] = useState<'solution' | 'pinterest' | 'financials' | 'defense' | 'video' | 'agents' | 'architecture'>('pinterest');
   const [selectedCaseId, setSelectedCaseId] = useState(solutionData.case_identification.id);
 
   // Financial Interactive Simulator State
@@ -115,9 +115,10 @@ export const CaseSimulatorModal: React.FC<CaseSimulatorModalProps> = ({
         </div>
 
         {/* Tab Navigation */}
-        <div className="flex border-b border-stone-200 dark:border-stone-800 bg-stone-100 dark:bg-stone-900 px-6 gap-2 pt-2">
+        <div className="flex border-b border-stone-200 dark:border-stone-800 bg-stone-100 dark:bg-stone-900 px-6 gap-2 pt-2 overflow-x-auto">
           {[
-            { id: 'solution', label: 'Winning Solution', icon: Award },
+            { id: 'pinterest', label: 'Pinterest Case Study', icon: BookOpen },
+            { id: 'solution', label: 'Executive Summary', icon: Award },
             { id: 'financials', label: 'Financial Simulator', icon: Calculator },
             { id: 'defense', label: 'Judge Q&A Defense', icon: ShieldAlert },
             { id: 'video', label: '2-Min Video & Deck', icon: Video },
@@ -144,7 +145,420 @@ export const CaseSimulatorModal: React.FC<CaseSimulatorModalProps> = ({
         </div>
 
         {/* Tab Content */}
-        <div className="flex-1 overflow-y-auto p-6 bg-white dark:bg-stone-950">
+        <div className="flex-1 overflow-y-auto p-6 bg-stone-50 dark:bg-stone-950">
+          {activeTab === 'pinterest' && (
+            <div className="space-y-6 max-w-5xl mx-auto font-sans">
+              {/* Editorial Top Brand Header */}
+              <div className="p-6 rounded-2xl bg-emerald-950 text-white border border-emerald-800 shadow-xl relative overflow-hidden">
+                <div className="absolute top-0 right-0 w-96 h-96 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
+                <div className="flex flex-wrap items-center gap-2 mb-3">
+                  <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                    CASE STUDY 01: DIGITAL TRANSFORMATION
+                  </span>
+                  <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-white/10 text-stone-200">
+                    NORTHSTAR RETAIL GROUP (CAD $1.2B)
+                  </span>
+                  <span className="px-2.5 py-0.5 rounded-full text-[11px] font-mono text-emerald-400 bg-emerald-900/50">
+                    CAPEX: CAD $13.0M / $20.0M CEILING
+                  </span>
+                </div>
+                <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-white mb-2">
+                  Project ReFlow: Digital Supply Chain Transformation
+                </h2>
+                <p className="text-xs sm:text-sm text-stone-300 max-w-3xl leading-relaxed">
+                  A deterministic turnaround blueprint for NorthStar Retail Group's 3-DC fulfillment network. 
+                  By deploying Portfolio A+B (Warehouse Robotics + Intelligent Transport Optimization), NorthStar slashes 
+                  late deliveries from 8.5% to 3.5%, cuts carbon emissions by 25.0%, and captures CAD $8.08M in annual net savings 
+                  with +CAD $7.094M in 3-year NPV at 10% WACC while preserving CAD $7.00M in contingency cash reserves.
+                </p>
+
+                {/* Quick PDF & Model Download Links */}
+                <div className="mt-5 pt-4 border-t border-emerald-800/80 flex flex-wrap gap-3">
+                  <a
+                    href="./cases/Project_ReFlow/Project_ReFlow_Master_Strategy_Blueprint.pdf"
+                    download="Project_ReFlow_Master_Strategy_Blueprint.pdf"
+                    className="px-3.5 py-2 rounded-xl text-xs font-semibold bg-emerald-500 hover:bg-emerald-400 text-stone-950 transition flex items-center gap-2 shadow-sm"
+                  >
+                    <Download className="w-3.5 h-3.5" />
+                    Download Strategy Blueprint (PDF)
+                  </a>
+                  <a
+                    href="./cases/Project_ReFlow/Project_ReFlow_Presentation_Deck.pdf"
+                    download="Project_ReFlow_Presentation_Deck.pdf"
+                    className="px-3.5 py-2 rounded-xl text-xs font-semibold bg-white/10 hover:bg-white/20 text-white border border-white/20 transition flex items-center gap-2"
+                  >
+                    <PresentationIcon className="w-3.5 h-3.5" />
+                    Download Executive Deck (PDF)
+                  </a>
+                  <a
+                    href="./cases/Project_ReFlow/Project_ReFlow_Financial_Model.xlsx"
+                    download="Project_ReFlow_Financial_Model.xlsx"
+                    className="px-3.5 py-2 rounded-xl text-xs font-semibold bg-white/10 hover:bg-white/20 text-white border border-white/20 transition flex items-center gap-2"
+                  >
+                    <Calculator className="w-3.5 h-3.5" />
+                    Excel Financial Model (.xlsx)
+                  </a>
+                </div>
+              </div>
+
+              {/* 4 Pinterest Big Metric Stat Cards */}
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-3.5">
+                {[
+                  {
+                    value: 'CAD $13.0M',
+                    label: 'CAPITAL ALLOCATION',
+                    sub: 'Leaves $7.0M in Cash Reserve',
+                    color: 'text-emerald-700 dark:text-emerald-400',
+                    border: 'border-emerald-500/40',
+                  },
+                  {
+                    value: 'CAD $8.08M',
+                    label: 'ANNUAL NET SAVINGS',
+                    sub: 'Net of OpEx and 15% Overlap',
+                    color: 'text-emerald-600 dark:text-emerald-300',
+                    border: 'border-emerald-500/40',
+                  },
+                  {
+                    value: '+$7.094M',
+                    label: '3-YEAR NPV @ 10%',
+                    sub: 'Hurdle Cleared (137% ROI)',
+                    color: 'text-emerald-700 dark:text-emerald-400',
+                    border: 'border-emerald-500/40',
+                  },
+                  {
+                    value: '19.3 Mo',
+                    label: 'PAYBACK HORIZON',
+                    sub: '1.61 Years Simple Payback',
+                    color: 'text-amber-600 dark:text-amber-400',
+                    border: 'border-amber-500/40',
+                  },
+                ].map((stat, i) => (
+                  <div
+                    key={i}
+                    className={`p-4 rounded-2xl bg-white dark:bg-stone-900 border ${stat.border} shadow-sm flex flex-col justify-between`}
+                  >
+                    <span className="text-[10px] font-bold tracking-wider text-stone-500 dark:text-stone-400 uppercase">
+                      {stat.label}
+                    </span>
+                    <div className={`text-2xl font-black ${stat.color} my-1`}>
+                      {stat.value}
+                    </div>
+                    <span className="text-[11px] text-stone-600 dark:text-stone-400">
+                      {stat.sub}
+                    </span>
+                  </div>
+                ))}
+              </div>
+
+              {/* 2 Visual Circular Gauges & Operational Profile */}
+              <div className="p-5 rounded-2xl bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 shadow-sm grid grid-cols-1 md:grid-cols-3 gap-6 items-center">
+                {/* Gauge 1: Late Delivery */}
+                <div className="flex flex-col items-center text-center">
+                  <div className="relative w-28 h-28 flex items-center justify-center">
+                    <svg className="w-full h-full -rotate-90" viewBox="0 0 100 100">
+                      <circle cx="50" cy="50" r="40" className="text-stone-200 dark:text-stone-800 stroke-current" strokeWidth="8" fill="transparent" />
+                      <circle
+                        cx="50"
+                        cy="50"
+                        r="40"
+                        className="text-emerald-600 dark:text-emerald-400 stroke-current"
+                        strokeWidth="8"
+                        strokeDasharray="251.2"
+                        strokeDashoffset="103"
+                        strokeLinecap="round"
+                        fill="transparent"
+                      />
+                    </svg>
+                    <div className="absolute flex flex-col items-center">
+                      <span className="text-xl font-extrabold text-stone-900 dark:text-stone-100">3.5%</span>
+                      <span className="text-[9px] uppercase font-bold text-stone-500">Target Met</span>
+                    </div>
+                  </div>
+                  <span className="text-xs font-bold text-emerald-800 dark:text-emerald-300 mt-2">LATE DELIVERY RATE</span>
+                  <span className="text-[11px] text-stone-500">Down from 8.5% baseline (Max 5.0 pt cap)</span>
+                </div>
+
+                {/* Gauge 2: Carbon Decarbonization */}
+                <div className="flex flex-col items-center text-center">
+                  <div className="relative w-28 h-28 flex items-center justify-center">
+                    <svg className="w-full h-full -rotate-90" viewBox="0 0 100 100">
+                      <circle cx="50" cy="50" r="40" className="text-stone-200 dark:text-stone-800 stroke-current" strokeWidth="8" fill="transparent" />
+                      <circle
+                        cx="50"
+                        cy="50"
+                        r="40"
+                        className="text-emerald-500 dark:text-emerald-300 stroke-current"
+                        strokeWidth="8"
+                        strokeDasharray="251.2"
+                        strokeDashoffset="63"
+                        strokeLinecap="round"
+                        fill="transparent"
+                      />
+                    </svg>
+                    <div className="absolute flex flex-col items-center">
+                      <span className="text-xl font-extrabold text-stone-900 dark:text-stone-100">-25.0%</span>
+                      <span className="text-[9px] uppercase font-bold text-stone-500">Target: -20%</span>
+                    </div>
+                  </div>
+                  <span className="text-xs font-bold text-emerald-800 dark:text-emerald-300 mt-2">LOGISTICS GHG REDUCTION</span>
+                  <span className="text-[11px] text-stone-500">Saves 4,500 tonnes CO2e/yr via routing</span>
+                </div>
+
+                {/* Operational Profile */}
+                <div className="border-t md:border-t-0 md:border-l border-stone-200 dark:border-stone-800 pt-4 md:pt-0 md:pl-6 space-y-2 text-xs">
+                  <h4 className="font-bold text-stone-900 dark:text-stone-100 uppercase tracking-wider text-[11px]">
+                    Current Network Realities
+                  </h4>
+                  <div className="flex justify-between py-1 border-b border-stone-100 dark:border-stone-800">
+                    <span className="text-stone-500">Annual Shipped Volume:</span>
+                    <span className="font-mono font-bold text-stone-800 dark:text-stone-200">12,000,000 Orders</span>
+                  </div>
+                  <div className="flex justify-between py-1 border-b border-stone-100 dark:border-stone-800">
+                    <span className="text-stone-500">Baseline Logistics Cost:</span>
+                    <span className="font-mono font-bold text-stone-800 dark:text-stone-200">$7.20 / Order ($86.4M)</span>
+                  </div>
+                  <div className="flex justify-between py-1 border-b border-stone-100 dark:border-stone-800">
+                    <span className="text-stone-500">Trailer Cube Utilization:</span>
+                    <span className="font-mono font-bold text-amber-600 dark:text-amber-400">62.0% (Sub-optimal)</span>
+                  </div>
+                  <div className="flex justify-between py-1">
+                    <span className="text-stone-500">Fulfillment Error Rate:</span>
+                    <span className="font-mono font-bold text-rose-600 dark:text-rose-400">2.4% (288,000 orders)</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Exhaustive 7-Portfolio Master Decision Matrix */}
+              <div className="p-5 rounded-2xl bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 shadow-sm overflow-hidden">
+                <div className="flex items-center justify-between mb-3">
+                  <div>
+                    <h3 className="text-sm font-bold text-stone-900 dark:text-stone-100">
+                      Exhaustive 7-Portfolio Valuation Matrix (Budget &le; CAD $20.0M)
+                    </h3>
+                    <p className="text-[11px] text-stone-500">
+                      Official 15% overlap deductions applied to secondary initiatives
+                    </p>
+                  </div>
+                  <span className="px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
+                    Winner: Portfolio A+B
+                  </span>
+                </div>
+
+                <div className="overflow-x-auto">
+                  <table className="w-full text-xs text-left">
+                    <thead>
+                      <tr className="bg-emerald-950 text-white text-[11px] uppercase tracking-wider">
+                        <th className="py-2.5 px-3 rounded-l-lg">Portfolio Candidate</th>
+                        <th className="py-2.5 px-2">Capex</th>
+                        <th className="py-2.5 px-2">Gross Sav</th>
+                        <th className="py-2.5 px-2">Net Sav/Yr</th>
+                        <th className="py-2.5 px-2">3-Yr NPV</th>
+                        <th className="py-2.5 px-2">Payback</th>
+                        <th className="py-2.5 px-2">Late %</th>
+                        <th className="py-2.5 px-2">CO2 Cut</th>
+                        <th className="py-2.5 px-3 rounded-r-lg">Status</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-stone-100 dark:divide-stone-800">
+                      {[
+                        { name: 'Option A (Warehouse)', capex: '$8.0M', gross: '$6.20M', net: '$4.90M', npv: '+$4.186M', pb: '1.63 Yrs', late: '6.5%', co2: '8.0%', status: 'FAIL', isWin: false },
+                        { name: 'Option B (Transport)', capex: '$5.0M', gross: '$4.80M', net: '$3.90M', npv: '+$4.699M', pb: '1.28 Yrs', late: '5.3%', co2: '18.0%', status: 'FAIL', isWin: false },
+                        { name: 'Option C (Micro-Hubs)', capex: '$12.0M', gross: '$7.00M', net: '$4.80M', npv: '-$0.063M', pb: '2.50 Yrs', late: '6.0%', co2: '12.0%', status: 'FAIL', isWin: false },
+                        { name: 'PORTFOLIO A + B (WINNER)', capex: '$13.0M', gross: '$10.28M', net: '$8.08M', npv: '+$7.094M', pb: '1.61 Yrs', late: '3.5%', co2: '25.0%', status: 'PASS', isWin: true },
+                        { name: 'Portfolio A + C', capex: '$20.0M', gross: '$12.15M', net: '$7.84M', npv: '-$0.503M', pb: '2.55 Yrs', late: '4.0%', co2: '20.0%', status: 'FAIL', isWin: false },
+                        { name: 'Portfolio B + C', capex: '$17.0M', gross: '$11.32M', net: '$8.22M', npv: '+$3.442M', pb: '2.07 Yrs', late: '3.5%', co2: '25.0%', status: 'FAIL', isWin: false },
+                        { name: 'Portfolio A + B + C', capex: '$25.0M', gross: '--', net: '--', npv: '--', pb: '--', late: '--', co2: '--', status: 'EXCEED', isWin: false },
+                      ].map((row, idx) => (
+                        <tr
+                          key={idx}
+                          className={
+                            row.isWin
+                              ? 'bg-emerald-500/10 font-bold text-emerald-900 dark:text-emerald-200 border-y-2 border-emerald-500'
+                              : 'text-stone-700 dark:text-stone-300 hover:bg-stone-50 dark:hover:bg-stone-900'
+                          }
+                        >
+                          <td className="py-2.5 px-3 font-medium">{row.name}</td>
+                          <td className="py-2.5 px-2">{row.capex}</td>
+                          <td className="py-2.5 px-2">{row.gross}</td>
+                          <td className="py-2.5 px-2">{row.net}</td>
+                          <td className={`py-2.5 px-2 font-mono ${row.npv.includes('+') ? 'text-emerald-600 dark:text-emerald-400' : (row.npv.includes('-') ? 'text-rose-600 dark:text-rose-400' : '')}`}>
+                            {row.npv}
+                          </td>
+                          <td className="py-2.5 px-2">{row.pb}</td>
+                          <td className={`py-2.5 px-2 ${['3.5%', '4.0%'].includes(row.late) ? 'text-emerald-600 dark:text-emerald-400 font-bold' : 'text-rose-500'}`}>
+                            {row.late}
+                          </td>
+                          <td className={`py-2.5 px-2 ${['25.0%', '20.0%'].includes(row.co2) ? 'text-emerald-600 dark:text-emerald-400 font-bold' : 'text-rose-500'}`}>
+                            {row.co2}
+                          </td>
+                          <td className="py-2.5 px-3">
+                            <span
+                              className={`px-2 py-0.5 rounded text-[10px] font-bold ${
+                                row.status === 'PASS'
+                                  ? 'bg-emerald-500 text-white'
+                                  : (row.status === 'EXCEED' ? 'bg-amber-500/20 text-amber-700 dark:text-amber-300' : 'bg-rose-500/10 text-rose-600 dark:text-rose-400')
+                              }`}
+                            >
+                              {row.status}
+                            </span>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              {/* 3-Horizon Visual Roadmap */}
+              <div className="p-5 rounded-2xl bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 shadow-sm space-y-3">
+                <h3 className="text-sm font-bold text-stone-900 dark:text-stone-100">
+                  Three-Horizon Staged Implementation Roadmap
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                  {[
+                    {
+                      step: '01',
+                      title: 'HORIZON 1: TRANSPORT ML',
+                      timeline: 'Months 1 - 4',
+                      budget: 'CAD $5.0M | VP Logistics',
+                      desc: 'Deploy dynamic vehicle routing software & carrier REST/EDI APIs. Raises cube fill from 62% to 84%. Cash flow starts Month 4.',
+                      color: 'border-emerald-600 text-emerald-700 dark:text-emerald-300',
+                    },
+                    {
+                      step: '02',
+                      title: 'HORIZON 2: WAREHOUSE COBOTS',
+                      timeline: 'Months 3 - 6',
+                      budget: 'CAD $5.5M | VP Operations',
+                      desc: 'Vision-guided robotic picking AMRs in DC 1 and DC 2. Eliminates 38% picker travel drag. Full $8.08M run-rate reached at Month 6.',
+                      color: 'border-emerald-500 text-emerald-600 dark:text-emerald-400',
+                    },
+                    {
+                      step: '03',
+                      title: 'HORIZON 3: DC 3 RETROFIT',
+                      timeline: 'Months 7 - 12',
+                      budget: 'CAD $2.5M | CTO',
+                      desc: 'Extends automation into DC 3; enables dynamic cross-facility load balancing for peak seasons. Sustains 3.5% late rate permanently.',
+                      color: 'border-amber-500 text-amber-600 dark:text-amber-400',
+                    },
+                  ].map((h, i) => (
+                    <div
+                      key={i}
+                      className={`p-4 rounded-xl border ${h.color} bg-stone-50 dark:bg-stone-950 flex flex-col justify-between`}
+                    >
+                      <div>
+                        <div className="flex items-center justify-between mb-2">
+                          <span className="font-mono font-black text-lg">{h.step}</span>
+                          <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-stone-200 dark:bg-stone-800 text-stone-700 dark:text-stone-300">
+                            {h.timeline}
+                          </span>
+                        </div>
+                        <h4 className="font-bold text-xs text-stone-900 dark:text-stone-100 mb-1">{h.title}</h4>
+                        <span className="text-[10px] font-mono font-semibold text-stone-500 block mb-2">{h.budget}</span>
+                        <p className="text-[11px] text-stone-600 dark:text-stone-300 leading-relaxed">{h.desc}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* 3-Scenario Sensitivity Stress Test */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-3.5">
+                {[
+                  {
+                    title: 'BEAR CASE: COST OVERRUN',
+                    sub: 'Capex +25% | Savings -30%',
+                    metrics: [
+                      { label: 'Capex Invested:', val: 'CAD $16.25M ($3.75M Buffer)' },
+                      { label: 'Annual Net Savings:', val: 'CAD $5.656M / Year' },
+                      { label: 'Simple Payback:', val: '2.87 Years (34.5 Months)' },
+                      { label: '3-Year NPV @ 10%:', val: '+CAD $3.839M (Accretive)' },
+                    ],
+                    badge: 'border-amber-500 text-amber-600 dark:text-amber-400',
+                  },
+                  {
+                    title: 'BASE PLAN: TARGET RUN-RATE',
+                    sub: 'Executive Target Blueprint',
+                    metrics: [
+                      { label: 'Capex Invested:', val: 'CAD $13.00M ($7.00M Buffer)' },
+                      { label: 'Annual Net Savings:', val: 'CAD $8.080M / Year' },
+                      { label: 'Simple Payback:', val: '1.61 Years (19.3 Months)' },
+                      { label: '3-Year NPV @ 10%:', val: '+CAD $7.094M (137% ROI)' },
+                    ],
+                    badge: 'border-emerald-600 text-emerald-700 dark:text-emerald-300 bg-emerald-500/5',
+                  },
+                  {
+                    title: 'BULL CASE: VOLUME SURGE',
+                    sub: 'Order Volume +20% (14.4M)',
+                    metrics: [
+                      { label: 'Capex Invested:', val: 'CAD $13.00M (Fixed Assets)' },
+                      { label: 'Annual Net Savings:', val: 'CAD $9.696M / Year' },
+                      { label: 'Simple Payback:', val: '1.34 Years (16.1 Months)' },
+                      { label: '3-Year NPV @ 10%:', val: '+CAD $11.118M (+157%)' },
+                    ],
+                    badge: 'border-emerald-500 text-emerald-600 dark:text-emerald-400',
+                  },
+                ].map((sc, i) => (
+                  <div
+                    key={i}
+                    className={`p-4 rounded-xl border ${sc.badge} bg-white dark:bg-stone-900 shadow-sm`}
+                  >
+                    <span className="text-[10px] font-bold uppercase tracking-wider block">{sc.title}</span>
+                    <span className="text-[11px] text-stone-500 dark:text-stone-400 block mb-3">{sc.sub}</span>
+                    <div className="space-y-1.5 text-xs">
+                      {sc.metrics.map((m, idx) => (
+                        <div key={idx} className="flex justify-between border-b border-stone-100 dark:border-stone-800 pb-1">
+                          <span className="text-stone-500">{m.label}</span>
+                          <span className="font-mono font-bold text-stone-800 dark:text-stone-200">{m.val}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Adversarial Judge Defense Cards */}
+              <div className="p-5 rounded-2xl bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 shadow-sm space-y-3">
+                <h3 className="text-sm font-bold text-stone-900 dark:text-stone-100">
+                  Adversarial Red Team Judge Defense Bank
+                </h3>
+                <div className="space-y-2.5">
+                  {[
+                    {
+                      q: "Why not Portfolio B+C, which offers higher gross savings ($11.32M vs $10.28M)?",
+                      a: "Gross savings ignore recurring OpEx. Option C carries $2.2M in annual recurring lease and software fees, making net savings virtually equal ($8.22M for B+C vs $8.08M for A+B). However, B+C requires CAD $17.0M capex ($4.0M more). That capital drag crushes 3-year NPV to CAD $3.44M vs CAD $7.09M for A+B. Portfolio A+B generates 106% greater net economic value.",
+                    },
+                    {
+                      q: "What if implementation costs overrun by 25% due to hardware inflation?",
+                      a: "Under a 25% capex overrun, investment expands to CAD $16.25M. This remains safely below the CAD $20.0M ceiling, preserving a $3.75M liquidity cushion. Simple payback rises to 2.01 years (24.1 months), still clearing the 3-year horizon, and 3-year NPV remains strongly positive at +CAD $3.839M.",
+                    },
+                    {
+                      q: "Why should NorthStar trust AI-driven algorithms with mission-critical fulfillment?",
+                      a: "We enforce closed-loop Human-in-the-Loop governance. Automated vehicle dispatch operates on edge telematics with deterministic static fallback routes if API latency exceeds 200ms. Distribution centres can run offline for up to 72 hours, and warehouse supervisors retain manual override at all times.",
+                    },
+                  ].map((qa, i) => (
+                    <div
+                      key={i}
+                      className="p-3.5 rounded-xl border border-stone-200 dark:border-stone-800 bg-stone-50 dark:bg-stone-950 text-xs space-y-1.5"
+                    >
+                      <div className="flex items-start gap-2">
+                        <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-rose-500/10 text-rose-600 dark:text-rose-400 shrink-0">
+                          Judge Q0{i + 1}
+                        </span>
+                        <h4 className="font-semibold text-stone-900 dark:text-stone-100">
+                          "{qa.q}"
+                        </h4>
+                      </div>
+                      <p className="pl-3 border-l-2 border-emerald-500/60 text-stone-700 dark:text-stone-300 text-[11px] leading-relaxed">
+                        <strong className="text-emerald-700 dark:text-emerald-400">Rebuttal: </strong>
+                        {qa.a}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
+
           {activeTab === 'solution' && (
             <div className="space-y-6 max-w-4xl mx-auto">
               {/* Big Idea Hook */}
