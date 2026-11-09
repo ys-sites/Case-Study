@@ -68,3 +68,4 @@ def reindex_all_cases():
 
 if __name__ == "__main__":
     reindex_all_cases()
+

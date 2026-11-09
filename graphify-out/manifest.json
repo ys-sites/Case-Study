@@ -1116,15 +1116,15 @@
     "semantic_hash": ""
   },
   "Finished Resources/06_PDF_Deliverables/Final_Case_Solution.pdf": {
-    "mtime": 1794192478.6925104,
-    "seen": 1794192540.8005116,
-    "ast_hash": "b0d4c9379f1863c3290be3e6e3ba2e4b",
+    "mtime": 1794192797.1730525,
+    "seen": 1794192967.8139212,
+    "ast_hash": "8aa5c6e59690c24641e44ad559ff9cc3",
     "semantic_hash": ""
   },
   "Finished Resources/06_PDF_Deliverables/Strategic_Blueprint.pdf": {
-    "mtime": 1794192478.6405125,
-    "seen": 1794192540.8005185,
-    "ast_hash": "84fa6246e78fe99371e9e7ebf940a3f6",
+    "mtime": 1794192797.152807,
+    "seen": 1794192967.813928,
+    "ast_hash": "fb7578d61f57d5355d954cc62ef0bf05",
     "semantic_hash": ""
   },
   "data/case-competition-master-prompt.pdf": {
@@ -1362,9 +1362,9 @@
     "semantic_hash": ""
   },
   "Finished Resources/solution_spec.json": {
-    "mtime": 1794192478.274684,
-    "seen": 1794192540.6995149,
-    "ast_hash": "58be79358c65ca25d3ca99f7be4ae5cb",
+    "mtime": 1794192900.0940816,
+    "seen": 1794192967.702378,
+    "ast_hash": "a6cfed43ebbfae52dbeb87dad2304fe6",
     "semantic_hash": ""
   },
   "metadata.json": {
@@ -1494,9 +1494,9 @@
     "semantic_hash": ""
   },
   "src/data/current_case_solution.json": {
-    "mtime": 1794192495.0016193,
-    "seen": 1794192540.7108958,
-    "ast_hash": "58be79358c65ca25d3ca99f7be4ae5cb",
+    "mtime": 1794192888.003501,
+    "seen": 1794192967.7186248,
+    "ast_hash": "a6cfed43ebbfae52dbeb87dad2304fe6",
     "semantic_hash": ""
   },
   "src/main.tsx": {
@@ -1554,9 +1554,51 @@
     "semantic_hash": ""
   },
   "scripts/reindex_case_database.py": {
-    "mtime": 1794192516.509395,
-    "seen": 1794192540.7021377,
-    "ast_hash": "80c388f17b13dbd453cd7209ce493b51",
+    "mtime": 1794192615.3438346,
+    "seen": 1794192967.7068868,
+    "ast_hash": "6b6f1bf8de48e7874f1c8973bc98d4d4",
+    "semantic_hash": ""
+  },
+  "scripts/solve_project_reflow.py": {
+    "mtime": 1794192791.6092584,
+    "seen": 1794192967.706894,
+    "ast_hash": "bbd5547bce42082b845ecb929c404e98",
+    "semantic_hash": ""
+  },
+  "cases/Project_ReFlow/01_Executive_Summary.md": {
+    "mtime": 1794192796.8880193,
+    "seen": 1794192967.7962883,
+    "ast_hash": "aed73ad0fc1eb6f7f16dc66b62170bd2",
+    "semantic_hash": ""
+  },
+  "cases/Project_ReFlow/02_Strategic_Assessment.md": {
+    "mtime": 1794192796.8993824,
+    "seen": 1794192967.7962947,
+    "ast_hash": "996466e78a81bd4a0c6fdb5aebbe519a",
+    "semantic_hash": ""
+  },
+  "cases/Project_ReFlow/03_Financial_Model.md": {
+    "mtime": 1794192796.904636,
+    "seen": 1794192967.7962983,
+    "ast_hash": "4a22891a486e72989029926bae34a5a9",
+    "semantic_hash": ""
+  },
+  "cases/Project_ReFlow/04_Pitch_Deck_10_Slides.md": {
+    "mtime": 1794192796.9234247,
+    "seen": 1794192967.7963018,
+    "ast_hash": "3f6cac1f24307c079e133084db131751",
+    "semantic_hash": ""
+  },
+  "cases/Project_ReFlow/05_Judge_QA_Defense.md": {
+    "mtime": 1794192796.9403439,
+    "seen": 1794192967.796305,
+    "ast_hash": "5bd5245d6f4ee541b7d71e07c29f4efc",
+    "semantic_hash": ""
+  },
+  "cases/Project_ReFlow/Project_ReFlow_Accenture_Style_Case_Competition.pdf": {
+    "mtime": 1794192389.0848756,
+    "seen": 1794192967.813933,
+    "ast_hash": "8b335ca5776d987dd6e6b14770a4d1e0",
     "semantic_hash": ""
   },
   "package-lock.json": {
