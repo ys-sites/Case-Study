@@ -1,77 +1,84 @@
-# Antigravity Autonomous Workflow Rules: Fast, Smart & Safe + Studocu Pipeline Law
+# Case-Study Studio Autonomous Workflow Rules: Case Simulation & Competition Law
 
-For website work, also follow the project-specific [Website Essentials Guide](./WEB_ESSENTIALS_GUIDE.md). Apply its design, accessibility, security and validation guidance as relevant to the task.
+For web application changes, follow the project-specific [Website Essentials Guide](./WEB_ESSENTIALS_GUIDE.md). Apply its design, accessibility, security, and verification guidance as relevant to the task.
 
-For 3D learner work, follow [the approved 3D model style](./THREE_D_MODEL_STYLE.md). A lighting/background change alone does not satisfy a request to rebuild the models.
+For task routing across Graphify, installed skills, and the local resource library, follow [Main Brain Pipeline](./MAIN_BRAIN_PIPELINE.md).
 
-For task routing across Graphify, installed skills and the local resource library, follow [Main Brain Pipeline](./MAIN_BRAIN_PIPELINE.md).
+For security verification of all agent skills and code, use **NVIDIA SkillSpector** (`001 Main/05 - Security & Standards/SkillSpector`) and the installed **Cloudflare Security Audit Skill** (`.agents/skills/security-audit`).
 
-## 1. MANDATORY FIRST STEP ON EVERY PROMPT
-Before executing any user task or generating any educational material, the agent MUST review and adhere to this permanent pipeline rule:
+---
 
-### The Studocu Replication & Queueing Law:
-Whenever the user provides new teacher materials (lecture notes, problem sets, course outlines, labs, slides) and asks to expand, explain, summarize, solve, or create any new documentation (e.g., Markdown topic guides, 1-page rapid review sheets, fully solved problem guides, compiled PDFs):
-1. **Primary Output Placement**:
-   - Save the primary Markdown and compiled PDF files in their proper course structure under:
-     `concordia/<Course>/...` and `c:\Users\Sharafath\Documents\iCloudDrive\Concodia\Semester 1\<Course>\...`
-     (Where `<Course>` is `Engr 213`, `Indu 211`, `Miae 215`, or `Miae 221`).
+## 1. MANDATORY CASE SIMULATION & COMPETITION LAW
+Before executing any case simulation, business challenge, or presentation task, the agent MUST review and adhere to this permanent pipeline rule:
 
-2. **Mandatory Studocu Replication**:
-   - Immediately replicate a copy of the newly created final document(s) (especially the compiled PDF / standalone guide) into:
-     `c:\Users\Sharafath\Documents\iCloudDrive\Concodia\Semester 1\Studocu\Need to Upload\`
+### The Case Competition 5-Stage Standard:
+Whenever the user provides a case brief, corporate statement, market dataset, or competition prompt, all generated documentation (Markdown strategy briefs, 10-slide pitch decks, financial models, executive memos) MUST adhere to the **5-Stage Case Competition Architecture**:
 
-3. **Mandatory Metadata Queue Logging**:
-   - Immediately append a complete Studocu upload metadata entry to:
-     `c:\Users\Sharafath\Documents\iCloudDrive\Concodia\Semester 1\Studocu\Need to Upload\Studocu_Need_To_Upload.md`
-   - The metadata entry must include:
-     - Exact Filename
-     - **University**: `Concordia University`
-     - **Course**: Verified course name & code (`Applied Ordinary Differential Equations (ENGR 213)`, `Introduction to Production and Manufacturing Systems (INDU 211)`, `Mechanical, Industrial & Aerospace engineering (MIAE 215)`, or `Materials Science (MIAE 221)`)
-     - **Category**: Dropdown value (`Lecture notes`, `Summaries`, `Practice materials`, `Practical`, `Mandatory assignments`, `Tutorial work`, `Other`)
-     - **Title**: Strict Course Code prefix (e.g., `MIAE 215 - ...` or `ENGR 213 - ...`)
-     - **Academic year**: `2025/2026`
-     - **Description**: 2-3 sentence high-yield summary highlighting core concepts and exam utility.
+1. **Executive Summary & MECE Problem Diagnosis**:
+   - Deliver an immediate, decisive executive hook ("The Big Idea").
+   - Distinguish root causes from surface symptoms using MECE (Mutually Exclusive, Collectively Exhaustive) issue trees.
+   - Frame the core value-capture bottleneck with quantified baseline metrics.
 
-## 2. PROMOTION TO "DONE" CYCLE
-When the user states that the pending documents in `Need to Upload` are finished/uploaded (e.g., *"Needs to Upload is done"*, *"I uploaded them"*, *"Mark as done"*):
-1. Move the physical files from:
-   `c:\Users\Sharafath\Documents\iCloudDrive\Concodia\Semester 1\Studocu\Need to Upload\`
-   $\longrightarrow$ `c:\Users\Sharafath\Documents\iCloudDrive\Concodia\Semester 1\Studocu\Done\`
-2. Transfer their metadata entries from:
-   `c:\Users\Sharafath\Documents\iCloudDrive\Concodia\Semester 1\Studocu\Need to Upload\Studocu_Need_To_Upload.md`
-   $\longrightarrow$ `c:\Users\Sharafath\Documents\iCloudDrive\Concodia\Semester 1\Studocu\Done\Studocu_Done.md`
-3. Reset `Studocu_Need_To_Upload.md` to reflect `Currently Pending Uploads: 0`.
+2. **Strategic Formulas & Theoretical Frameworks to Retain**:
+   - State every business and financial formula explicitly with all variables, units, and benchmarks defined:
+     - Addressable Market Triangulation: $\text{TAM} \longrightarrow \text{SAM} \longrightarrow \text{SOM}$
+     - Customer Unit Economics: $\text{LTV} = \frac{\text{ARPU} \times \text{Gross Margin}}{\text{Churn Rate}}$ and $\frac{\text{LTV}}{\text{CAC}} \ge 3.0\times$
+     - Breakeven Volume: $\text{BEP} = \frac{\text{Fixed Implementation Costs}}{\text{Unit Contribution Margin}}$
+     - Capital Hurdle & Valuation: $\text{WACC}$, $\text{NPV}$, $\text{IRR}$, and Payback Horizon.
 
-## 3. STRICT ANONYMITY & PRIVACY LAW (NO PERSONAL IDENTITY OR ABSOLUTE USER PATHS)
-Under no circumstances should the student's personal name (`Sharafath`, `Mohamed Sharafath`, etc.) or personal computer paths (e.g. `C:\Users\Sharafath\...`, `file:///c:/Users/Sharafath/...`, `users.sharafat`, etc.) appear in ANY generated study guide, Markdown topic guide, review sheet, PDF, HTML, assignment, or website file.
-1. **No Personal Names in Documents**: All headers, footers, cover pages, and metadata must refer to generic academic designations (e.g., `Concordia University · Gina Cody School of Engineering`, `Course Engineering Hub`, or `Student Academic Guide`).
-2. **Relative File Paths Only**: Any hyperlinks or references to other course documents must use relative repository paths (e.g., `../02 - Comprehensive Topic Guides/...` or `[Document Title](./filename.pdf)`) rather than machine-specific local drive paths.
-3. **No Personal Footers or Machine Citations**: Never stamp local user paths onto rendered PDFs or web documents.
+3. **Baby-Step Financial Proofs & Proforma Projections**:
+   - Zero skipped intermediate arithmetic or algebra ($11 + 7 = 18$).
+   - Provide complete 3-year proforma statements (Revenue, Gross Margin, OpEx, EBITDA).
+   - Include 3-scenario sensitivity testing: Bear Case (-20%), Base Case (Plan), and Bull Case (+25%).
 
-## 4. UNIFIED COURSE LESSON STRUCTURE (ALL COURSES)
-Across all courses (**MIAE 221**, **MIAE 215**, **ENGR 213**, **INDU 211**), maintain this exact structure:
-1. **Explanation of the topic**: Beginner-friendly conceptual breakdown and physical analogies based on teacher slides (no ASCII art; extract real figures to `./images/`).
-2. **Formula to retain**: Core equations with every symbol, variable, and physical unit explicitly defined.
-3. **Example of the topic**: Fully worked example with baby steps and zero skipped intermediate arithmetic or algebra ($11 + 7 = 18$).
-4. **Practice Questions**: Dedicated section for check-your-understanding items, practice banks, and drills.
-5. **Past Midterms**: Dedicated section (separate from Practice Questions) for real past midterm/exam problems.
-- Do NOT include YouTube video embeds or exam percentage weight blocks.
+4. **Implementation Roadmap & Risk Pre-Mortem Matrix**:
+   - Phased execution across 3 horizons (Horizon 1: Foundation & Pilot; Horizon 2: Commercial Rollout; Horizon 3: Scale & Industry Standardization).
+   - Governance KPI dashboard separating **Leading Indicators** (Predictive) from **Lagging Indicators** (Financial).
+   - 2x2 Risk Impact vs. Likelihood matrix with actionable pre-mortem mitigation plans.
 
-## 5. FAST, SMART & SAFE EXECUTION RULES (QUOTA & RATE-LIMIT PROTECTION)
-1. **Targeted access to `001 Main`**:
-   - Use its README and task-specific resources as directed by the Main Brain Pipeline. Avoid broad scans, indiscriminate indexing, unreviewed execution and loading unrelated materials.
+5. **Judge Q&A Stress-Test Defense Bank**:
+   - Dedicated section anticipating the top 5 most adversarial judge questions (assumptions sensitivity, competitor retaliation, capital constraints, operational bottlenecks, pilot failures).
+   - Rigorous, evidence-backed rebuttals prepared for rapid presentation defense.
+
+---
+
+## 2. STRICT ANONYMITY & PRIVACY LAW (NO PERSONAL IDENTITY OR ABSOLUTE USER PATHS)
+Under no circumstances should any personal name or machine-specific local drive paths (`/path/to/...`, `file:///...`, etc.) appear in ANY generated case brief, Markdown strategy guide, review sheet, PDF, HTML, or website file.
+1. **Generic Designations Only**: All headers, footers, cover slides, and metadata must refer to generic academic or competition designations (e.g., `Strategy Consulting Hub`, `Executive Case Simulation Team`, `Academic Competition Strategy Platform`).
+2. **Relative File Paths Only**: Any hyperlinks or references must use relative repository paths (`./cases/...` or `[Document Title](./filename.md)`) rather than machine-specific paths.
+3. **Zero Machine Footers**: Never stamp local user paths onto rendered PDFs, slides, or web documents.
+
+---
+
+## 3. UNIFIED CASE FILE PLACEMENT & REPOSITORY STRUCTURE
+- Primary Case Studies & Solution Briefs:
+  `cases/<Case_Name>/01_Executive_Summary.md`  
+  `cases/<Case_Name>/02_Strategic_Assessment.md`  
+  `cases/<Case_Name>/03_Financial_Model.md`  
+  `cases/<Case_Name>/04_Pitch_Deck_10_Slides.md`  
+  `cases/<Case_Name>/05_Judge_QA_Defense.md`  
+- Standalone Studio Web Application: `src/` (React + Vite + Tailwind CSS v4 + TypeScript)
+- Local Knowledge & Skill Library: `001 Main/` (Ignored in Git, local references only)
+- Verified Agent Skills: `.agents/skills/` (Audited via NVIDIA SkillSpector)
+
+---
+
+## 4. FAST, SMART & SAFE EXECUTION RULES (QUOTA & RATE-LIMIT PROTECTION)
+1. **Targeted Access to `001 Main`**:
+   - Use its README and task-specific resources as directed by `MAIN_BRAIN_PIPELINE.md`. Avoid broad scans, indiscriminate indexing, and loading unrelated materials.
 2. **No Parallel Subagent Swarms**:
-   - NEVER spawn multiple parallel subagents (e.g. 5+ concurrent Opus agents) for batch tasks, as this immediately drains API rate limits. Execute work directly and sequentially.
+   - NEVER spawn multiple parallel subagents for batch tasks, as this immediately drains API rate limits. Execute work directly and sequentially.
 3. **Speed & Targeted Scope**:
-   - Answer simple questions immediately without inspecting files or running tools.
    - Read and modify only the specific files relevant to the user's request.
    - Do not scan the entire codebase when the target file is known.
-   - Do not run full `npm run build` after every small edit; use targeted validation (`npm run validate:curriculum`) when needed.
+   - Use targeted verification (`npm run build` or `python -m skillspector.cli scan`) only when relevant changes are made.
 
-## 6. MANDATORY AUTOMATIC GIT PUSH LAW (ALWAYS PUSH)
+---
+
+## 5. MANDATORY AUTOMATIC GIT PUSH LAW (ALWAYS PUSH)
 On every prompt where changes, fixes, enhancements, or new files are created or modified:
 1. **Always Push Automatically**: Proactively stage, commit with a descriptive message, and push directly to `origin` before concluding the turn.
 2. **Never Wait to be Asked**: Every completed change is pushed automatically as the final step.
 3. **Mandatory Remote Target**:
-   - All commits and branch pushes MUST strictly target: `https://github.com/ys-sites/concordia.git`
+   - All commits and branch pushes MUST strictly target: `https://github.com/ys-sites/Case-Study.git`
    - Never push to alternate repositories without explicit user instruction.
