@@ -640,13 +640,6 @@ def assemble_video_with_ffmpeg():
     subprocess.run(cmd_master, check=True)
     print(f"\n[OK] Explainer Video Generated: {OUTPUT_MP4}")
 
-    # Copy to Finished Resources as well
-    fin_mp4 = Path("Finished Resources/09_Video/Project_ReFlow_Explainer_Video.mp4")
-    fin_mp4.parent.mkdir(parents=True, exist_ok=True)
-    import shutil
-    shutil.copy2(OUTPUT_MP4, fin_mp4)
-    print(f"[OK] Copied video to: {fin_mp4}")
-
 # -----------------------------------------------------------------------------
 # WRITE MOTION VIDEO DIRECTOR ARTIFACTS
 # -----------------------------------------------------------------------------
@@ -747,3 +740,4 @@ async def main():
 
 if __name__ == "__main__":
     asyncio.run(main())
+
