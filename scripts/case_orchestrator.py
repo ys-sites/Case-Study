@@ -165,7 +165,47 @@ def load_case_data(case_identifier: str = "ENG-0001"):
             "source_type": "directory_package"
         }
 
-    # 3. Lookup in data/engineering_1000_case_simulations.json
+    # 3. Lookup in data/engineering_100000_preview.csv
+    if case_identifier.upper().startswith("ENG100K"):
+        csv_100k = Path("data/engineering_100000_preview.csv")
+        if csv_100k.exists():
+            try:
+                with open(csv_100k, "r", encoding="utf-8-sig") as f:
+                    reader = csv.DictReader(f)
+                    for row in reader:
+                        if row.get("Case ID") == case_identifier:
+                            return {
+                                "id": row["Case ID"],
+                                "title": f"{row.get('Archetype', 'Case')} — {row.get('Context', '')} ({row.get('Shock', '')})",
+                                "discipline": row.get("Discipline", "Industrial Engineering"),
+                                "difficulty": row.get("Difficulty", "Beginner"),
+                                "brief": row.get("Decision Brief", ""),
+                                "decision_question": f"Which design should be chosen for {row.get('Archetype', 'the system')} during {row.get('Shock', '')}?",
+                                "objective": f"Achieve {row.get('Target Improvement Percent', 20)}% improvement in {row.get('Target Metric', 'output')} within {row.get('Deadline Months', 12)} months under CAD ${float(row.get('Budget CAD', 1500000)):,}.",
+                                "inputs": {
+                                    "baseline_metric": row.get("Baseline Metric", "Current daily output"),
+                                    "baseline_value": float(row.get("Baseline Value", 1000)),
+                                    "baseline_unit": row.get("Baseline Unit", "units/day"),
+                                    "target_metric": row.get("Target Metric", "Throughput gain"),
+                                    "target_value": float(row.get("Target Improvement Percent", 20)),
+                                    "target_unit": "%",
+                                    "capital_budget_CAD": float(row.get("Budget CAD", 1500000)),
+                                    "timeline_months": int(row.get("Deadline Months", 12))
+                                },
+                                "constraints": [c.strip() for c in row.get("Technical Constraints", "").split("|") if c.strip()],
+                                "alternatives": [
+                                    f"Option A: {row.get('Option A', 'Tuning')} (CAD ${float(row.get('Option A Cost CAD', 500000)):,}, +{row.get('Option A Estimated Improvement Percent', 15)}%)",
+                                    f"Option B: {row.get('Option B', 'Retrofit')} (CAD ${float(row.get('Option B Cost CAD', 1200000)):,}, +{row.get('Option B Estimated Improvement Percent', 25)}%)",
+                                    f"Option C: {row.get('Option C', 'Modernization')} (CAD ${float(row.get('Option C Cost CAD', 1800000)):,}, +{row.get('Option C Estimated Improvement Percent', 35)}%)"
+                                ],
+                                "suggested_analysis": row.get("Suggested Analysis", "Theory of Constraints + Discrete-Event Simulation"),
+                                "judge_challenge": row.get("Judge Challenge", "How does your recommendation change if costs rise 20% or performance falls 15%?"),
+                                "source_type": "100k_preview_simulation"
+                            }
+            except Exception as e:
+                print(f"Notice: Failed to load from 100k preview: {e}")
+
+    # 4. Lookup in data/engineering_1000_case_simulations.json
     simulations_file = Path("data/engineering_1000_case_simulations.json")
     if simulations_file.exists():
         try:

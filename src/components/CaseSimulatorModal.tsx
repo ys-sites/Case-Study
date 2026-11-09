@@ -384,16 +384,38 @@ export const CaseSimulatorModal: React.FC<CaseSimulatorModalProps> = ({
               </div>
 
               {/* Video Player Card */}
-              <div className="p-4 rounded-2xl border border-stone-200 dark:border-stone-800 bg-stone-950 text-white flex flex-col items-center justify-center min-h-[220px]">
-                <Video className="w-12 h-12 text-amber-500 mb-3 animate-pulse" />
-                <h4 className="text-base font-bold">Finished Resources/09_Video/Final_Demo_120s.mp4</h4>
-                <p className="text-xs text-stone-400 mt-1">
-                  Duration: 120 Seconds | Format: H.264 / AAC 1080p | Subtitles: Synced SRT Included
-                </p>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="p-4 rounded-2xl border border-stone-200 dark:border-stone-800 bg-stone-950 text-white flex flex-col items-center justify-center min-h-[200px]">
+                  <Video className="w-10 h-10 text-cyan-400 mb-2 animate-pulse" />
+                  <h4 className="text-sm font-bold text-center">System Architecture Explainer (112s)</h4>
+                  <p className="text-[11px] text-stone-400 mt-1 text-center">
+                    Finished Resources/09_Video/System_Architecture_Explainer.mp4<br/>
+                    1080p | Neural Voiceover + Procedural Ambience
+                  </p>
+                </div>
+                <div className="p-4 rounded-2xl border border-stone-200 dark:border-stone-800 bg-stone-950 text-white flex flex-col items-center justify-center min-h-[200px]">
+                  <Video className="w-10 h-10 text-amber-500 mb-2 animate-pulse" />
+                  <h4 className="text-sm font-bold text-center">Case Solution Demo Video (120s)</h4>
+                  <p className="text-[11px] text-stone-400 mt-1 text-center">
+                    Finished Resources/09_Video/Final_Demo_120s.mp4<br/>
+                    1080p | Synchronized Storyboard & Subtitles (.srt)
+                  </p>
+                </div>
               </div>
 
               {/* Direct Deliverable Files */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                <div className="p-3.5 rounded-xl border border-cyan-500/30 bg-cyan-500/5 dark:bg-cyan-950/20 flex items-center justify-between text-xs">
+                  <div className="flex items-center gap-2.5">
+                    <FileText className="w-4 h-4 text-cyan-500" />
+                    <div>
+                      <div className="font-semibold text-stone-900 dark:text-stone-100">System_Pipeline_Guide.pdf</div>
+                      <div className="text-[11px] text-stone-400">docs/CASE_COMPETITION_SYSTEM_PIPELINE_GUIDE.pdf</div>
+                    </div>
+                  </div>
+                  <span className="font-mono text-cyan-600 dark:text-cyan-400 font-bold">6 Pages Ready</span>
+                </div>
+
                 <div className="p-3.5 rounded-xl border border-stone-200 dark:border-stone-800 bg-stone-50 dark:bg-stone-900 flex items-center justify-between text-xs">
                   <div className="flex items-center gap-2.5">
                     <FileText className="w-4 h-4 text-rose-500" />

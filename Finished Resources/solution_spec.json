@@ -1,17 +1,17 @@
 {
   "version": "1.0.0",
-  "generated_at": "2026-11-09T02:06:24.610064Z",
+  "generated_at": "2026-11-09T02:24:54.118528+00:00",
   "case_identification": {
-    "id": "ENG-0001",
-    "title": "Factory bottleneck redesign \u2014 Baseline improvement",
+    "id": "ENG100K-000003",
+    "title": "Factory bottleneck redesign \u2014 Food and agriculture processor (energy tariff increase)",
     "discipline": "Industrial Engineering",
     "difficulty": "Beginner"
   },
   "problem_diagnosis": {
     "core_bottleneck": "Unsynchronized batch processing and legacy mechanical interlocks creating throughput starvation.",
-    "baseline_value": 1042.83,
+    "baseline_value": 1112.68,
     "baseline_unit": "units/day",
-    "target_improvement_percent": 20.7,
+    "target_improvement_percent": 31.9,
     "root_causes": [
       "Fixed cycle time variance exceeding tolerance thresholds (+/- 18%).",
       "Sub-optimal material buffering between staging and assembly.",
@@ -37,7 +37,7 @@
     ]
   },
   "financial_summary": {
-    "initial_investment_CAD": 1625000,
+    "initial_investment_CAD": 679000.0,
     "year_1_revenue_CAD": 3450000,
     "year_2_revenue_CAD": 5200000,
     "year_3_revenue_CAD": 7800000,

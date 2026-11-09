@@ -26,6 +26,9 @@ Thumbs.db
 *.rar
 *.7z
 *.tar.gz
+*.wav
+*.mp3
+Finished Resources/09_Video/assets/
 
 # Executable Binaries
 *.exe

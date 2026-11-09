@@ -1,19 +1,17 @@
-# Case Intelligence Report: Factory bottleneck redesign — Baseline improvement
+# Case Intelligence Report: Factory bottleneck redesign — Food and agriculture processor (energy tariff increase)
 
 **Discipline**: Industrial Engineering | **Difficulty**: Beginner
 
 ### Problem Statement
-Factory bottleneck redesign at a hypothetical regional engineering organization. Standard operations with predictable demand. The present current daily output is 1,042.83 units/day.
+Food and agriculture processor: address factory bottleneck redesign during energy tariff increase. Baseline current daily output is 1,112.68 units/day; aim for 31.9% improvement in capacity increase within 6 months and CAD 679,000. Availability 84.53% and allowed installation downtime 12 hours. Evaluate three alternative designs under the stated synthetic assumptions.
 
 ### Core Decision Question
-Which design or operational change should be selected for factory bottleneck redesign, and why does it outperform alternatives under the stated conditions?
+Which design should be chosen for Factory bottleneck redesign during energy tariff increase?
 
 ### Objective
-Create an implementable engineering proposal achieving target output improvement of 20.7 %, while preserving safety, service and regulatory compliance.
+Achieve 31.9% improvement in Capacity increase within 6 months under CAD $679,000.0.
 
 ### Stated Constraints
-- Capital budget <= CAD 1,625,000
-- Finish core implementation within 12 months
-- Use only the provided facts; explain assumptions and show one quantitative comparison.
-- Do not sacrifice regulatory compliance or operational safety
-- Standard operations with predictable demand.
+- Meet statutory environmental permits
+- Allow for future capacity expansion
+- No unplanned service outages permitted

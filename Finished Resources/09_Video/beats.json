@@ -1,0 +1,57 @@
+{
+  "project": "Case Competition System Architecture Explainer",
+  "resolution": "1920x1080",
+  "fps": 30,
+  "engine": "motion-video-director v3.5.2",
+  "beats": [
+    {
+      "id": "beat_01",
+      "title": "THE CASE COMPETITION CHALLENGE",
+      "subtitle": "Unstructured Data, Tight Deadlines, High Stakes",
+      "voice_text": "In premier global case competitions, teams are handed 40-page briefs, messy spreadsheets, and brutal deadlines. Most teams scramble and present surface-level summaries. Winning requires an entirely different level of systematic speed and precision.",
+      "duration": 15.0,
+      "theme": "problem"
+    },
+    {
+      "id": "beat_02",
+      "title": "CHAMBER 1 & 2: INTAKE & THE GRAPHIFY BRAIN",
+      "subtitle": "Optical Decryption & 132+ Global Case Benchmarks",
+      "voice_text": "Drop in any document or dataset. The machine's optical intake chamber strips layout noise, extracts balance sheets, and maps constraints. Simultaneously, the Graphify brain traverses 132 verified global case competitions to borrow proven championship patterns.",
+      "duration": 18.0,
+      "theme": "intake"
+    },
+    {
+      "id": "beat_03",
+      "title": "THE 14 AUTONOMOUS AGENTS IN LOCKSTEP",
+      "subtitle": "Root-Cause Surgeons, Innovation Labs, and Red Teams",
+      "voice_text": "Behind the scenes, fourteen specialized AI agents operate in synchronized lockstep. Root-cause surgeons isolate core bottlenecks using MECE issue trees, while the innovation lab brainstorms and scores solution archetypes against the official judging rubric.",
+      "duration": 18.0,
+      "theme": "agents"
+    },
+    {
+      "id": "beat_04",
+      "title": "THE QUANTITATIVE FINANCIAL REACTOR",
+      "subtitle": "Little's Law, TOC Bottlenecks, and 3-Scenario Proformas",
+      "voice_text": "Every recommendation is backed by zero-skip industrial mathematics. Little's Law proves cycle-time compression, the Theory of Constraints synchronizes capacity, and proforma financial models survive rigorous Bear, Base, and Bull sensitivity testing.",
+      "duration": 18.0,
+      "theme": "math"
+    },
+    {
+      "id": "beat_05",
+      "title": "THE OMNICHANNEL DELIVERABLE FACTORY",
+      "subtitle": "PDFs, 12-Slide Pitch Deck, Financial Models, Video, and Web App",
+      "voice_text": "In under sixty seconds, the deliverable factory outputs the complete championship suite: two vector-grade executive blueprints, a twelve-slide pitch deck, dynamic financial models, and a live interactive web simulator.",
+      "duration": 17.0,
+      "theme": "factory"
+    },
+    {
+      "id": "beat_06",
+      "title": "CHAMPIONSHIP VICTORY BY DESIGN",
+      "subtitle": "Airtight Judge Q&A Defense & 100% Deterministic Execution",
+      "voice_text": "Before you take the stage, an adversarial red-team judge stress-tests every vulnerability with pre-calculated rebuttals. This is not just analysis; it is an autonomous competition-winning machine.",
+      "duration": 14.0,
+      "theme": "victory"
+    }
+  ],
+  "output_file": "System_Architecture_Explainer.mp4"
+}
