@@ -14,6 +14,9 @@ import {
   Award,
   ChevronRight,
   Calculator,
+  Workflow,
+  BookOpen,
+  ArrowRight,
 } from 'lucide-react';
 import solutionData from '../data/current_case_solution.json';
 import sampleCases from '../data/case_index.json';
@@ -29,7 +32,7 @@ export const CaseSimulatorModal: React.FC<CaseSimulatorModalProps> = ({
   onClose,
   onLoadCaseIntoEditor,
 }) => {
-  const [activeTab, setActiveTab] = useState<'solution' | 'agents' | 'financials' | 'defense' | 'video'>('solution');
+  const [activeTab, setActiveTab] = useState<'solution' | 'financials' | 'defense' | 'video' | 'agents' | 'architecture'>('solution');
   const [selectedCaseId, setSelectedCaseId] = useState(solutionData.case_identification.id);
 
   // Financial Interactive Simulator State
@@ -119,6 +122,7 @@ export const CaseSimulatorModal: React.FC<CaseSimulatorModalProps> = ({
             { id: 'defense', label: 'Judge Q&A Defense', icon: ShieldAlert },
             { id: 'video', label: '2-Min Video & Deck', icon: Video },
             { id: 'agents', label: '14 Agents Pipeline', icon: Layers },
+            { id: 'architecture', label: 'Machine Pipeline Guide', icon: Workflow },
           ].map((tab) => {
             const Icon = tab.icon;
             const isActive = activeTab === tab.id;
@@ -244,6 +248,149 @@ export const CaseSimulatorModal: React.FC<CaseSimulatorModalProps> = ({
             </div>
           )}
 
+          {activeTab === 'architecture' && (
+            <div className="space-y-6 max-w-4xl mx-auto">
+              <div className="p-4 rounded-xl bg-cyan-500/10 border border-cyan-500/20">
+                <div className="flex items-center gap-2 mb-1">
+                  <Workflow className="w-4 h-4 text-cyan-600 dark:text-cyan-400" />
+                  <h3 className="font-bold text-sm text-stone-900 dark:text-stone-100">
+                    How the Case Competition Machine Works: 5-Stage Architecture
+                  </h3>
+                </div>
+                <p className="text-xs text-stone-600 dark:text-stone-300">
+                  Like a high-precision industrial lathe or test rig, this system operates deterministically. 
+                  Every raw case brief or dataset is processed through 5 synchronized chambers with zero skipped mathematics.
+                </p>
+              </div>
+
+              {/* 5 Processing Chambers */}
+              <div className="space-y-3">
+                <h4 className="text-xs font-bold uppercase tracking-wider text-stone-500">
+                  The 5 Precision Chambers
+                </h4>
+
+                {[
+                  {
+                    chamber: 'Chamber 1',
+                    title: 'Optical Intake & Decryption',
+                    desc: 'PyMuPDF strips layout noise, parses tables/CSVs, extracts raw constraints, and distinguishes verified evidence from assumptions.',
+                    agent: 'Agents 00 & 01',
+                    color: 'border-cyan-500 text-cyan-600 dark:text-cyan-400 bg-cyan-500/5',
+                  },
+                  {
+                    chamber: 'Chamber 2',
+                    title: 'Graphify Neural Brain & Issue Trees',
+                    desc: 'Traverses knowledge graph across 39 skills and 132+ global case benchmarks (Wharton, Harvard, Rotman) to isolate the core bottleneck.',
+                    agent: 'Agents 02 & 03',
+                    color: 'border-purple-500 text-purple-600 dark:text-purple-400 bg-purple-500/5',
+                  },
+                  {
+                    chamber: 'Chamber 3',
+                    title: 'Hydraulic Strategy Press & Decision Matrix',
+                    desc: 'Generates 3-5 distinct strategic archetypes and scores each against the official competition rubric using weighted utility formulas.',
+                    agent: 'Agents 04 & 05',
+                    color: 'border-amber-500 text-amber-600 dark:text-amber-400 bg-amber-500/5',
+                  },
+                  {
+                    chamber: 'Chamber 4',
+                    title: 'Quantitative Financial Reactor',
+                    desc: "Applies Little's Law, Theory of Constraints, and 3-year proforma statements tested under Bear (-20%), Base, and Bull (+25%) scenarios.",
+                    agent: 'Agents 06, 07 & 08',
+                    color: 'border-emerald-500 text-emerald-600 dark:text-emerald-400 bg-emerald-500/5',
+                  },
+                  {
+                    chamber: 'Chamber 5',
+                    title: 'Omnichannel Deliverable Conveyor',
+                    desc: 'Compiles the full championship suite: 2 PDFs, 12 PPTX slides, Excel model, 112s explainer video, and this live interactive web app.',
+                    agent: 'Agents 09, 10, 11 & 12',
+                    color: 'border-rose-500 text-rose-600 dark:text-rose-400 bg-rose-500/5',
+                  },
+                ].map((c, i) => (
+                  <div
+                    key={c.chamber}
+                    className={`p-3.5 rounded-xl border ${c.color} flex items-start justify-between gap-3`}
+                  >
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <span className="font-mono font-bold text-xs">{c.chamber}:</span>
+                        <span className="font-semibold text-stone-900 dark:text-stone-100 text-xs">
+                          {c.title}
+                        </span>
+                      </div>
+                      <p className="text-[11px] text-stone-600 dark:text-stone-300 mt-1 leading-relaxed">
+                        {c.desc}
+                      </p>
+                    </div>
+                    <span className="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-stone-200 dark:bg-stone-800 text-stone-700 dark:text-stone-300 shrink-0">
+                      {c.agent}
+                    </span>
+                  </div>
+                ))}
+              </div>
+
+              {/* Formula Sheet */}
+              <div className="p-4 rounded-xl border border-stone-200 dark:border-stone-800 bg-stone-50 dark:bg-stone-900">
+                <h4 className="text-xs font-bold text-stone-900 dark:text-stone-100 mb-2">
+                  Standard Industrial & Financial Formulas Applied
+                </h4>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
+                  <div className="p-2.5 rounded-lg bg-white dark:bg-stone-950 border border-stone-200 dark:border-stone-800 font-mono">
+                    <span className="text-[11px] font-bold text-cyan-600 dark:text-cyan-400 block mb-1">
+                      Little's Law (Queueing Flow)
+                    </span>
+                    <p className="text-[11px] text-stone-700 dark:text-stone-300">
+                      WIP = Throughput (TH) x Cycle Time (CT)
+                    </p>
+                  </div>
+                  <div className="p-2.5 rounded-lg bg-white dark:bg-stone-950 border border-stone-200 dark:border-stone-800 font-mono">
+                    <span className="text-[11px] font-bold text-purple-600 dark:text-purple-400 block mb-1">
+                      Theory of Constraints (Bottlenecks)
+                    </span>
+                    <p className="text-[11px] text-stone-700 dark:text-stone-300">
+                      Throughput_sys = min(R1, R2, ..., Rn)
+                    </p>
+                  </div>
+                  <div className="p-2.5 rounded-lg bg-white dark:bg-stone-950 border border-stone-200 dark:border-stone-800 font-mono">
+                    <span className="text-[11px] font-bold text-amber-600 dark:text-amber-400 block mb-1">
+                      Unit Economics (LTV / CAC)
+                    </span>
+                    <p className="text-[11px] text-stone-700 dark:text-stone-300">
+                      LTV = (ARPU x Margin %) / Churn &ge; 3.0x CAC
+                    </p>
+                  </div>
+                  <div className="p-2.5 rounded-lg bg-white dark:bg-stone-950 border border-stone-200 dark:border-stone-800 font-mono">
+                    <span className="text-[11px] font-bold text-emerald-600 dark:text-emerald-400 block mb-1">
+                      Breakeven Volume (BEP)
+                    </span>
+                    <p className="text-[11px] text-stone-700 dark:text-stone-300">
+                      BEP = Fixed Capex / Unit Contribution Margin
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Documentation Assets */}
+              <div className="p-4 rounded-xl border border-stone-200 dark:border-stone-800 bg-stone-900 text-white space-y-3">
+                <div className="flex items-center gap-2">
+                  <BookOpen className="w-4 h-4 text-cyan-400" />
+                  <h4 className="text-xs font-bold uppercase tracking-wider text-cyan-400">
+                    Official System Documentation Assets
+                  </h4>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+                  <div className="p-2.5 rounded-lg bg-stone-800/80 border border-stone-700/60">
+                    <span className="font-semibold block text-stone-200">System Pipeline Guide (PDF)</span>
+                    <span className="text-[10px] text-stone-400 font-mono">docs/CASE_COMPETITION_SYSTEM_PIPELINE_GUIDE.pdf</span>
+                  </div>
+                  <div className="p-2.5 rounded-lg bg-stone-800/80 border border-stone-700/60">
+                    <span className="font-semibold block text-stone-200">How the Machine Works (Guide)</span>
+                    <span className="text-[10px] text-stone-400 font-mono">docs/HOW_THE_CASE_MACHINE_WORKS.md</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
           {activeTab === 'financials' && (
             <div className="space-y-6 max-w-4xl mx-auto">
               <div className="p-4 rounded-xl bg-amber-500/10 border border-amber-500/20">
@@ -330,6 +477,149 @@ export const CaseSimulatorModal: React.FC<CaseSimulatorModalProps> = ({
                     {solutionData.financial_summary.ltv_to_cac_ratio}x
                   </div>
                   <span className="text-[11px] text-stone-400">Benchmark: &ge;3.0x</span>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {activeTab === 'architecture' && (
+            <div className="space-y-6 max-w-4xl mx-auto">
+              <div className="p-4 rounded-xl bg-cyan-500/10 border border-cyan-500/20">
+                <div className="flex items-center gap-2 mb-1">
+                  <Workflow className="w-4 h-4 text-cyan-600 dark:text-cyan-400" />
+                  <h3 className="font-bold text-sm text-stone-900 dark:text-stone-100">
+                    How the Case Competition Machine Works: 5-Stage Architecture
+                  </h3>
+                </div>
+                <p className="text-xs text-stone-600 dark:text-stone-300">
+                  Like a high-precision industrial lathe or test rig, this system operates deterministically. 
+                  Every raw case brief or dataset is processed through 5 synchronized chambers with zero skipped mathematics.
+                </p>
+              </div>
+
+              {/* 5 Processing Chambers */}
+              <div className="space-y-3">
+                <h4 className="text-xs font-bold uppercase tracking-wider text-stone-500">
+                  The 5 Precision Chambers
+                </h4>
+
+                {[
+                  {
+                    chamber: 'Chamber 1',
+                    title: 'Optical Intake & Decryption',
+                    desc: 'PyMuPDF strips layout noise, parses tables/CSVs, extracts raw constraints, and distinguishes verified evidence from assumptions.',
+                    agent: 'Agents 00 & 01',
+                    color: 'border-cyan-500 text-cyan-600 dark:text-cyan-400 bg-cyan-500/5',
+                  },
+                  {
+                    chamber: 'Chamber 2',
+                    title: 'Graphify Neural Brain & Issue Trees',
+                    desc: 'Traverses knowledge graph across 39 skills and 132+ global case benchmarks (Wharton, Harvard, Rotman) to isolate the core bottleneck.',
+                    agent: 'Agents 02 & 03',
+                    color: 'border-purple-500 text-purple-600 dark:text-purple-400 bg-purple-500/5',
+                  },
+                  {
+                    chamber: 'Chamber 3',
+                    title: 'Hydraulic Strategy Press & Decision Matrix',
+                    desc: 'Generates 3-5 distinct strategic archetypes and scores each against the official competition rubric using weighted utility formulas.',
+                    agent: 'Agents 04 & 05',
+                    color: 'border-amber-500 text-amber-600 dark:text-amber-400 bg-amber-500/5',
+                  },
+                  {
+                    chamber: 'Chamber 4',
+                    title: 'Quantitative Financial Reactor',
+                    desc: "Applies Little's Law, Theory of Constraints, and 3-year proforma statements tested under Bear (-20%), Base, and Bull (+25%) scenarios.",
+                    agent: 'Agents 06, 07 & 08',
+                    color: 'border-emerald-500 text-emerald-600 dark:text-emerald-400 bg-emerald-500/5',
+                  },
+                  {
+                    chamber: 'Chamber 5',
+                    title: 'Omnichannel Deliverable Conveyor',
+                    desc: 'Compiles the full championship suite: 2 PDFs, 12 PPTX slides, Excel model, 112s explainer video, and this live interactive web app.',
+                    agent: 'Agents 09, 10, 11 & 12',
+                    color: 'border-rose-500 text-rose-600 dark:text-rose-400 bg-rose-500/5',
+                  },
+                ].map((c, i) => (
+                  <div
+                    key={c.chamber}
+                    className={`p-3.5 rounded-xl border ${c.color} flex items-start justify-between gap-3`}
+                  >
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <span className="font-mono font-bold text-xs">{c.chamber}:</span>
+                        <span className="font-semibold text-stone-900 dark:text-stone-100 text-xs">
+                          {c.title}
+                        </span>
+                      </div>
+                      <p className="text-[11px] text-stone-600 dark:text-stone-300 mt-1 leading-relaxed">
+                        {c.desc}
+                      </p>
+                    </div>
+                    <span className="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-stone-200 dark:bg-stone-800 text-stone-700 dark:text-stone-300 shrink-0">
+                      {c.agent}
+                    </span>
+                  </div>
+                ))}
+              </div>
+
+              {/* Formula Sheet */}
+              <div className="p-4 rounded-xl border border-stone-200 dark:border-stone-800 bg-stone-50 dark:bg-stone-900">
+                <h4 className="text-xs font-bold text-stone-900 dark:text-stone-100 mb-2">
+                  Standard Industrial & Financial Formulas Applied
+                </h4>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
+                  <div className="p-2.5 rounded-lg bg-white dark:bg-stone-950 border border-stone-200 dark:border-stone-800 font-mono">
+                    <span className="text-[11px] font-bold text-cyan-600 dark:text-cyan-400 block mb-1">
+                      Little's Law (Queueing Flow)
+                    </span>
+                    <p className="text-[11px] text-stone-700 dark:text-stone-300">
+                      WIP = Throughput (TH) x Cycle Time (CT)
+                    </p>
+                  </div>
+                  <div className="p-2.5 rounded-lg bg-white dark:bg-stone-950 border border-stone-200 dark:border-stone-800 font-mono">
+                    <span className="text-[11px] font-bold text-purple-600 dark:text-purple-400 block mb-1">
+                      Theory of Constraints (Bottlenecks)
+                    </span>
+                    <p className="text-[11px] text-stone-700 dark:text-stone-300">
+                      Throughput_sys = min(R1, R2, ..., Rn)
+                    </p>
+                  </div>
+                  <div className="p-2.5 rounded-lg bg-white dark:bg-stone-950 border border-stone-200 dark:border-stone-800 font-mono">
+                    <span className="text-[11px] font-bold text-amber-600 dark:text-amber-400 block mb-1">
+                      Unit Economics (LTV / CAC)
+                    </span>
+                    <p className="text-[11px] text-stone-700 dark:text-stone-300">
+                      LTV = (ARPU x Margin %) / Churn &ge; 3.0x CAC
+                    </p>
+                  </div>
+                  <div className="p-2.5 rounded-lg bg-white dark:bg-stone-950 border border-stone-200 dark:border-stone-800 font-mono">
+                    <span className="text-[11px] font-bold text-emerald-600 dark:text-emerald-400 block mb-1">
+                      Breakeven Volume (BEP)
+                    </span>
+                    <p className="text-[11px] text-stone-700 dark:text-stone-300">
+                      BEP = Fixed Capex / Unit Contribution Margin
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Documentation Assets */}
+              <div className="p-4 rounded-xl border border-stone-200 dark:border-stone-800 bg-stone-900 text-white space-y-3">
+                <div className="flex items-center gap-2">
+                  <BookOpen className="w-4 h-4 text-cyan-400" />
+                  <h4 className="text-xs font-bold uppercase tracking-wider text-cyan-400">
+                    Official System Documentation Assets
+                  </h4>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+                  <div className="p-2.5 rounded-lg bg-stone-800/80 border border-stone-700/60">
+                    <span className="font-semibold block text-stone-200">System Pipeline Guide (PDF)</span>
+                    <span className="text-[10px] text-stone-400 font-mono">docs/CASE_COMPETITION_SYSTEM_PIPELINE_GUIDE.pdf</span>
+                  </div>
+                  <div className="p-2.5 rounded-lg bg-stone-800/80 border border-stone-700/60">
+                    <span className="font-semibold block text-stone-200">How the Machine Works (Guide)</span>
+                    <span className="text-[10px] text-stone-400 font-mono">docs/HOW_THE_CASE_MACHINE_WORKS.md</span>
+                  </div>
                 </div>
               </div>
             </div>
@@ -463,6 +753,149 @@ export const CaseSimulatorModal: React.FC<CaseSimulatorModalProps> = ({
             </div>
           )}
 
+          {activeTab === 'architecture' && (
+            <div className="space-y-6 max-w-4xl mx-auto">
+              <div className="p-4 rounded-xl bg-cyan-500/10 border border-cyan-500/20">
+                <div className="flex items-center gap-2 mb-1">
+                  <Workflow className="w-4 h-4 text-cyan-600 dark:text-cyan-400" />
+                  <h3 className="font-bold text-sm text-stone-900 dark:text-stone-100">
+                    How the Case Competition Machine Works: 5-Stage Architecture
+                  </h3>
+                </div>
+                <p className="text-xs text-stone-600 dark:text-stone-300">
+                  Like a high-precision industrial lathe or test rig, this system operates deterministically. 
+                  Every raw case brief or dataset is processed through 5 synchronized chambers with zero skipped mathematics.
+                </p>
+              </div>
+
+              {/* 5 Processing Chambers */}
+              <div className="space-y-3">
+                <h4 className="text-xs font-bold uppercase tracking-wider text-stone-500">
+                  The 5 Precision Chambers
+                </h4>
+
+                {[
+                  {
+                    chamber: 'Chamber 1',
+                    title: 'Optical Intake & Decryption',
+                    desc: 'PyMuPDF strips layout noise, parses tables/CSVs, extracts raw constraints, and distinguishes verified evidence from assumptions.',
+                    agent: 'Agents 00 & 01',
+                    color: 'border-cyan-500 text-cyan-600 dark:text-cyan-400 bg-cyan-500/5',
+                  },
+                  {
+                    chamber: 'Chamber 2',
+                    title: 'Graphify Neural Brain & Issue Trees',
+                    desc: 'Traverses knowledge graph across 39 skills and 132+ global case benchmarks (Wharton, Harvard, Rotman) to isolate the core bottleneck.',
+                    agent: 'Agents 02 & 03',
+                    color: 'border-purple-500 text-purple-600 dark:text-purple-400 bg-purple-500/5',
+                  },
+                  {
+                    chamber: 'Chamber 3',
+                    title: 'Hydraulic Strategy Press & Decision Matrix',
+                    desc: 'Generates 3-5 distinct strategic archetypes and scores each against the official competition rubric using weighted utility formulas.',
+                    agent: 'Agents 04 & 05',
+                    color: 'border-amber-500 text-amber-600 dark:text-amber-400 bg-amber-500/5',
+                  },
+                  {
+                    chamber: 'Chamber 4',
+                    title: 'Quantitative Financial Reactor',
+                    desc: "Applies Little's Law, Theory of Constraints, and 3-year proforma statements tested under Bear (-20%), Base, and Bull (+25%) scenarios.",
+                    agent: 'Agents 06, 07 & 08',
+                    color: 'border-emerald-500 text-emerald-600 dark:text-emerald-400 bg-emerald-500/5',
+                  },
+                  {
+                    chamber: 'Chamber 5',
+                    title: 'Omnichannel Deliverable Conveyor',
+                    desc: 'Compiles the full championship suite: 2 PDFs, 12 PPTX slides, Excel model, 112s explainer video, and this live interactive web app.',
+                    agent: 'Agents 09, 10, 11 & 12',
+                    color: 'border-rose-500 text-rose-600 dark:text-rose-400 bg-rose-500/5',
+                  },
+                ].map((c, i) => (
+                  <div
+                    key={c.chamber}
+                    className={`p-3.5 rounded-xl border ${c.color} flex items-start justify-between gap-3`}
+                  >
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <span className="font-mono font-bold text-xs">{c.chamber}:</span>
+                        <span className="font-semibold text-stone-900 dark:text-stone-100 text-xs">
+                          {c.title}
+                        </span>
+                      </div>
+                      <p className="text-[11px] text-stone-600 dark:text-stone-300 mt-1 leading-relaxed">
+                        {c.desc}
+                      </p>
+                    </div>
+                    <span className="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-stone-200 dark:bg-stone-800 text-stone-700 dark:text-stone-300 shrink-0">
+                      {c.agent}
+                    </span>
+                  </div>
+                ))}
+              </div>
+
+              {/* Formula Sheet */}
+              <div className="p-4 rounded-xl border border-stone-200 dark:border-stone-800 bg-stone-50 dark:bg-stone-900">
+                <h4 className="text-xs font-bold text-stone-900 dark:text-stone-100 mb-2">
+                  Standard Industrial & Financial Formulas Applied
+                </h4>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
+                  <div className="p-2.5 rounded-lg bg-white dark:bg-stone-950 border border-stone-200 dark:border-stone-800 font-mono">
+                    <span className="text-[11px] font-bold text-cyan-600 dark:text-cyan-400 block mb-1">
+                      Little's Law (Queueing Flow)
+                    </span>
+                    <p className="text-[11px] text-stone-700 dark:text-stone-300">
+                      WIP = Throughput (TH) x Cycle Time (CT)
+                    </p>
+                  </div>
+                  <div className="p-2.5 rounded-lg bg-white dark:bg-stone-950 border border-stone-200 dark:border-stone-800 font-mono">
+                    <span className="text-[11px] font-bold text-purple-600 dark:text-purple-400 block mb-1">
+                      Theory of Constraints (Bottlenecks)
+                    </span>
+                    <p className="text-[11px] text-stone-700 dark:text-stone-300">
+                      Throughput_sys = min(R1, R2, ..., Rn)
+                    </p>
+                  </div>
+                  <div className="p-2.5 rounded-lg bg-white dark:bg-stone-950 border border-stone-200 dark:border-stone-800 font-mono">
+                    <span className="text-[11px] font-bold text-amber-600 dark:text-amber-400 block mb-1">
+                      Unit Economics (LTV / CAC)
+                    </span>
+                    <p className="text-[11px] text-stone-700 dark:text-stone-300">
+                      LTV = (ARPU x Margin %) / Churn &ge; 3.0x CAC
+                    </p>
+                  </div>
+                  <div className="p-2.5 rounded-lg bg-white dark:bg-stone-950 border border-stone-200 dark:border-stone-800 font-mono">
+                    <span className="text-[11px] font-bold text-emerald-600 dark:text-emerald-400 block mb-1">
+                      Breakeven Volume (BEP)
+                    </span>
+                    <p className="text-[11px] text-stone-700 dark:text-stone-300">
+                      BEP = Fixed Capex / Unit Contribution Margin
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Documentation Assets */}
+              <div className="p-4 rounded-xl border border-stone-200 dark:border-stone-800 bg-stone-900 text-white space-y-3">
+                <div className="flex items-center gap-2">
+                  <BookOpen className="w-4 h-4 text-cyan-400" />
+                  <h4 className="text-xs font-bold uppercase tracking-wider text-cyan-400">
+                    Official System Documentation Assets
+                  </h4>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+                  <div className="p-2.5 rounded-lg bg-stone-800/80 border border-stone-700/60">
+                    <span className="font-semibold block text-stone-200">System Pipeline Guide (PDF)</span>
+                    <span className="text-[10px] text-stone-400 font-mono">docs/CASE_COMPETITION_SYSTEM_PIPELINE_GUIDE.pdf</span>
+                  </div>
+                  <div className="p-2.5 rounded-lg bg-stone-800/80 border border-stone-700/60">
+                    <span className="font-semibold block text-stone-200">How the Machine Works (Guide)</span>
+                    <span className="text-[10px] text-stone-400 font-mono">docs/HOW_THE_CASE_MACHINE_WORKS.md</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
           {activeTab === 'agents' && (
             <div className="space-y-4 max-w-4xl mx-auto">
               <div className="p-4 rounded-xl bg-amber-500/10 border border-amber-500/20 mb-2">
@@ -496,6 +929,149 @@ export const CaseSimulatorModal: React.FC<CaseSimulatorModalProps> = ({
                     </span>
                   </div>
                 ))}
+              </div>
+            </div>
+          )}
+
+          {activeTab === 'architecture' && (
+            <div className="space-y-6 max-w-4xl mx-auto">
+              <div className="p-4 rounded-xl bg-cyan-500/10 border border-cyan-500/20">
+                <div className="flex items-center gap-2 mb-1">
+                  <Workflow className="w-4 h-4 text-cyan-600 dark:text-cyan-400" />
+                  <h3 className="font-bold text-sm text-stone-900 dark:text-stone-100">
+                    How the Case Competition Machine Works: 5-Stage Architecture
+                  </h3>
+                </div>
+                <p className="text-xs text-stone-600 dark:text-stone-300">
+                  Like a high-precision industrial lathe or test rig, this system operates deterministically. 
+                  Every raw case brief or dataset is processed through 5 synchronized chambers with zero skipped mathematics.
+                </p>
+              </div>
+
+              {/* 5 Processing Chambers */}
+              <div className="space-y-3">
+                <h4 className="text-xs font-bold uppercase tracking-wider text-stone-500">
+                  The 5 Precision Chambers
+                </h4>
+
+                {[
+                  {
+                    chamber: 'Chamber 1',
+                    title: 'Optical Intake & Decryption',
+                    desc: 'PyMuPDF strips layout noise, parses tables/CSVs, extracts raw constraints, and distinguishes verified evidence from assumptions.',
+                    agent: 'Agents 00 & 01',
+                    color: 'border-cyan-500 text-cyan-600 dark:text-cyan-400 bg-cyan-500/5',
+                  },
+                  {
+                    chamber: 'Chamber 2',
+                    title: 'Graphify Neural Brain & Issue Trees',
+                    desc: 'Traverses knowledge graph across 39 skills and 132+ global case benchmarks (Wharton, Harvard, Rotman) to isolate the core bottleneck.',
+                    agent: 'Agents 02 & 03',
+                    color: 'border-purple-500 text-purple-600 dark:text-purple-400 bg-purple-500/5',
+                  },
+                  {
+                    chamber: 'Chamber 3',
+                    title: 'Hydraulic Strategy Press & Decision Matrix',
+                    desc: 'Generates 3-5 distinct strategic archetypes and scores each against the official competition rubric using weighted utility formulas.',
+                    agent: 'Agents 04 & 05',
+                    color: 'border-amber-500 text-amber-600 dark:text-amber-400 bg-amber-500/5',
+                  },
+                  {
+                    chamber: 'Chamber 4',
+                    title: 'Quantitative Financial Reactor',
+                    desc: "Applies Little's Law, Theory of Constraints, and 3-year proforma statements tested under Bear (-20%), Base, and Bull (+25%) scenarios.",
+                    agent: 'Agents 06, 07 & 08',
+                    color: 'border-emerald-500 text-emerald-600 dark:text-emerald-400 bg-emerald-500/5',
+                  },
+                  {
+                    chamber: 'Chamber 5',
+                    title: 'Omnichannel Deliverable Conveyor',
+                    desc: 'Compiles the full championship suite: 2 PDFs, 12 PPTX slides, Excel model, 112s explainer video, and this live interactive web app.',
+                    agent: 'Agents 09, 10, 11 & 12',
+                    color: 'border-rose-500 text-rose-600 dark:text-rose-400 bg-rose-500/5',
+                  },
+                ].map((c, i) => (
+                  <div
+                    key={c.chamber}
+                    className={`p-3.5 rounded-xl border ${c.color} flex items-start justify-between gap-3`}
+                  >
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <span className="font-mono font-bold text-xs">{c.chamber}:</span>
+                        <span className="font-semibold text-stone-900 dark:text-stone-100 text-xs">
+                          {c.title}
+                        </span>
+                      </div>
+                      <p className="text-[11px] text-stone-600 dark:text-stone-300 mt-1 leading-relaxed">
+                        {c.desc}
+                      </p>
+                    </div>
+                    <span className="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-stone-200 dark:bg-stone-800 text-stone-700 dark:text-stone-300 shrink-0">
+                      {c.agent}
+                    </span>
+                  </div>
+                ))}
+              </div>
+
+              {/* Formula Sheet */}
+              <div className="p-4 rounded-xl border border-stone-200 dark:border-stone-800 bg-stone-50 dark:bg-stone-900">
+                <h4 className="text-xs font-bold text-stone-900 dark:text-stone-100 mb-2">
+                  Standard Industrial & Financial Formulas Applied
+                </h4>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
+                  <div className="p-2.5 rounded-lg bg-white dark:bg-stone-950 border border-stone-200 dark:border-stone-800 font-mono">
+                    <span className="text-[11px] font-bold text-cyan-600 dark:text-cyan-400 block mb-1">
+                      Little's Law (Queueing Flow)
+                    </span>
+                    <p className="text-[11px] text-stone-700 dark:text-stone-300">
+                      WIP = Throughput (TH) x Cycle Time (CT)
+                    </p>
+                  </div>
+                  <div className="p-2.5 rounded-lg bg-white dark:bg-stone-950 border border-stone-200 dark:border-stone-800 font-mono">
+                    <span className="text-[11px] font-bold text-purple-600 dark:text-purple-400 block mb-1">
+                      Theory of Constraints (Bottlenecks)
+                    </span>
+                    <p className="text-[11px] text-stone-700 dark:text-stone-300">
+                      Throughput_sys = min(R1, R2, ..., Rn)
+                    </p>
+                  </div>
+                  <div className="p-2.5 rounded-lg bg-white dark:bg-stone-950 border border-stone-200 dark:border-stone-800 font-mono">
+                    <span className="text-[11px] font-bold text-amber-600 dark:text-amber-400 block mb-1">
+                      Unit Economics (LTV / CAC)
+                    </span>
+                    <p className="text-[11px] text-stone-700 dark:text-stone-300">
+                      LTV = (ARPU x Margin %) / Churn &ge; 3.0x CAC
+                    </p>
+                  </div>
+                  <div className="p-2.5 rounded-lg bg-white dark:bg-stone-950 border border-stone-200 dark:border-stone-800 font-mono">
+                    <span className="text-[11px] font-bold text-emerald-600 dark:text-emerald-400 block mb-1">
+                      Breakeven Volume (BEP)
+                    </span>
+                    <p className="text-[11px] text-stone-700 dark:text-stone-300">
+                      BEP = Fixed Capex / Unit Contribution Margin
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Documentation Assets */}
+              <div className="p-4 rounded-xl border border-stone-200 dark:border-stone-800 bg-stone-900 text-white space-y-3">
+                <div className="flex items-center gap-2">
+                  <BookOpen className="w-4 h-4 text-cyan-400" />
+                  <h4 className="text-xs font-bold uppercase tracking-wider text-cyan-400">
+                    Official System Documentation Assets
+                  </h4>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+                  <div className="p-2.5 rounded-lg bg-stone-800/80 border border-stone-700/60">
+                    <span className="font-semibold block text-stone-200">System Pipeline Guide (PDF)</span>
+                    <span className="text-[10px] text-stone-400 font-mono">docs/CASE_COMPETITION_SYSTEM_PIPELINE_GUIDE.pdf</span>
+                  </div>
+                  <div className="p-2.5 rounded-lg bg-stone-800/80 border border-stone-700/60">
+                    <span className="font-semibold block text-stone-200">How the Machine Works (Guide)</span>
+                    <span className="text-[10px] text-stone-400 font-mono">docs/HOW_THE_CASE_MACHINE_WORKS.md</span>
+                  </div>
+                </div>
               </div>
             </div>
           )}
