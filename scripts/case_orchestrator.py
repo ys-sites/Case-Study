@@ -205,6 +205,51 @@ def load_case_data(case_identifier: str = "ENG-0001"):
             except Exception as e:
                 print(f"Notice: Failed to load from 100k preview: {e}")
 
+    # 4. Lookup in data/engineering_1million_additional_preview.csv
+    if case_identifier.upper().startswith("ENG1M"):
+        csv_1m = Path("data/engineering_1million_additional_preview.csv")
+        if csv_1m.exists():
+            try:
+                with open(csv_1m, "r", encoding="utf-8-sig") as f:
+                    reader = csv.DictReader(f)
+                    for row in reader:
+                        if row.get("case_id") == case_identifier:
+                            return {
+                                "id": row["case_id"],
+                                "title": f"{row.get('asset', 'Asset').title()} — {row.get('technical_challenge', '').title()} ({row.get('disruption', '')})",
+                                "discipline": row.get("discipline", "Industrial Engineering"),
+                                "difficulty": row.get("difficulty", "Beginner"),
+                                "brief": f"Operating context: {row.get('operating_context')}. Disruption: {row.get('disruption')}. Constraint: {row.get('constraint')}.",
+                                "decision_question": row.get("decision_question", ""),
+                                "objective": f"Achieve {row.get('required_improvement_pct', 20)}% improvement in {row.get('technical_challenge', 'performance')} under CAD ${float(row.get('budget_cad', 1500000)):,}.",
+                                "inputs": {
+                                    "baseline_metric": f"{row.get('technical_challenge', 'Baseline').title()}",
+                                    "baseline_value": float(row.get("baseline_value", 1000)),
+                                    "baseline_unit": row.get("baseline_unit", "units/day"),
+                                    "target_metric": "Target Improvement",
+                                    "target_value": float(row.get("required_improvement_pct", 20)),
+                                    "target_unit": "%",
+                                    "capital_budget_CAD": float(row.get("budget_cad", 1500000)),
+                                    "timeline_months": int(float(row.get("deadline_months", 12)))
+                                },
+                                "constraints": [
+                                    f"Budget: CAD ${float(row.get('budget_cad', 1500000)):,}",
+                                    f"Deadline: {row.get('deadline_months')} months",
+                                    f"Minimum Availability: {row.get('minimum_availability_pct', 95)}%",
+                                    row.get("constraint", "")
+                                ],
+                                "alternatives": [
+                                    f"Option A: {row.get('option_a')} (CAD ${float(row.get('option_a_capex_cad', 500000)):,}, +{row.get('option_a_estimated_improvement_pct', 15)}%)",
+                                    f"Option B: {row.get('option_b')} (CAD ${float(row.get('option_b_capex_cad', 1200000)):,}, +{row.get('option_b_estimated_improvement_pct', 25)}%)",
+                                    f"Option C: {row.get('option_c')} (CAD ${float(row.get('option_c_capex_cad', 1800000)):,}, +{row.get('option_c_estimated_improvement_pct', 35)}%)"
+                                ],
+                                "suggested_analysis": row.get("analysis_methods", "Theory of Constraints + Discrete-Event Simulation"),
+                                "judge_challenge": row.get("judge_question", "What happens to system throughput if cooling loop downtime spikes during seasonal peak?"),
+                                "source_type": "1m_preview_simulation"
+                            }
+            except Exception as e:
+                print(f"Notice: Failed to load from 1m preview: {e}")
+
     # 4. Lookup in data/engineering_1000_case_simulations.json
     simulations_file = Path("data/engineering_1000_case_simulations.json")
     if simulations_file.exists():
@@ -856,8 +901,15 @@ def generate_qa_and_manifest(spec: dict):
     print(f"[Agent 12 Website Development] Synced solution specification to frontend: {web_data_dir / 'current_case_solution.json'}")
 
 if __name__ == "__main__":
+    import argparse
+    parser = argparse.ArgumentParser(description="Autonomous Case Competition Intelligence System Orchestrator")
+    parser.add_argument("case_pos", nargs="?", default=None, help="Positional case identifier or path")
+    parser.add_argument("--case-id", "-c", dest="case_id", default=None, help="Case identifier (e.g. ENG1M-0000001, ENG100K-000003, ENG-0001)")
+    parser.add_argument("--input", "-i", dest="input_path", default=None, help="Path to custom PDF, Markdown, or directory")
+    args = parser.parse_args()
+
+    chosen_case = args.case_id or args.input_path or args.case_pos or "ENG-0001"
     create_directory_structure()
-    case_arg = sys.argv[1] if len(sys.argv) > 1 else "ENG-0001"
-    case_info = load_case_data(case_arg)
+    case_info = load_case_data(chosen_case)
     run_agent_pipeline(case_info)
 

@@ -726,15 +726,15 @@
     "semantic_hash": ""
   },
   "Finished Resources/01_Case_Intelligence/assumptions_register.md": {
-    "mtime": 1794191094.147933,
-    "seen": 1794192113.8186095,
-    "ast_hash": "0c0dff355c939d421f3734f8cee28193",
+    "mtime": 1794192478.289841,
+    "seen": 1794192540.7653852,
+    "ast_hash": "d74c26de26dbb885bacb23bfaec82772",
     "semantic_hash": ""
   },
   "Finished Resources/01_Case_Intelligence/case_summary.md": {
-    "mtime": 1794191094.1262188,
-    "seen": 1794192113.8186116,
-    "ast_hash": "59d95ce1125104c49f80813d93381d41",
+    "mtime": 1794192478.281837,
+    "seen": 1794192540.7653918,
+    "ast_hash": "9173aadbcee70b58d41936ce420511eb",
     "semantic_hash": ""
   },
   "Finished Resources/01_Case_Intelligence/judging_rubric.md": {
@@ -750,8 +750,8 @@
     "semantic_hash": ""
   },
   "Finished Resources/02_Research/competitor_analysis.md": {
-    "mtime": 1794191094.1529331,
-    "seen": 1794192113.8186195,
+    "mtime": 1794192478.2928529,
+    "seen": 1794192540.766575,
     "ast_hash": "3833735507ca89c468d8b186b09c7d8c",
     "semantic_hash": ""
   },
@@ -774,8 +774,8 @@
     "semantic_hash": ""
   },
   "Finished Resources/03_Brainstorming/idea_clusters.md": {
-    "mtime": 1794191094.1765924,
-    "seen": 1794192113.8186305,
+    "mtime": 1794192478.3107526,
+    "seen": 1794192540.768357,
     "ast_hash": "f0b0141a414814eb0e050a4b3ce8b40e",
     "semantic_hash": ""
   },
@@ -834,15 +834,15 @@
     "semantic_hash": ""
   },
   "Finished Resources/07_PowerPoint/judge_QA_preparation.md": {
-    "mtime": 1794191094.7492018,
-    "seen": 1794192113.8186562,
+    "mtime": 1794192478.8063889,
+    "seen": 1794192540.7737272,
     "ast_hash": "02d6dc91d818130d9e1acfd43d565bac",
     "semantic_hash": ""
   },
   "Finished Resources/07_PowerPoint/speaker_notes.md": {
-    "mtime": 1794191094.7452054,
-    "seen": 1794192113.8186586,
-    "ast_hash": "cedc40d7d9fc3796e4f9b3647d7b160d",
+    "mtime": 1794192478.8003757,
+    "seen": 1794192540.7737322,
+    "ast_hash": "bf2ea6dc81ec9656a958092dddf54305",
     "semantic_hash": ""
   },
   "Finished Resources/08_Website/README.md": {
@@ -864,20 +864,20 @@
     "semantic_hash": ""
   },
   "Finished Resources/09_Video/narration_script.md": {
-    "mtime": 1794191094.7707183,
-    "seen": 1794192113.8186688,
+    "mtime": 1794192478.8261049,
+    "seen": 1794192540.775494,
     "ast_hash": "5283b41284b45ebded10cd1eb0b25fa4",
     "semantic_hash": ""
   },
   "Finished Resources/09_Video/storyboard.md": {
-    "mtime": 1794191094.7651467,
-    "seen": 1794192113.8186715,
+    "mtime": 1794192478.8191006,
+    "seen": 1794192540.7754996,
     "ast_hash": "1ee3b8740fdffb5e5d0febc76eb78a94",
     "semantic_hash": ""
   },
   "Finished Resources/11_Final_Quality_Control/compliance_checklist.md": {
-    "mtime": 1794191114.1728587,
-    "seen": 1794192113.8186738,
+    "mtime": 1794192494.9778178,
+    "seen": 1794192540.775504,
     "ast_hash": "40b380cbdae0d7a3c61a4390e22b7ea0",
     "semantic_hash": ""
   },
@@ -1116,15 +1116,15 @@
     "semantic_hash": ""
   },
   "Finished Resources/06_PDF_Deliverables/Final_Case_Solution.pdf": {
-    "mtime": 1794191094.628526,
-    "seen": 1794192113.8187768,
-    "ast_hash": "537c6043e16ddebeec1225a8cc15460e",
+    "mtime": 1794192478.6925104,
+    "seen": 1794192540.8005116,
+    "ast_hash": "b0d4c9379f1863c3290be3e6e3ba2e4b",
     "semantic_hash": ""
   },
   "Finished Resources/06_PDF_Deliverables/Strategic_Blueprint.pdf": {
-    "mtime": 1794191094.575145,
-    "seen": 1794192113.8187795,
-    "ast_hash": "f6f33352e205fd8bd4e0ba45f9b54dcd",
+    "mtime": 1794192478.6405125,
+    "seen": 1794192540.8005185,
+    "ast_hash": "84fa6246e78fe99371e9e7ebf940a3f6",
     "semantic_hash": ""
   },
   "data/case-competition-master-prompt.pdf": {
@@ -1332,15 +1332,15 @@
     "semantic_hash": ""
   },
   "Finished Resources/00_Project_Overview/project_status.json": {
-    "mtime": 1794191114.1858609,
-    "seen": 1794192178.0899112,
-    "ast_hash": "c95dcc5099aefe1aa29d7f5f0828206c",
+    "mtime": 1794192494.991514,
+    "seen": 1794192540.697835,
+    "ast_hash": "a9a4aa523f4ce611840c1b8073fb6ed1",
     "semantic_hash": ""
   },
   "Finished Resources/01_Case_Intelligence/case_data.json": {
-    "mtime": 1794191094.142931,
-    "seen": 1794192178.0899172,
-    "ast_hash": "f32152a7e1a47aae957f50b4fcc53974",
+    "mtime": 1794192478.28584,
+    "seen": 1794192540.697847,
+    "ast_hash": "c3ca08b9c0beeb776d8c52b8a02bd36e",
     "semantic_hash": ""
   },
   "Finished Resources/09_Video/beats.json": {
@@ -1356,15 +1356,15 @@
     "semantic_hash": ""
   },
   "Finished Resources/11_Final_Quality_Control/final_delivery_manifest.json": {
-    "mtime": 1794191114.1798608,
-    "seen": 1794192178.0899348,
-    "ast_hash": "c95dcc5099aefe1aa29d7f5f0828206c",
+    "mtime": 1794192494.985513,
+    "seen": 1794192540.6995068,
+    "ast_hash": "a9a4aa523f4ce611840c1b8073fb6ed1",
     "semantic_hash": ""
   },
   "Finished Resources/solution_spec.json": {
-    "mtime": 1794191094.119908,
-    "seen": 1794192178.08994,
-    "ast_hash": "417a7e45f00bd62b6dd3615565b2d161",
+    "mtime": 1794192478.274684,
+    "seen": 1794192540.6995149,
+    "ast_hash": "58be79358c65ca25d3ca99f7be4ae5cb",
     "semantic_hash": ""
   },
   "metadata.json": {
@@ -1380,9 +1380,9 @@
     "semantic_hash": ""
   },
   "scripts/case_orchestrator.py": {
-    "mtime": 1794191086.8731737,
-    "seen": 1794192178.0899563,
-    "ast_hash": "bddb7dcacf8f62bd5c38431075029a75",
+    "mtime": 1794192471.2331433,
+    "seen": 1794192540.7009454,
+    "ast_hash": "f6e694b5cb25a7faec09fdb3daa9dce8",
     "semantic_hash": ""
   },
   "scripts/generate_pipeline_pdf.py": {
@@ -1482,9 +1482,9 @@
     "semantic_hash": ""
   },
   "src/data/case_index.json": {
-    "mtime": 1794189494.9757366,
-    "seen": 1794192178.0900464,
-    "ast_hash": "06d600976a6db5f092c39b99a43c29e9",
+    "mtime": 1794192521.080264,
+    "seen": 1794192540.710304,
+    "ast_hash": "25dfea2ee937ee0254d54e6a5ca05e3e",
     "semantic_hash": ""
   },
   "src/data/competitions.json": {
@@ -1494,9 +1494,9 @@
     "semantic_hash": ""
   },
   "src/data/current_case_solution.json": {
-    "mtime": 1794191114.191488,
-    "seen": 1794192178.0900564,
-    "ast_hash": "417a7e45f00bd62b6dd3615565b2d161",
+    "mtime": 1794192495.0016193,
+    "seen": 1794192540.7108958,
+    "ast_hash": "58be79358c65ca25d3ca99f7be4ae5cb",
     "semantic_hash": ""
   },
   "src/main.tsx": {
@@ -1545,6 +1545,18 @@
     "mtime": 1794186190.126494,
     "seen": 1794192178.090098,
     "ast_hash": "ca113b1750a5c4e85d0a2409d0fc5fb6",
+    "semantic_hash": ""
+  },
+  "scripts/graphify_case_query.py": {
+    "mtime": 1794192358.1604457,
+    "seen": 1794192540.701558,
+    "ast_hash": "485277e5409c02e554f376987360e412",
+    "semantic_hash": ""
+  },
+  "scripts/reindex_case_database.py": {
+    "mtime": 1794192516.509395,
+    "seen": 1794192540.7021377,
+    "ast_hash": "80c388f17b13dbd453cd7209ce493b51",
     "semantic_hash": ""
   },
   "package-lock.json": {

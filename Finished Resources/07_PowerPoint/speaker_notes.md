@@ -1,6 +1,6 @@
 # Executive Presentation Speaker Notes (Slide-by-Slide)
 
-### Slide: Strategic Turnaround: Factory bottleneck redesign — Food and agriculture processor (energy tariff increase)
+### Slide: Strategic Turnaround: Cold-Chain Fulfillment Center — Capacity Scaling (unexpected demand increase)
 **Key Talking Point**: Focus on the core trade-off. Reiterate that Winning Case Strategy Deck | Executive Presentation.
 **Time Target**: 50 - 60 seconds. Address the judges directly with zero hedging.
 
@@ -13,7 +13,7 @@
 **Time Target**: 50 - 60 seconds. Address the judges directly with zero hedging.
 
 ### Slide: 3. The Core Bottleneck & TOC Framing
-**Key Talking Point**: Focus on the core trade-off. Reiterate that Baseline output: 1112.68 units/day.
+**Key Talking Point**: Focus on the core trade-off. Reiterate that Baseline output: 1190.0 units/day.
 **Time Target**: 50 - 60 seconds. Address the judges directly with zero hedging.
 
 ### Slide: 4. Strategic Alternatives Comparison

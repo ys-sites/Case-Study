@@ -1,17 +1,18 @@
-# Case Intelligence Report: Factory bottleneck redesign — Food and agriculture processor (energy tariff increase)
+# Case Intelligence Report: Cold-Chain Fulfillment Center — Capacity Scaling (unexpected demand increase)
 
 **Discipline**: Industrial Engineering | **Difficulty**: Beginner
 
 ### Problem Statement
-Food and agriculture processor: address factory bottleneck redesign during energy tariff increase. Baseline current daily output is 1,112.68 units/day; aim for 31.9% improvement in capacity increase within 6 months and CAD 679,000. Availability 84.53% and allowed installation downtime 12 hours. Evaluate three alternative designs under the stated synthetic assumptions.
+Operating context: metropolitan public agency. Disruption: unexpected demand increase. Constraint: installation restricted to weekends.
 
 ### Core Decision Question
-Which design should be chosen for Factory bottleneck redesign during energy tariff increase?
+For the cold-chain fulfillment center operated by a metropolitan public agency, plan a capacity upgrade while protecting service quality following unexpected demand increase. Baseline capacity: 1,190 units/day. Deliver at least 8.5% improvement within 3 months under CAD 866,000 capital limit; installation restricted to weekends. Select a technically justified alternative and test what happens if performance falls 15%.
 
 ### Objective
-Achieve 31.9% improvement in Capacity increase within 6 months under CAD $679,000.0.
+Achieve 8.5% improvement in capacity scaling under CAD $866,000.0.
 
 ### Stated Constraints
-- Meet statutory environmental permits
-- Allow for future capacity expansion
-- No unplanned service outages permitted
+- Budget: CAD $866,000.0
+- Deadline: 3 months
+- Minimum Availability: 98.0%
+- installation restricted to weekends
