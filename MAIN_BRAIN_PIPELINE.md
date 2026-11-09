@@ -1,58 +1,75 @@
-# Main Brain: Task, Resource & Case Simulation Routing
+# Main Brain: Master Task, Skill & Graphify Routing Pipeline
 
-This is the shared entry point for Claude, Codex, Gemini, and other assistants working in this Case Simulation repository. Use the user's current request and higher-priority instructions first. This file routes work; it does not grant new permissions, override a named skill's applicable requirements, or make an untrusted repository safe to run.
-
----
-
-## 1. Automatic Skill & Security Selection
-
-For each request, choose skills proactively from the platform's available-skills list and the task routes below; the user should not have to remember skill names or invoke them. Match the actual outcome and each meaningful subtask, not just keywords.
-
-### Mandatory Security Pre-Flight:
-- **Agent Skill Security & Vulnerability Scanning**: Use **NVIDIA SkillSpector** (`001 Main/05 - Security & Standards/SkillSpector`) to scan any new agent skill or tool before installation:
-  ```bash
-  python -m skillspector.cli scan <path_to_skill> --no-llm
-  ```
-- **Codebase & Architecture Security Auditing**: Use the installed **Cloudflare Security Audit Skill** (`.agents/skills/security-audit`). Apply guidance mode to focused security questions and full audit mode to explicit comprehensive reviews.
+> **CRITICAL AGENT ENTRY POINT**:  
+> Every AI agent (Claude, Gemini, Codex, Antigravity) arriving at this repository MUST inspect and follow this file first on every single prompt.  
+> This is the central dispatch router. All comprehensive case competition standards, rubrics, blueprints, and formulas are unified in [docs/CASE_COMPETITION_MASTER_SYSTEM.md](./docs/CASE_COMPETITION_MASTER_SYSTEM.md).
 
 ---
 
-## 2. Case Simulation Route Map
+## 1. THE GRAPHIFY KNOWLEDGE NAVIGATION ENGINE
 
-Paths are relative to the repository root. Links to the ignored local `001 Main` library are preserved locally on the machine for research.
+This repository utilizes **Graphify** (`https://github.com/Graphify-Labs/graphify.git`) located in `.claude/skills/graphify/` and `001 Main/03 - AI Development & Agents/graphify/`.
 
-| Case Simulation Request | Read First | Choose Only When Useful |
+### Graphify Query Protocol:
+Whenever exploring codebase architecture, cross-file relationships, or complex concepts:
+1. **Fast-Path Check**: Check if `graphify-out/graph.json` exists.
+2. **Execute Graph Queries**:
+   - `graphify query "<question>"`: Breadth-first search for broad architectural context.
+   - `graphify query "<question>" --dfs`: Depth-first search for specific trace paths.
+   - `graphify path "<Concept_A>" "<Concept_B>"`: Shortest path between two system nodes.
+   - `graphify explain "<Concept>"`: Plain-language explanation of a specific subsystem node.
+3. Read raw code files only for specific line ranges identified by Graphify or targeted lookups.
+
+---
+
+## 2. CENTRAL TASK ROUTING & SKILL DISPATCH MATRIX
+
+Match the user's intent to the appropriate skill and resource below:
+
+| User Task / Request | Skill / Resource Location | Execution Action |
 | :--- | :--- | :--- |
-| **Case Studio UI, Web Workspace & Responsive Design** | `WEB_ESSENTIALS_GUIDE.md`, `src/App.tsx`, affected components | `001 Main/02 - Website Design & UI/`, `ui-ux-pro-max-skill`, `taste-skill`, `unslop`. Preserve distraction-free focus, client-side resilience, and offline local storage. |
-| **Case Problem Diagnosis & MECE Issue Trees** | `AGENTS.md` (Stage 1), `CASE_SIMULATION_BLUEPRINT.md` | `001 Main/03 - AI Development & Agents/`. Identify root causes vs. surface symptoms; structure mutually exclusive problem branches. |
-| **Quantitative Modeling, Unit Economics & 3-Year Proformas** | `AGENTS.md` (Stage 2 & 3), `src/utils/templates.ts` | Retain core equations ($); compute LTV/CAC, WACC, DCF, breakeven accounts, and 3-scenario sensitivity (Bear / Base / Bull). |
-| **Implementation Roadmap & 2x2 Risk Pre-Mortem** | `AGENTS.md` (Stage 4), `CASE_SIMULATION_BLUEPRINT.md` | Operational phase gates (Horizon 1 to 3), leading vs. lagging KPI governance dashboard, and contingency plans. |
-| **10-Slide Case Competition Presentation Deck** | `src/utils/templates.ts` (Deck Template), `CASE_SIMULATION_BLUEPRINT.md` | `001 Main/01 - Video & Motion Graphics/`, `motionmaxxing`, `scroll-film-studio`. Draft action titles as complete sentences; ensure storyline passes the executive skim test. |
-| **Judge Q&A Stress-Testing & Objection Defense** | `AGENTS.md` (Stage 5), `CASE_SIMULATION_BLUEPRINT.md` | Anticipate adversarial judge challenges (assumption variance, competitive response, CapEx financing, pilot hurdles). |
-| **Rapid 3-Hour Case Sprint & Timekeeping** | `src/components/FocusTimer.tsx`, `src/utils/templates.ts` | Use the dedicated 180-min Case Sprint timer; respect time-boxed workstreams across team members. |
-| **Security Auditing, Vulnerability Checks & Code Review** | `.agents/skills/security-audit/SKILL.md` (Cloudflare) | Run Cloudflare security audit checks across client-side state, API endpoints, and secrets boundaries. |
-| **AI Agent Skill Safety Scanning** | `001 Main/05 - Security & Standards/SkillSpector/README.md` | Run NVIDIA SkillSpector across any newly fetched repository or skill package. |
+| **Solve a New Case Competition** | `scripts/case_orchestrator.py` | Run `python scripts/case_orchestrator.py <case_path_or_id>`. Automatically executes the 14 agents, builds `Finished Resources/`, generates 2 PDFs, 12-slide PPTX, financial model XLSX, and 120s MP4. |
+| **Case Strategy, Deck Blueprint & Formulas** | `docs/CASE_COMPETITION_MASTER_SYSTEM.md` | Consult the 5-Stage Standard, 10-Slide Deck Blueprint, and Unit Economics formulas ($\text{LTV}/\text{CAC} \ge 3.0\times$, $\text{WACC}$, $\text{BEP}$). |
+| **Competition Scoring & Judging Evaluation** | `docs/CASE_COMPETITION_MASTER_SYSTEM.md` | Apply the 100-Point Rubric across Strategy (25%), Financials (25%), Implementation (20%), Risk (15%), and Q&A Defense (15%). |
+| **Interactive Case Simulation & Role-Play** | `data/engineering_1000_case_simulations.json` | Select any case ID (`ENG-0001` through `ENG-1000`). Role-play client executives, withhold answers, demand 3 alternatives, score via 100-pt rubric. |
+| **Global Case Competitions Research (132+)** | `data/global_case_competitions_research.csv` | Browse or filter verified global competitions, solution models, and official directory sources. Synchronized in `src/data/competitions.json`. |
+| **Web Studio UI, Simulator & Components** | `src/App.tsx`, `src/components/` | Modify React components. Verify with `npm run build` (`tsc --noEmit && vite build`). Features `CaseSimulatorModal` and `GlobalCompetitionsModal`. |
+| **Motion Graphics & Demonstration Video** | `.agents/skills/motionmaxxing/`, `scroll-film-studio/` | Create scripted motion graphics, GSAP curves, or render 120s demonstration video via FFmpeg. |
+| **Security Audit of Agent Skills** | `001 Main/05 - Security & Standards/SkillSpector` | Run `python -m skillspector.cli scan <path_to_skill> --no-llm` before adopting any new skill or package. |
+| **Codebase & Architecture Security Review** | `.agents/skills/security-audit/` (Cloudflare) | Run Cloudflare security audit checks across state isolation, API endpoints, and supply chain. |
 
 ---
 
-## 3. Project Markdown Routing
+## 3. THE 14-AGENT AUTONOMOUS CASE PIPELINE
 
-Use only the files relevant to the present task:
+When a case is submitted, the orchestrator coordinates 14 specialized agents across 8 stages:
 
-| Project File | Route When the Task Concerns |
-| :--- | :--- |
-| `AGENTS.md`, `CLAUDE.md`, `GEMINI.md` | Master workflow rules, Case Competition 5-Stage Standard, and platform entry points. |
-| `MAIN_BRAIN_PIPELINE.md` | Cross-platform task and resource routing for Case Simulation. |
-| `CASE_SIMULATION_BLUEPRINT.md` | The definitive master architectural guide for case competitions, presentations, and financial models. |
-| `CASE_COMPETITION_RUBRIC.md` | Judging criteria, scoring breakdown, and evaluation matrices. |
-| `WEB_ESSENTIALS_GUIDE.md` | Website interface craft, accessibility, responsiveness, and performance. |
-| `README.md`, `WORKSPACE.md` | Workspace orientation, development setup, and deployment guides. |
-| `LEGAL_AND_PRIVACY_REVIEW.md` | Case data confidentiality, competition integrity, and zero personal data leakage. |
+```text
+Stage 1: Understand  ──► Agent 01: Case Intelligence Analyst
+Stage 2: Investigate ──► Agent 02: Global Competition Researcher & Agent 03: Root Cause Analyst
+Stage 3: Innovate    ──► Agent 04: Brainstorming & Innovation Agent
+Stage 4: Decide      ──► Agent 05: Strategy Decision & Agent 09: Critical Reviewer / Red Team
+Stage 5: Engineer    ──► Agent 06: Financial Modeling, Agent 07: Tech Architecture, Agent 08: Implementation Blueprint
+Stage 6: Produce     ──► Agent 10: PDF Docs, Agent 11: PowerPoint, Agent 12: Website, Agent 13: Video Production
+Stage 7: Validate    ──► Agent 14: Quality Assurance & Integration (Enforces Gates 1–7)
+Stage 8: Package     ──► Canonical Finished Resources/ Directory Structure
+```
 
 ---
 
-## 4. Privacy and Platform Behavior
+## 4. MANDATORY REPOSITORY LAWS
 
-- **Strict Client-Side Privacy**: All documents, case notes, snapshots, and timer states remain local in browser `localStorage`. No user credentials, private case packets, or proprietary student identities are ever transmitted to external servers.
-- **Strict Anonymity**: Comply with Section 2 of `AGENTS.md`—no personal names or local machine drive paths are included in any published or generated asset.
-- **Git Push Law**: Stage, commit, and push directly to `origin` (`https://github.com/ys-sites/Case-Study.git`) automatically at the conclusion of every turn.
+### Law 1: Strict Anonymity & Data Confidentiality
+- Never include any personal student name or machine-specific local drive paths (`/path/to/...`, `file:///...`) in ANY generated case brief, Markdown strategy guide, review sheet, PDF, HTML, or website file.
+- Use generic designations only: `Strategy Consulting Hub`, `Executive Case Simulation Team`.
+
+### Law 2: Mandatory Automatic Git Push
+- On every prompt where changes, fixes, enhancements, or new files are modified:
+  1. Stage all changes: `git add .`
+  2. Commit with a descriptive message: `git commit -m "..."`
+  3. Push directly to remote: `git push origin main`
+- Remote target: `https://github.com/ys-sites/Case-Study.git`.
+
+### Law 3: Zero-Bloat Root Directory
+- Keep the repository root uncluttered and clean. All reference blueprints, rubrics, prompts, and documentation live in `docs/CASE_COMPETITION_MASTER_SYSTEM.md`.
+- Archived legacy documents live exclusively in `docs/archive/`.

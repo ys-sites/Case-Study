@@ -186,3 +186,4 @@ export const GlobalCompetitionsModal: React.FC<GlobalCompetitionsModalProps> = (
     </div>
   );
 };
+

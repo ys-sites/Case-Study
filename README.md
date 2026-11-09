@@ -75,7 +75,7 @@ npm run preview
 
 ## 📚 Project Routing & Conventions
 
-- **`MAIN_BRAIN_PIPELINE.md`**: Cross-platform task and resource routing across Graphify, installed skills, and local references.
+- **`MAIN_BRAIN_PIPELINE.md`**: Master task and resource routing across Graphify, installed skills, and local references.
 - **`AGENTS.md`**: Autonomous workflow rules, strict anonymity laws, and unified structural conventions.
-- **`WEB_ESSENTIALS_GUIDE.md`**: Interface design, responsive typography, performance budgets, accessibility, and security standards.
+- **`docs/CASE_COMPETITION_MASTER_SYSTEM.md`**: Unified master repository of all blueprints, rubrics, 14-agent specifications, formulas, and web studio essentials.
 - **`001 Main/`**: Categorized local knowledge library for motion, UI/UX, AI agents, and security guidelines.

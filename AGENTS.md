@@ -1,6 +1,6 @@
 # Case-Study Studio Autonomous Workflow Rules: Case Simulation & Competition Law
 
-For web application changes, follow the project-specific [Website Essentials Guide](./WEB_ESSENTIALS_GUIDE.md). Apply its design, accessibility, security, and verification guidance as relevant to the task.
+For web application changes, strategy blueprints, rubrics, and formulas, follow the unified [Case Competition Master System](./docs/CASE_COMPETITION_MASTER_SYSTEM.md). Apply its design, accessibility, security, and verification guidance as relevant to the task.
 
 For task routing across Graphify, installed skills, and the local resource library, follow [Main Brain Pipeline](./MAIN_BRAIN_PIPELINE.md).
 

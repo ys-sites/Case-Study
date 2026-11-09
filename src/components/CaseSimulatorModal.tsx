@@ -482,3 +482,4 @@ export const CaseSimulatorModal: React.FC<CaseSimulatorModalProps> = ({
     </div>
   );
 };
+
