@@ -1,0 +1,79 @@
+1
+00:00:00,350 --> 00:00:01,980
+Case ENG1M-0000001.
+
+2
+00:00:01,980 --> 00:00:08,585
+Cold-Chain Fulfillment Center, Capacity Scaling (unexpected demand increase).
+
+3
+00:00:08,585 --> 00:00:17,078
+In the next two minutes: the situation, what makes it hard, and what the judges are really testing.
+
+4
+00:00:18,080 --> 00:00:25,136
+Cold-Chain Fulfillment Center, Capacity Scaling (unexpected demand increase).
+
+5
+00:00:25,136 --> 00:00:31,276
+Metropolitan public agency; disruption: unexpected demand increase.
+
+6
+00:00:31,276 --> 00:00:35,216
+Capacity Scaling today: 1,190.00 units/day.
+
+7
+00:00:36,220 --> 00:00:39,984
+Capacity Scaling is 1,190.00 units/day.
+
+8
+00:00:39,984 --> 00:00:49,924
+The target is a 8.5 percent improvement, within 3 months and a capital ceiling of 866 thousand dollars.
+
+9
+00:00:50,920 --> 00:00:53,311
+And there are hard limits.
+
+10
+00:00:53,311 --> 00:00:56,621
+installation restricted to weekends.
+
+11
+00:00:56,621 --> 00:00:59,104
+Minimum availability 98.0%.
+
+12
+00:01:00,100 --> 00:01:12,442
+For the cold-chain fulfillment center operated by a metropolitan public agency, plan a capacity upgrade while protecting service quality following unexpected demand increase.
+
+13
+00:01:12,442 --> 00:01:14,925
+Baseline capacity: 1,190 units/day.
+
+14
+00:01:14,925 --> 00:01:24,004
+Deliver at least 8.5% improvement within 3 months under 866 thousand dollars capital limit; installation restricted to weekends.
+
+15
+00:01:24,004 --> 00:01:30,388
+Select a technically justified alternative and test what happens if performance falls 15%.
+
+16
+00:01:31,390 --> 00:01:49,321
+Three alternatives are on the table: option A, Instrumentation and operating procedure changes for cold-chain fulfillment center; option B, Selective retrofit of critical cold-chain fulfillment center subsystems; option C, Comprehensive architecture replacement for cold-chain fulfillment center.
+
+17
+00:01:49,321 --> 00:01:51,502
+Video two shows how to compare them.
+
+18
+00:01:52,500 --> 00:01:56,263
+This is a throughput / capacity problem under a hard budget.
+
+19
+00:01:56,263 --> 00:02:06,110
+Judges are testing whether you find the binding driver before spending, compare three options on the same basis, and show what happens when the numbers move.
+
+20
+00:02:06,110 --> 00:02:10,500
+The scoring rewards diagnosis, rigour and a defensible recommendation.

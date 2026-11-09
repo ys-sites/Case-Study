@@ -1,76 +1,139 @@
-# Main Brain: Master Task, Skill & Graphify Routing Pipeline
+# Main Brain: Case Pipeline Core Skill & Routing
 
-> **CRITICAL AGENT ENTRY POINT**:  
-> Every AI agent (Claude, Gemini, Codex, Antigravity) arriving at this repository MUST inspect and follow this file first on every single prompt.  
-> This is the central dispatch router. All comprehensive case competition standards, rubrics, blueprints, and formulas are unified in [docs/CASE_COMPETITION_MASTER_SYSTEM.md](./docs/CASE_COMPETITION_MASTER_SYSTEM.md).
-
----
-
-## 1. THE GRAPHIFY KNOWLEDGE NAVIGATION ENGINE
-
-This repository utilizes **Graphify** (`https://github.com/Graphify-Labs/graphify.git`) located in `.claude/skills/graphify/` and `001 Main/03 - AI Development & Agents/graphify/`.
-
-### Graphify Query Protocol:
-Whenever exploring codebase architecture, cross-file relationships, or complex concepts:
-1. **Fast-Path Check**: Check if `graphify-out/graph.json` exists.
-2. **Execute Graph Queries**:
-   - `graphify query "<question>"`: Breadth-first search for broad architectural context.
-   - `graphify query "<question>" --dfs`: Depth-first search for specific trace paths.
-   - `graphify path "<Concept_A>" "<Concept_B>"`: Shortest path between two system nodes.
-   - `graphify explain "<Concept>"`: Plain-language explanation of a specific subsystem node.
-3. Read raw code files only for specific line ranges identified by Graphify or targeted lookups.
+> **AGENT ENTRY POINT.** Every agent (Claude, Gemini, Codex, Antigravity) reads this file first on every prompt.
+> If the prompt contains or points to a **case** (a case file, brief, PDF, case ID, pasted case text, or a request to
+> solve / crack / simulate / present a case), follow **§1 Case Request Protocol** exactly. Everything else routes via **§4**.
+> Standards, rubrics and formulas: [docs/CASE_COMPETITION_MASTER_SYSTEM.md](./docs/CASE_COMPETITION_MASTER_SYSTEM.md).
 
 ---
 
-## 2. CENTRAL TASK ROUTING & SKILL DISPATCH MATRIX
+## 1. CASE REQUEST PROTOCOL (core skill)
 
-Match the user's intent to the appropriate skill and resource below:
+**Goal:** case in → decrypt it → generate every level of solution → choose the best on the numbers → produce
+the submission pack (booklet PDF, deck, models, three videos) → tell the user what to check before submitting.
 
-| User Task / Request | Skill / Resource Location | Execution Action |
-| :--- | :--- | :--- |
-| **Solve a New Case Competition** | `scripts/case_orchestrator.py` | Run `python scripts/case_orchestrator.py <case_path_or_id>` (`ENG-0001`, `ENG100K-…`, `ENG1M-…`, or a PDF/MD/TXT/JSON/dir). Scores the 3 options, picks the winner from the numbers (budget = hard gate), builds one `solution_spec.json`, and renders every deliverable from it (2 PDFs, 12-slide PPTX, 3 XLSX with live formulas, 120s MP4). Agent 14 then runs 9 real gates (PASS/WARN/FAIL; exit code 2 on FAIL). Flags: `--out DIR`, `--no-video` (fast), `--spec-only`, `--unit-value CAD`. Read `11_Final_Quality_Control/unresolved_issues.md` before presenting. |
-| **Case Strategy, Deck Blueprint & Formulas** | `docs/CASE_COMPETITION_MASTER_SYSTEM.md` | Consult the 5-Stage Standard, 10-Slide Deck Blueprint, and Unit Economics formulas ($\text{LTV}/\text{CAC} \ge 3.0\times$, $\text{WACC}$, $\text{BEP}$). |
-| **Competition Scoring & Judging Evaluation** | `docs/CASE_COMPETITION_MASTER_SYSTEM.md` | Apply the 100-Point Rubric across Strategy (25%), Financials (25%), Implementation (20%), Risk (15%), and Q&A Defense (15%). |
-| **Interactive Case Simulation & Role-Play** | `data/engineering_1000_case_simulations.json` | Select any case ID (`ENG-0001` through `ENG-1000`). Role-play client executives, withhold answers, demand 3 alternatives, score via 100-pt rubric. |
-| **Global Case Competitions Research (132+)** | `data/global_case_competitions_research.csv` | Browse or filter verified global competitions, solution models, and official directory sources. Synchronized in `src/data/competitions.json`. |
-| **Web Studio UI, Simulator & Components** | `src/App.tsx`, `src/components/` | Modify React components. Verify with `npm run build` (`tsc --noEmit && vite build`). Features `CaseSimulatorModal` and `GlobalCompetitionsModal`. |
-| **Motion Graphics & Demonstration Video** | `.agents/skills/motionmaxxing/`, `scroll-film-studio/` | Create scripted motion graphics, GSAP curves, or render 120s demonstration video via FFmpeg. |
-| **Concordia Illustrated Engineering Motion Videos** | `.agents/skills/concordia-motion-director/`, `001 Main/ode-motion-lessons/` | Render warm-white illustrated engineering lessons and quiz walkthroughs adhering to the 6-pillar pipeline across ENGR 213, INDU 211, MIAE 215, and MIAE 221. |
-| **Security Audit of Agent Skills** | `001 Main/05 - Security & Standards/SkillSpector` | Run `python -m skillspector.cli scan <path_to_skill> --no-llm` before adopting any new skill or package. |
-| **Codebase & Architecture Security Review** | `.agents/skills/security-audit/` (Cloudflare) | Run Cloudflare security audit checks across state isolation, API endpoints, and supply chain. |
+### Step 1 — Identify the input and the mode
 
----
+| The user gives… | Input to pass |
+| :--- | :--- |
+| A case ID (`ENG-0001`…`ENG-1000`, `ENG100K-000001`…, `ENG1M-0000001`…) | the ID |
+| A file (PDF, MD, TXT, JSON) | the path |
+| A folder of case material | the folder path |
+| Pasted text only | save it to `cases/<Short_Name>/brief.md`, then pass that path |
 
-## 3. THE 14-AGENT AUTONOMOUS CASE PIPELINE
+| The user wants… | Mode |
+| :--- | :--- |
+| "solve / crack / build the pack" (default) | **Solve**: Steps 2–5 |
+| "simulate / practise / quiz me / role-play" | **Simulate**: §2. Do **not** reveal the solution before the user submits |
+| "score my answer / judge this" | **Judge**: §3 |
 
-When a case is submitted, the orchestrator coordinates 14 specialized agents across 8 stages:
+### Step 2 — Run the engine (one command)
 
-```text
-Stage 1: Understand  ──► Agent 01: Case Intelligence Analyst
-Stage 2: Investigate ──► Agent 02: Global Competition Researcher & Agent 03: Root Cause Analyst
-Stage 3: Innovate    ──► Agent 04: Brainstorming & Innovation Agent
-Stage 4: Decide      ──► Agent 05: Strategy Decision & Agent 09: Critical Reviewer / Red Team
-Stage 5: Engineer    ──► Agent 06: Financial Modeling, Agent 07: Tech Architecture, Agent 08: Implementation Blueprint
-Stage 6: Produce     ──► Agent 10: PDF Docs, Agent 11: PowerPoint, Agent 12: Website, Agent 13: Video Production
-Stage 7: Validate    ──► Agent 14: Quality Assurance & Integration (Enforces Gates 1–7)
-Stage 8: Package     ──► Canonical Finished Resources/ Directory Structure
+```bash
+python scripts/case_orchestrator.py <ID | path>                 # full pack incl. 3 narrated videos (~2.5 min)
+python scripts/case_orchestrator.py <ID | path> --no-video      # fast (~7 s): everything except MP4s
+python scripts/case_orchestrator.py <ID | path> --spec-only     # print the computed solution JSON only
 ```
+Other flags: `--out DIR` (scratch runs; never touches the website), `--no-tts` (offline: silent videos with
+subtitles), `--unit-value CAD` (override monetisation when the case gives a value per unit).
+Exit code `0` = no failed gates; `2` = at least one FAIL (read it, don't hide it).
+
+### Step 3 — What the engine does (stages → modules)
+
+| Stage | What happens | Module |
+| :--- | :--- | :--- |
+| 1. Intake | Normalise any input; extract baseline, target, budget, deadline, options (free text: budget chosen by context, misses logged as assumptions) | `case_orchestrator.load_case_data` |
+| 2. Decrypt | Classify archetype (5 solution models) and objective family (8: throughput, service, reliability, safety, quality, energy, environment, cost, schedule); SCQA; MECE issue tree; hypothesis; toolkit; quick math | `case_intelligence.py` |
+| 3. Economics | One cash model: NPV, IRR, monthly payback, benefit/cost, levelized cost; bear/base/bull; NPV tornado | `cash_model`, `sensitivity` |
+| 4. Solution levels | Score 3 options (target 30%, NPV 25%, payback 15%, resilience 15%, headroom 15%; budget = hard gate). **Solution ladder**: L1 quick win → L2 minimum compliant → L3 value maximiser → L4 stretch, plus why the pick wins | `evaluate_options`, `solution_ladder` |
+| 5. Plan & defend | 3-horizon roadmap, 30/60/90 days, top risks with triggers, KPIs, 13+ computed judge answers, pre-submission checklist | `build_horizons`, `build_qa_bank` |
+| 6. Produce | Pinterest-style 7-page booklet, blueprint + memo PDFs, 12-slide PPTX, 3 XLSX with live formulas, 3 narrated videos | `case_visual_pdf.py`, `case_videos.py` |
+| 7. Validate | 9 gates: inputs, assumptions, comparison, target, viability, integrity, cross-artifact consistency, anonymity, stale files | `run_quality_gates` |
+
+### Step 4 — Read these outputs, in this order (`Finished Resources/`)
+
+1. `11_Final_Quality_Control/compliance_checklist.md` (gate results) and `unresolved_issues.md`
+2. `04_Final_Strategy/case_decrypt.md` (SCQA, issue tree, hypothesis, solution ladder, 30/60/90)
+3. `04_Final_Strategy/executive_summary.md`
+4. `11_Final_Quality_Control/submission_checklist.md`
+
+Deliverables: `06_PDF_Deliverables/Case_Study_Booklet.pdf` (editorial booklet), `Strategic_Blueprint.pdf`,
+`Final_Case_Solution.pdf`; `07_PowerPoint/Final_Presentation.pptx` + `judge_QA_preparation.md`;
+`05_Financial_Models/*.xlsx`; `09_Video/01_The_Case.mp4` (what the case asks), `02_How_To_Tackle.mp4`
+(method), `03_Solution_Brief.mp4` (answer + pre-submission brief), each with `.srt` and `_script.md`.
+
+### Step 5 — Reply to the user (answer first)
+
+1. **Recommendation in one sentence** with three numbers (gain vs target, capex vs budget, NPV/payback).
+2. **Solution ladder**: the four levels and why the pick wins (from `case_decrypt.md`).
+3. **Gate status**: every WARN/FAIL in plain words (e.g. "no option meets the target within budget"; "energy case:
+   negative NPV on tariff alone, judge on CAD per kWh saved").
+4. **Before you submit**: open items from `submission_checklist.md`, especially assumptions to replace with real data.
+5. Links to the booklet, deck and the three videos.
+
+**Interpreting results honestly:** a FAIL is information, not an error to suppress. Never edit outputs to turn a FAIL into
+a PASS; fix the input data or explain the trade-off. Synthetic datasets are training cases, never "historical winners".
 
 ---
 
-## 4. MANDATORY REPOSITORY LAWS
+## 2. SIMULATE MODE (coach / role-play)
+
+Follow `data/engineering_case_simulator_master_prompt.txt`: present the brief and data only; role-play client,
+engineers, operators and regulators; disclose extra synthetic data only on request and label it as generated; require a
+decision, 3 alternatives, a model, sensitivity, safety analysis, 10-slide proposal and plan. After the user presents:
+run the engine with `--no-video --out <scratch>`, score with the case rubric (§3), ask four adversarial questions from
+`intelligence.qa_bank`, then show the illustrative approach (the `02_How_To_Tackle` script).
+
+## 3. JUDGE MODE
+
+Score against the case's own rubric (`case_inputs.rubric`; default: diagnosis 20, rigour 25, feasibility & safety 20,
+cost/impact 15, implementation 10, communication & Q&A 10). Compare the user's numbers with `solution_spec.json` and
+cite the solution ladder level their pick sits on.
+
+---
+
+## 4. KNOWLEDGE BASE (`data/`) — what each source is for
+
+| File | Content | Used by |
+| :--- | :--- | :--- |
+| `engineering_1000_case_simulations.json/.csv/.xlsx` | 1,000 synthetic cases: 20 disciplines × 5 scenarios (baseline, growth surge, budget-constrained, reliability crisis, low-carbon); 8 objective families; rubric + 4 judge questions each; option names without costs | intake (`ENG-xxxx`), family toolkits, rubric |
+| `engineering_100000_preview.csv` | 100 throughput cases with option costs/gains and an **answer key** ("Illustrative Feasible Option") | intake (`ENG100K-…`); validation: engine agrees on 98/100 (the 2 differences pick higher-NPV over cheapest-compliant; both shown on the ladder) |
+| `engineering_1million_additional_preview.csv` | 100 cold-chain cases across 8 disruptions × 5 constraints, costed options | intake (`ENG1M-…`) |
+| `global_case_competitions_research.csv/.xlsx` | 132 competitions, 5 solution-model archetypes (directory-listed; winners NOT verified) | archetype model + "similar competitions" |
+| `case-competition-master-prompt.pdf` | Winning model: SCQA, MECE, hypothesis in 20 min, 80/20, Lean/TOC tools, one recommendation, 30/60/90, Pyramid slides, 20+ Q&A, time split | decrypt layer, checklist, video 2 |
+| `engineering_case_simulator_master_prompt.txt` | Facilitator rules for interactive simulation | §2 Simulate mode |
+
+---
+
+## 5. OTHER TASK ROUTING
+
+| Request | Resource | Action |
+| :--- | :--- | :--- |
+| Case strategy, deck blueprint & formulas | `docs/CASE_COMPETITION_MASTER_SYSTEM.md` | 5-stage standard, deck blueprint, unit economics |
+| Web studio UI / simulator | `src/App.tsx`, `src/components/` | Edit React; verify `npm run build`. `CaseSimulatorModal` reads `src/data/current_case_solution.json` (synced by canonical runs only) |
+| Motion graphics beyond the 3 case videos | `.agents/skills/motionmaxxing/`, `scroll-film-studio/` | Scripted motion, GSAP, FFmpeg |
+| Concordia illustrated engineering lessons | `.agents/skills/concordia-motion-director/` | 6-pillar lesson pipeline (ENGR 213, INDU 211, MIAE 215, MIAE 221) |
+| Security audit of a skill/package | `001 Main/05 - Security & Standards/SkillSpector` | `python -m skillspector.cli scan <path> --no-llm` |
+| Codebase security review | `.agents/skills/security-audit/` | Cloudflare audit checks |
+
+### Graphify navigation (code questions)
+If `graphify-out/graph.json` exists, run `graphify query "<question>"` before grepping or reading source;
+`graphify explain "<node>"` for one subsystem; `graphify path "<A>" "<B>"` for relationships. Read raw files only for
+located line ranges. After code changes: `graphify update .` (code-only, no private material).
+
+---
+
+## 6. MANDATORY REPOSITORY LAWS
 
 ### Law 1: Strict Anonymity & Data Confidentiality
-- Never include any personal student name or machine-specific local drive paths (`/path/to/...`, `file:///...`) in ANY generated case brief, Markdown strategy guide, review sheet, PDF, HTML, or website file.
+- Never include personal student names or machine-specific paths (`C:\Users\…`, `/Users/…`, `file:///`) in any generated
+  brief, guide, PDF, HTML, video or website file. Gate 8 enforces this automatically.
 - Use generic designations only: `Strategy Consulting Hub`, `Executive Case Simulation Team`.
 
 ### Law 2: Mandatory Automatic Git Push
-- On every prompt where changes, fixes, enhancements, or new files are modified:
-  1. Stage all changes: `git add .`
-  2. Commit with a descriptive message: `git commit -m "..."`
-  3. Push directly to remote: `git push origin main`
+- On every prompt where files change: stage the changes, commit with a descriptive message, `git push origin main`.
 - Remote target: `https://github.com/ys-sites/Case-Study.git`.
 
 ### Law 3: Zero-Bloat Root Directory
-- Keep the repository root uncluttered and clean. All reference blueprints, rubrics, prompts, and documentation live in `docs/CASE_COMPETITION_MASTER_SYSTEM.md`.
-- Archived legacy documents live exclusively in `docs/archive/`.
+- Keep the repository root clean. Reference material lives in `docs/CASE_COMPETITION_MASTER_SYSTEM.md`;
+  archived documents in `docs/archive/`.

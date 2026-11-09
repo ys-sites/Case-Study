@@ -1,0 +1,20 @@
+[
+  {
+    "file": "01_The_Case.mp4",
+    "duration_s": 131.2,
+    "scenes": 7,
+    "narrated": true
+  },
+  {
+    "file": "02_How_To_Tackle.mp4",
+    "duration_s": 152.3,
+    "scenes": 8,
+    "narrated": true
+  },
+  {
+    "file": "03_Solution_Brief.mp4",
+    "duration_s": 177.7,
+    "scenes": 10,
+    "narrated": true
+  }
+]

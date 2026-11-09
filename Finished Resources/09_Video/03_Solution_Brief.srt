@@ -1,0 +1,123 @@
+1
+00:00:00,350 --> 00:00:08,102
+The solution to case ENG1M-0000001, and everything to check before you submit.
+
+2
+00:00:09,100 --> 00:00:16,245
+Our answer: option C, Comprehensive architecture replacement for cold-chain fulfillment center.
+
+3
+00:00:16,245 --> 00:00:24,820
+It delivers 13 percent against a target of 8.5 percent, for 676 thousand dollars of a 866 thousand dollars budget.
+
+4
+00:00:25,820 --> 00:00:27,604
+Option C is recommended.
+
+5
+00:00:27,604 --> 00:00:33,476
+It is both the cheapest compliant option and the best value: a dominant choice.
+
+6
+00:00:34,480 --> 00:00:44,872
+The economics: a run-rate benefit of 948 thousand dollars a year, net present value of 2.68 million dollars, and payback in 11 months.
+
+7
+00:00:45,870 --> 00:00:47,062
+Now stress it.
+
+8
+00:00:47,062 --> 00:00:57,105
+If performance falls fifteen percent and costs rise twenty, the gain is 11.05 percent and NPV is 2.00 million dollars.
+
+9
+00:00:57,105 --> 00:00:59,062
+The target still holds.
+
+10
+00:00:59,062 --> 00:01:05,190
+The most sensitive driver is annual benefit: achieved gain x unit value.
+
+11
+00:01:06,190 --> 00:01:08,913
+Days 1 to 30: Validate & pilot.
+
+12
+00:01:08,913 --> 00:01:13,217
+Confirm baseline data and the binding constraint.
+
+13
+00:01:13,217 --> 00:01:15,853
+Days 31 to 60: Prove & decide.
+
+14
+00:01:15,853 --> 00:01:22,529
+Pilot gate: Go/no-go: pilot result within 20% of model, no safety incidents.
+
+15
+00:01:22,529 --> 00:01:25,252
+Days 61 to 90: Scale & control.
+
+16
+00:01:25,252 --> 00:01:33,070
+Begin scale-up: comprehensive architecture replacement for cold-chain fulfillment center.
+
+17
+00:01:34,070 --> 00:01:40,990
+The three risks to manage: Delivered improvement below model, mitigated by stage-gated rollout.
+
+18
+00:01:40,990 --> 00:01:46,088
+Capital overrun, mitigated by cad $190,000 headroom to budget ceiling.
+
+19
+00:01:46,088 --> 00:01:52,862
+Schedule slip / installation window, mitigated by pre-fabrication and off-shift installation.
+
+20
+00:01:53,860 --> 00:02:04,273
+Question: What changes when unexpected demand increase persists and the selected design underperforms by 15%?
+
+21
+00:02:04,273 --> 00:02:15,163
+Answer: Bear case (performance -15%, capex +20%): 11.0% improvement, NPV 2.00 million dollars payback 14.9 months.
+
+22
+00:02:15,163 --> 00:02:17,073
+Target is still met.
+
+23
+00:02:17,073 --> 00:02:20,990
+Question: Why not Option A, the cheapest?
+
+24
+00:02:20,990 --> 00:02:32,740
+Answer: It costs 232 thousand dollars but delivers 4.6% (misses the 8.5% target); it scores 4.6/10 vs 8.55/10 for Option C.
+
+25
+00:02:33,740 --> 00:02:36,495
+Before you submit, run the checklist.
+
+26
+00:02:36,495 --> 00:02:38,356
+10 of 11 items are ready.
+
+27
+00:02:38,356 --> 00:02:42,005
+Still open: assumptions validated with real data.
+
+28
+00:02:42,005 --> 00:02:49,004
+Replace the assumptions with real data if you can, or state them clearly on an appendix slide.
+
+29
+00:02:49,000 --> 00:02:55,495
+Lead with the answer, prove it with three numbers, and own the risks.
+
+30
+00:02:55,495 --> 00:02:56,212
+Option C.
+
+31
+00:02:56,212 --> 00:02:57,008
+Good luck.

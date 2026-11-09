@@ -1,6 +1,6 @@
 {
   "status": "COMPLETED",
-  "timestamp": "2026-11-09T05:05:34+00:00",
+  "timestamp": "2026-11-09T05:29:15+00:00",
   "case_id": "ENG1M-0000001",
   "output_root": "Finished Resources",
   "deliverables": {
@@ -13,8 +13,12 @@
     "evaluation_matrix_xlsx": "03_Brainstorming/evaluation_matrix.xlsx",
     "executive_summary_md": "04_Final_Strategy/executive_summary.md",
     "judge_qa_md": "07_PowerPoint/judge_QA_preparation.md",
-    "video_subtitles_srt": "09_Video/subtitles.srt",
-    "video_demo_mp4": "09_Video/Final_Demo_120s.mp4"
+    "case_study_booklet_pdf": "06_PDF_Deliverables/Case_Study_Booklet.pdf",
+    "case_decrypt_md": "04_Final_Strategy/case_decrypt.md",
+    "video_subtitles_srt": "09_Video/03_Solution_Brief.srt",
+    "video_case_mp4": "09_Video/01_The_Case.mp4",
+    "video_tackle_mp4": "09_Video/02_How_To_Tackle.mp4",
+    "video_solution_mp4": "09_Video/03_Solution_Brief.mp4"
   },
   "gates": [
     {
@@ -45,12 +49,12 @@
     {
       "gate": "6. Deliverable integrity",
       "status": "PASS",
-      "detail": "11 core files present"
+      "detail": "15 core files present"
     },
     {
       "gate": "7. Cross-artifact consistency",
       "status": "PASS",
-      "detail": "winner, capex, NPV and payback identical across 4 artifacts"
+      "detail": "winner, capex, NPV and payback identical across 5 artifacts"
     },
     {
       "gate": "8. Anonymity (Law 1)",

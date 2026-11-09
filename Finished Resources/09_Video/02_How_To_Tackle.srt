@@ -1,0 +1,123 @@
+1
+00:00:00,350 --> 00:00:03,716
+How to tackle case ENG1M-0000001.
+
+2
+00:00:03,716 --> 00:00:10,142
+A step-by-step method you can repeat on any case like this one.
+
+3
+00:00:11,140 --> 00:00:24,124
+Cases like this follow the operations & engineering improvement model: Baseline KPIs, then bottleneck/root cause, then optimize/simulate, then pilot, then ROI + KPIs.
+
+4
+00:00:25,120 --> 00:00:33,957
+Start with one question: How do we achieve 8.5% capacity scaling improvement within 3 months and 866 thousand dollars?
+
+5
+00:00:33,957 --> 00:00:42,045
+Split it into three branches with no overlap: Demand & mix, Capacity at the constraint, Flow between stages.
+
+6
+00:00:42,045 --> 00:00:45,040
+Each person on the team owns one branch.
+
+7
+00:00:46,040 --> 00:00:50,758
+Within twenty minutes, write down a hypothesis you can prove wrong.
+
+8
+00:00:50,758 --> 00:00:59,912
+Here: The gap is one binding constraint, not total capacity: relieving it delivers the target without rebuilding the whole system.
+
+9
+00:00:59,912 --> 00:01:02,659
+If the data kills it, pivot and say so.
+
+10
+00:01:02,659 --> 00:01:04,208
+Judges reward honesty.
+
+11
+00:01:05,210 --> 00:01:08,256
+Use only the tools that fit.
+
+12
+00:01:08,256 --> 00:01:12,717
+Theory of Constraints (5 focusing steps).
+
+13
+00:01:12,717 --> 00:01:17,396
+OEE = Availability × Performance × Quality.
+
+14
+00:01:17,396 --> 00:01:22,074
+Little's Law: WIP = Throughput × Flow time.
+
+15
+00:01:22,074 --> 00:01:29,037
+Then do the quick math: Gap: 1,190.00 , then 1,291.15 units/day.
+
+16
+00:01:29,037 --> 00:01:34,586
+Budget per % point of target: 102 thousand dollars.
+
+17
+00:01:35,590 --> 00:01:44,107
+Score all three options with explicit weights: target attainment, return, payback, downside resilience and budget headroom.
+
+18
+00:01:44,107 --> 00:01:48,262
+The budget is a hard gate: an option over budget cannot win.
+
+19
+00:01:49,260 --> 00:01:51,568
+Then build a solution ladder.
+
+20
+00:01:51,568 --> 00:01:53,557
+Level one, the quick win.
+
+21
+00:01:53,557 --> 00:01:57,775
+Level two, the cheapest option that meets the target.
+
+22
+00:01:57,775 --> 00:02:00,401
+Level three, the value maximiser.
+
+23
+00:02:00,401 --> 00:02:02,311
+Level four, the stretch.
+
+24
+00:02:02,311 --> 00:02:07,404
+Your recommendation should explain where it sits on this ladder.
+
+25
+00:02:08,400 --> 00:02:11,288
+Finally, protect your time.
+
+26
+00:02:11,288 --> 00:02:14,175
+0:00 to 0:40, Read & align.
+
+27
+00:02:14,175 --> 00:02:17,598
+0:40 to 1:50, Data & quick math.
+
+28
+00:02:17,598 --> 00:02:21,127
+1:50 to 3:20, Options & decision.
+
+29
+00:02:21,127 --> 00:02:23,159
+3:20 to 4:20, Deck.
+
+30
+00:02:23,159 --> 00:02:26,261
+4:20 to 5:00, Rehearse & Q&A.
+
+31
+00:02:26,261 --> 00:02:31,608
+Video three shows the answer this method produces.

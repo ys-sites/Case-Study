@@ -48,6 +48,10 @@ from pathlib import Path
 
 OUTPUT_ROOT = Path("Finished Resources")
 REPO_ROOT = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from case_intelligence import build_intelligence  # noqa: E402
+import case_videos  # noqa: E402
+from case_visual_pdf import generate_case_study_booklet  # noqa: E402
 DATA_DIR = REPO_ROOT / "data"
 
 # --------------------------------------------------------------------------------------
@@ -652,6 +656,7 @@ def build_solution_spec(case: dict, unit_value_override: float | None = None) ->
         "risks": build_risks(case, win, scen),
         "red_team_defense": build_red_team(case, opts, win, scen, tornado),
     }
+    spec["intelligence"] = build_intelligence(case, spec)
     return spec
 
 
@@ -796,9 +801,46 @@ Cost-effectiveness: {fs['levelized_cost']} {fs['levelized_cost_unit']} — this 
     write_text(R / "05_Financial_Models/financial_assumptions.md", "# Financial Assumptions\n\n" + md_table(
         ["Parameter", "Value", "Source"], [[a["parameter"], a["value"], a["source"]] for a in spec["assumptions"]]))
 
+    # 04 case decrypt (how the case was cracked)
+    it = spec["intelligence"]
+    sq = it["scqa"]
+    write_text(R / "04_Final_Strategy/case_decrypt.md", f"""
+# Case Decrypt — {ci['title']}
+**Archetype:** {it['archetype_name']} · **Family:** {it['family_label']}
+**Solution model:** {it['solution_model']}
+
+> {it['what_the_case_tests']}
+
+## SCQA
+- **Situation:** {sq['situation']}
+- **Complication:** {sq['complication']}
+- **Question:** {sq['question']}
+- **Answer:** {sq['answer']}
+
+## Issue tree
+**{it['issue_tree']['root']}**
+""" + "\n".join(f"- **{b['name']}**: " + " / ".join(b["questions"]) for b in it["issue_tree"]["branches"]) + f"""
+
+## Hypothesis (first 20 minutes)
+{it['hypothesis']}
+
+## Toolkit & quick math
+""" + "\n".join(f"- {t}" for t in it["toolkit"] + it["quick_math"]) + """
+
+## Solution ladder
+""" + md_table(["Level", "Name", "Rule", "Pick"], [[r["level"], r["name"], r["rule"], r["summary"]] for r in it["solution_ladder"]])
+        + f"\n\n**Why the recommendation:** {it['ladder_rationale']}\n\n## KPIs\n"
+        + md_table(["KPI", "Baseline", "Target"], [[k["kpi"], k["baseline"], k["target"]] for k in it["kpis"]])
+        + "\n\n## 30 / 60 / 90 days\n" + "\n".join(f"- **{p['window']} — {p['focus']}:** " + "; ".join(p["actions"]) for p in it["plan_30_60_90"])
+        + "\n\n## Time plan (5-hour window)\n" + md_table(["Time", "Step", "Output"], [[t["time"], t["step"], t["output"]] for t in it["time_plan"]])
+        + "\n\n## Similar competitions (directory-listed; winners not verified)\n"
+        + "\n".join(f"- {c['competition']} ({c['region']}, {c['focus']})" for c in it["similar_competitions"]))
+
     # 07 Q&A
     write_text(R / "07_PowerPoint/judge_QA_preparation.md", "# Judge Q&A Preparation\n\n" + "\n\n".join(
-        f"### Q: {qa['question']}\n**A:** {qa['rebuttal']}" for qa in spec["red_team_defense"]))
+        f"### [{qa.get('category', 'Q&A')}] {qa['question']}\n**A:** {qa['rebuttal']}" for qa in spec["intelligence"]["qa_bank"]))
+    write_text(R / "11_Final_Quality_Control/submission_checklist.md", "# Pre-Submission Checklist\n\n" + "\n".join(
+        f"- [{'x' if c['ok'] else ' '}] **{c['item']}** — {c['evidence']}" for c in spec["intelligence"]["submission_checklist"]))
 
 
 # --------------------------------------------------------------------------------------
@@ -1116,68 +1158,22 @@ def generate_powerpoint_deck(spec: dict) -> None:
 # --------------------------------------------------------------------------------------
 # Agent 13: video (beats -> storyboard, narration, SRT, 120 s MP4)
 # --------------------------------------------------------------------------------------
-def build_beats(spec: dict) -> list[dict]:
-    ci, fs, pdg, sol = spec["case_identification"], spec["financial_summary"], spec["problem_diagnosis"], spec["approved_solution"]
-    win = next(o for o in spec["options_evaluation"]["options"] if o["selected"])
-    return [
-        {"title": "The problem", "on_screen": f"{num(pdg['baseline_value'])} {pdg['baseline_unit']}",
-         "narration": f"{ci['title']}. {pdg['baseline_metric']} is {num(pdg['baseline_value'])} {pdg['baseline_unit']}, and it has to improve {pdg['target_improvement_percent']:g} percent."},
-        {"title": "The diagnosis", "on_screen": "Find the binding constraint",
-         "narration": "We treat the gap as a constraint problem: find the stage that limits performance, and prove it with a pilot before spending at scale."},
-        {"title": "Three options", "on_screen": " / ".join(f"{o['label']}: {o['improvement_percent']:g}%" for o in spec["options_evaluation"]["options"]),
-         "narration": "We costed three alternatives on the same basis and scored them on target attainment, return, payback, resilience and budget headroom."},
-        {"title": f"Option {win['label']} wins", "on_screen": textwrap.shorten(win["name"], 54, placeholder="…"),
-         "narration": f"Option {win['label']}, {win['name']}, delivers {win['improvement_percent']:g} percent for {cad(win['capex_CAD'])}."},
-        {"title": "The numbers", "on_screen": f"NPV {cad(fs['npv_CAD'])} · payback {months(fs['payback_period_months'])}",
-         "narration": f"Net present value is {cad(fs['npv_CAD'])}, with payback in {months(fs['payback_period_months'])}. Under a bear case, NPV is {cad(spec['scenarios'][0]['npv'])}."},
-        {"title": "The plan", "on_screen": " → ".join(h["horizon"] for h in spec["implementation_horizons"]),
-         "narration": f"Three gated horizons over {spec['case_inputs']['timeline_months']} months: pilot, scale, stabilise. Each gate protects the downside."},
-    ]
-
-
-def _srt_time(t: float) -> str:
-    return f"{int(t // 3600):02}:{int(t % 3600 // 60):02}:{int(t % 60):02},{int(round((t % 1) * 1000)):03}"
-
-
-def generate_video_assets(spec: dict, render: bool = True) -> None:
-    vdir, beats, dur = OUTPUT_ROOT / "09_Video", build_beats(spec), 20
-    (vdir / "beats.json").write_text(json.dumps(beats, indent=2), encoding="utf-8")
-    write_text(vdir / "storyboard.md", "# Storyboard (120 s)\n\n" + md_table(
-        ["Time", "Beat", "On screen", "Narration"],
-        [[f"{_srt_time(i * dur)[3:8]}-{_srt_time((i + 1) * dur)[3:8]}", b["title"], b["on_screen"], b["narration"]] for i, b in enumerate(beats)]))
-    write_text(vdir / "narration_script.md", "\n\n".join(b["narration"] for b in beats))
-    write_text(vdir / "subtitles.srt", "\n".join(
-        f"{i + 1}\n{_srt_time(i * dur + 0.5)} --> {_srt_time((i + 1) * dur - 0.5)}\n{b['narration']}\n" for i, b in enumerate(beats)))
-
-    mp4 = vdir / "Final_Demo_120s.mp4"
-    mp4.unlink(missing_ok=True)  # never let a stale render satisfy the integrity gate
-    ffmpeg = shutil.which("ffmpeg")
-    if not render or not ffmpeg:
-        print("[Agent 13] Video render skipped" + ("" if render else " (--no-video)") + ("" if ffmpeg else " (ffmpeg not found)"))
-        return
-    src = vdir / "source_project"
-    font = Path("C:/Windows/Fonts/segoeui.ttf")
-    font_opt = f"fontfile='{font.as_posix().replace(':', chr(92) + ':')}':" if font.exists() else ""
-    filters = []
-    for i, b in enumerate(beats):
-        (src / f"title_{i}.txt").write_text(b["title"].upper(), encoding="utf-8")
-        (src / f"body_{i}.txt").write_text(b["on_screen"], encoding="utf-8")
-        en = f"enable='between(t,{i * dur},{(i + 1) * dur})'"
-        filters.append(f"drawtext={font_opt}expansion=none:textfile=source_project/title_{i}.txt:fontcolor=0xd97706:fontsize=44:x=(w-text_w)/2:y=h/2-110:{en}")
-        filters.append(f"drawtext={font_opt}expansion=none:textfile=source_project/body_{i}.txt:fontcolor=white:fontsize=60:x=(w-text_w)/2:y=h/2-10:{en}")
-    (src / "case.txt").write_text(f"{spec['case_identification']['id']}  ·  {spec['case_identification']['title'][:80]}", encoding="utf-8")
-    filters.append(f"drawtext={font_opt}expansion=none:textfile=source_project/case.txt:fontcolor=0x94a3b8:fontsize=26:x=60:y=h-80")
-    cmd = [ffmpeg, "-y", "-loglevel", "error", "-f", "lavfi", "-i", "color=c=0x0f172a:s=1920x1080:d=120:r=30",
-           "-f", "lavfi", "-i", "anullsrc=r=48000:cl=stereo", "-vf", ",".join(filters), "-t", "120",
-           "-c:v", "libx264", "-preset", "veryfast", "-crf", "28", "-pix_fmt", "yuv420p", "-c:a", "aac", "-shortest", mp4.name]
-    try:
-        proc = subprocess.run(cmd, cwd=vdir, capture_output=True, text=True, timeout=600)
-        if proc.returncode != 0:
-            print(f"[Agent 13] ffmpeg failed: {proc.stderr.strip()[:300]}")
-            mp4.unlink(missing_ok=True)
-    except subprocess.TimeoutExpired:
-        print("[Agent 13] ffmpeg timed out")
-        mp4.unlink(missing_ok=True)
+def generate_video_assets(spec: dict, render: bool = True, tts: bool = True) -> None:
+    """Agent 13: three narrated explainer videos (case, how to tackle, solution brief)."""
+    vdir = OUTPUT_ROOT / "09_Video"
+    for legacy in ("Final_Demo_120s.mp4", "beats.json", "subtitles.srt"):  # superseded outputs of this pipeline
+        (vdir / legacy).unlink(missing_ok=True)
+    for slug, _, _ in case_videos.VIDEOS:
+        (vdir / f"{slug}.mp4").unlink(missing_ok=True)
+    for old in (vdir / "source_project").glob("*.txt"):  # title-card text files from the previous video engine
+        old.unlink()
+    results = case_videos.render_all(spec, vdir, tts=tts, render=render and shutil.which("ffmpeg") is not None)
+    write_text(vdir / "storyboard.md", "# Video Suite\n\n" + md_table(
+        ["Video", "Purpose", "Scenes", "Duration", "Narrated"],
+        [[f"{slug}.mp4", title, r["scenes"], f"{r.get('duration_s', 0)} s", "yes" if r["narrated"] else "no"]
+         for (slug, title, _), r in zip(case_videos.VIDEOS, results)]) + "\n\nScripts: `*_script.md`; subtitles: `*.srt`.")
+    write_text(vdir / "narration_script.md", "\n\n".join(
+        (vdir / f"{slug}_script.md").read_text(encoding="utf-8") for slug, _, _ in case_videos.VIDEOS if (vdir / f"{slug}_script.md").exists()))
 
 
 def video_duration(path: Path) -> float:
@@ -1211,9 +1207,15 @@ DELIVERABLES = {
     "evaluation_matrix_xlsx": "03_Brainstorming/evaluation_matrix.xlsx",
     "executive_summary_md": "04_Final_Strategy/executive_summary.md",
     "judge_qa_md": "07_PowerPoint/judge_QA_preparation.md",
-    "video_subtitles_srt": "09_Video/subtitles.srt",
-    "video_demo_mp4": "09_Video/Final_Demo_120s.mp4",
+    "case_study_booklet_pdf": "06_PDF_Deliverables/Case_Study_Booklet.pdf",
+    "case_decrypt_md": "04_Final_Strategy/case_decrypt.md",
+    "video_subtitles_srt": "09_Video/03_Solution_Brief.srt",
+    "video_case_mp4": "09_Video/01_The_Case.mp4",
+    "video_tackle_mp4": "09_Video/02_How_To_Tackle.mp4",
+    "video_solution_mp4": "09_Video/03_Solution_Brief.mp4",
 }
+VIDEO_KEYS = {"video_case_mp4", "video_tackle_mp4", "video_solution_mp4", "video_subtitles_srt"}
+DASHES = str.maketrans({"\u2010": "-", "\u2011": "-", "\u2012": "-", "\u2013": "-", "\u2212": "-"})
 
 
 def _artifact_text() -> dict[str, str]:
@@ -1232,7 +1234,7 @@ def _artifact_text() -> dict[str, str]:
     p = OUTPUT_ROOT / DELIVERABLES["executive_summary_md"]
     if p.exists():
         out["executive_summary_md"] = p.read_text(encoding="utf-8")
-    return {k: unicodedata.normalize("NFKC", v) for k, v in out.items()}
+    return {k: unicodedata.normalize("NFKC", v).translate(DASHES) for k, v in out.items()}
 
 
 def run_quality_gates(spec: dict, video_expected: bool, run_started: float = 0.0) -> list[dict]:
@@ -1259,17 +1261,29 @@ def run_quality_gates(spec: dict, video_expected: bool, run_started: float = 0.0
     gate("5. Financial viability", status5,
          f"base NPV {cad(fs['npv_CAD'])}, bear NPV {cad(bear['npv'])}, payback {months(fs['payback_period_months'])}; "
          f"{fs['levelized_cost']} {fs['levelized_cost_unit']} ({fs['economic_case'].split(' (')[0]})")
-    missing = [v for k, v in DELIVERABLES.items() if (k != "video_demo_mp4" or video_expected)
-               and not ((OUTPUT_ROOT / v).exists() and (OUTPUT_ROOT / v).stat().st_size > 0)]
-    if video_expected and "09_Video/Final_Demo_120s.mp4" not in missing:
-        dur = video_duration(OUTPUT_ROOT / DELIVERABLES["video_demo_mp4"])
-        if shutil.which("ffprobe") and dur < 119:
-            missing.append(f"Final_Demo_120s.mp4 ({dur:.0f}s, expected 120s)")
-    gate("6. Deliverable integrity", "FAIL" if missing else "PASS", f"missing/empty: {', '.join(missing)}" if missing else f"{len(DELIVERABLES) - (0 if video_expected else 1)} core files present")
+    expected = {k: v for k, v in DELIVERABLES.items() if k not in VIDEO_KEYS or video_expected}
+    missing = [v for v in expected.values() if not ((OUTPUT_ROOT / v).exists() and (OUTPUT_ROOT / v).stat().st_size > 0)]
+    if video_expected and shutil.which("ffprobe"):
+        for k in VIDEO_KEYS - {"video_subtitles_srt"}:
+            dur = video_duration(OUTPUT_ROOT / DELIVERABLES[k])
+            if DELIVERABLES[k] not in missing and dur < 30:
+                missing.append(f"{DELIVERABLES[k]} ({dur:.0f}s, expected >= 30s)")
+    gate("6. Deliverable integrity", "FAIL" if missing else "PASS",
+         f"missing/empty: {', '.join(missing)}" if missing else f"{len(expected)} core files present")
     texts = _artifact_text()
     needles = {"winner": win["name"][:30], "capex": cad(fs["initial_investment_CAD"]), "NPV": cad(fs["npv_CAD"]),
                "payback": months(fs["payback_period_months"])}
     gaps = [f"{n} not in {k}" for k, t in texts.items() for n, v in needles.items() if v not in " ".join(t.split())]
+    bk = OUTPUT_ROOT / DELIVERABLES["case_study_booklet_pdf"]
+    if bk.exists():
+        import pymupdf
+        from case_visual_pdf import _cad as short
+        with pymupdf.open(str(bk)) as d:
+            bt = unicodedata.normalize("NFKC", " ".join(" ".join(pg.get_text() for pg in d).split())).translate(DASHES)
+        for n, v in {"winner": f"Option {win['label']}", "NPV": short(fs["npv_CAD"]), "budget": short(spec["case_inputs"]["budget"])}.items():
+            if v not in bt:
+                gaps.append(f"{n} not in case_study_booklet_pdf")
+        texts["case_study_booklet_pdf"] = bt
     gate("7. Cross-artifact consistency", "FAIL" if gaps else "PASS",
          "; ".join(gaps[:6]) if gaps else f"winner, capex, NPV and payback identical across {len(texts)} artifacts")
     leak_patterns = [r"[A-Za-z]:[\\/](?:Users|Documents)", r"file:///", r"/Users/[A-Za-z]"]
@@ -1312,8 +1326,7 @@ def write_qc(spec: dict, gates: list[dict], video_expected: bool) -> dict:
         "status": "COMPLETED" if counts["FAIL"] == 0 else "COMPLETED_WITH_FAILURES",
         "timestamp": spec["generated_at"], "case_id": spec["case_identification"]["id"],
         "output_root": "Finished Resources" if OUTPUT_ROOT.name == "Finished Resources" else OUTPUT_ROOT.name,
-        "deliverables": {k: v for k, v in DELIVERABLES.items()
-                         if k != "video_demo_mp4" or video_expected},
+        "deliverables": {k: v for k, v in DELIVERABLES.items() if k not in VIDEO_KEYS or video_expected},
         "gates": gates, "gates_passed": counts["PASS"], "gates_warn": counts["WARN"], "gates_failed": counts["FAIL"],
     }
     for target in (qc / "final_delivery_manifest.json", OUTPUT_ROOT / "00_Project_Overview/project_status.json",
@@ -1325,7 +1338,8 @@ def write_qc(spec: dict, gates: list[dict], video_expected: bool) -> dict:
 # --------------------------------------------------------------------------------------
 # Orchestration
 # --------------------------------------------------------------------------------------
-def run_agent_pipeline(case_info: dict, render_video: bool = True, unit_value_override: float | None = None) -> dict:
+def run_agent_pipeline(case_info: dict, render_video: bool = True, unit_value_override: float | None = None,
+                       tts: bool = True) -> dict:
     print("=" * 80)
     print(f"CASE [{case_info['id']}] {case_info['title']}")
     print("=" * 80)
@@ -1341,8 +1355,9 @@ def run_agent_pipeline(case_info: dict, render_video: bool = True, unit_value_ov
         ("05 Evaluation matrix", lambda: write_evaluation_matrix(spec)),
         ("06 Financial workbooks", lambda: write_financial_workbooks(spec)),
         ("10 PDF deliverables", lambda: generate_pdf_deliverables(spec)),
+        ("10 Case study booklet", lambda: generate_case_study_booklet(spec, OUTPUT_ROOT / DELIVERABLES["case_study_booklet_pdf"])),
         ("11 PowerPoint deck", lambda: generate_powerpoint_deck(spec)),
-        ("13 Video assets", lambda: generate_video_assets(spec, render_video)),
+        ("13 Video suite", lambda: generate_video_assets(spec, render_video, tts)),
     ]
     if OUTPUT_ROOT.resolve() == (REPO_ROOT / "Finished Resources").resolve():  # scratch --out runs never touch the website
         steps.append(("12 Frontend sync", lambda: sync_frontend(spec)))
@@ -1369,6 +1384,7 @@ def main() -> int:
     ap.add_argument("--out", "-o", default=str(OUTPUT_ROOT), help="Output directory (default: Finished Resources)")
     ap.add_argument("--unit-value", type=float, help="CAD value of one unit of improvement (overrides default monetisation)")
     ap.add_argument("--no-video", action="store_true", help="Skip MP4 rendering (fast mode)")
+    ap.add_argument("--no-tts", action="store_true", help="Render videos without online neural narration (offline mode)")
     ap.add_argument("--spec-only", action="store_true", help="Print the computed solution spec and exit")
     args = ap.parse_args()
     if hasattr(sys.stdout, "reconfigure"):
@@ -1380,7 +1396,8 @@ def main() -> int:
         return 0
     OUTPUT_ROOT = Path(args.out)
     create_directory_structure()
-    manifest = run_agent_pipeline(case_info, render_video=not args.no_video, unit_value_override=args.unit_value)
+    manifest = run_agent_pipeline(case_info, render_video=not args.no_video, unit_value_override=args.unit_value,
+                                  tts=not args.no_tts)
     return 0 if manifest["gates_failed"] == 0 else 2
 
 

@@ -43,3 +43,6 @@ graphify-out/cache/
 001 Main/
 001 Main/**
 **/001 Main/**
+
+# Regenerable per-run video frames and narration audio
+Finished Resources/09_Video/source_project/
