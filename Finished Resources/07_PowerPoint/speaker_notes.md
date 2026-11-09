@@ -1,50 +1,37 @@
-# Executive Presentation Speaker Notes (Slide-by-Slide)
+# Speaker Notes
 
-### Slide: Strategic Turnaround: Cold-Chain Fulfillment Center — Capacity Scaling (unexpected demand increase)
-**Key Talking Point**: Focus on the core trade-off. Reiterate that Winning Case Strategy Deck | Executive Presentation.
-**Time Target**: 50 - 60 seconds. Address the judges directly with zero hedging.
+### 1. Cold-Chain Fulfillment Center — Capacity Scaling (unexpected demand increase)
+Open with the answer, then prove it.
 
-### Slide: 1. Executive Summary & Big Idea
-**Key Talking Point**: Focus on the core trade-off. Reiterate that Decouples monolithic throughput dependencies into self-balancing autonomous cells, delivering +24.5% net output with 8.4-month capital payback..
-**Time Target**: 50 - 60 seconds. Address the judges directly with zero hedging.
+### 2. 1. The answer
+State the recommendation and the three numbers judges remember.
 
-### Slide: 2. MECE Problem Diagnosis
-**Key Talking Point**: Focus on the core trade-off. Reiterate that Distinguishing surface symptoms from core architectural constraints.
-**Time Target**: 50 - 60 seconds. Address the judges directly with zero hedging.
+### 3. 2. The problem, quantified
+Capacity Scaling
 
-### Slide: 3. The Core Bottleneck & TOC Framing
-**Key Talking Point**: Focus on the core trade-off. Reiterate that Baseline output: 1190.0 units/day.
-**Time Target**: 50 - 60 seconds. Address the judges directly with zero hedging.
+### 4. 3. Root-cause hypotheses
+What we must prove before spending at scale
 
-### Slide: 4. Strategic Alternatives Comparison
-**Key Talking Point**: Focus on the core trade-off. Reiterate that Multi-criteria weighted evaluation of 3 competing proposals.
-**Time Target**: 50 - 60 seconds. Address the judges directly with zero hedging.
+### 5. 4. Three alternatives
+Costed and compared on the same basis
 
-### Slide: 5. The Recommended Solution Architecture
-**Key Talking Point**: Focus on the core trade-off. Reiterate that Modular Micro-Cell Architecture with Predictive Edge Orchestration (MM-PEO).
-**Time Target**: 50 - 60 seconds. Address the judges directly with zero hedging.
+### 6. 5. Decision logic
+Weighted criteria; budget is a hard gate
 
-### Slide: 6. Operational Workflow & System Decoupling
-**Key Talking Point**: Focus on the core trade-off. Reiterate that Transitioning from rigid batch flow to asynchronous micro-cells.
-**Time Target**: 50 - 60 seconds. Address the judges directly with zero hedging.
+### 7. 6. Recommended: Option C
+Comprehensive architecture replacement for cold-chain fulfillment center
 
-### Slide: 7. Unit Economics & Capital Efficiency
-**Key Talking Point**: Focus on the core trade-off. Reiterate that Payback: 8.4 Months | LTV/CAC: 3.8x.
-**Time Target**: 50 - 60 seconds. Address the judges directly with zero hedging.
+### 8. 7. Five-year economics
+NPV CAD $2,681,053 at 9.5% WACC
 
-### Slide: 8. Three-Year Proforma Projections
-**Key Talking Point**: Focus on the core trade-off. Reiterate that Year 3 EBITDA: CAD $2,496,000 (32.0%).
-**Time Target**: 50 - 60 seconds. Address the judges directly with zero hedging.
+### 9. 8. Stress test
+Scenarios and the assumption that matters most
 
-### Slide: 9. Three-Horizon Implementation Roadmap
-**Key Talking Point**: Focus on the core trade-off. Reiterate that Phased de-risking across Pilot (H1), Rollout (H2), and Scaling (H3).
-**Time Target**: 50 - 60 seconds. Address the judges directly with zero hedging.
+### 10. 9. Implementation roadmap
+3 months, three gated horizons
 
-### Slide: 10. Risk Pre-Mortem & Mitigation Matrix
-**Key Talking Point**: Focus on the core trade-off. Reiterate that Proactive buffers against supply chain, integration, and adoption friction.
-**Time Target**: 50 - 60 seconds. Address the judges directly with zero hedging.
+### 11. 10. Risks and mitigations
+Pre-mortem with early-warning triggers
 
-### Slide: 11. Judge Defense Bank & Stress-Test Rebuttals
-**Key Talking Point**: Focus on the core trade-off. Reiterate that Evidence-backed rebuttals prepared for rapid Q&A defense.
-**Time Target**: 50 - 60 seconds. Address the judges directly with zero hedging.
-
+### 12. 11. Judge defence bank
+Bear case NPV CAD $1,996,871. Lead with the number, then the mitigation.

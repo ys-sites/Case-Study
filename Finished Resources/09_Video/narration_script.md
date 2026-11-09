@@ -1,6 +1,11 @@
-In industrial automation, when line dependencies are locked, a single delay starves the entire plant. At NextGen Automation, rigid cycle variances create costly daily throughput bottlenecks.
-Our diagnosis isolated the root cause: synchronous coupling. Machine variance exceeds 18%, causing staging bottlenecks and 42 minutes of daily idle time.
-The solution is MM-PEO: Modular Micro-Cells with Predictive Edge Orchestration. By decoupling operations into independent, buffered cells, each station operates at peak efficiency.
-On screen, the edge controller monitors cycle variance in real time. Work-in-progress congestion is down 22.5%, and effective line uptime rises to 96.8%.
-The numbers are decisive: an 8.4-month capital payback, Year 3 EBITDA of 2.5 million dollars, and zero safety compromise.
-Modular, predictive, and immediately accretive. This is how NextGen turns architectural bottlenecks into competitive advantage.
+Cold-Chain Fulfillment Center — Capacity Scaling (unexpected demand increase). Capacity Scaling is 1,190 units/day, and it has to improve 8.5 percent.
+
+We treat the gap as a constraint problem: find the stage that limits performance, and prove it with a pilot before spending at scale.
+
+We costed three alternatives on the same basis and scored them on target attainment, return, payback, resilience and budget headroom.
+
+Option C, Comprehensive architecture replacement for cold-chain fulfillment center, delivers 13 percent for CAD $676,000.
+
+Net present value is CAD $2,681,053, with payback in 11.1 months. Under a bear case, NPV is CAD $1,996,871.
+
+Three gated horizons over 3 months: pilot, scale, stabilise. Each gate protects the downside.

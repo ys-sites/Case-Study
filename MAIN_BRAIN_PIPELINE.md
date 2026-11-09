@@ -28,7 +28,7 @@ Match the user's intent to the appropriate skill and resource below:
 
 | User Task / Request | Skill / Resource Location | Execution Action |
 | :--- | :--- | :--- |
-| **Solve a New Case Competition** | `scripts/case_orchestrator.py` | Run `python scripts/case_orchestrator.py <case_path_or_id>`. Automatically executes the 14 agents, builds `Finished Resources/`, generates 2 PDFs, 12-slide PPTX, financial model XLSX, and 120s MP4. |
+| **Solve a New Case Competition** | `scripts/case_orchestrator.py` | Run `python scripts/case_orchestrator.py <case_path_or_id>` (`ENG-0001`, `ENG100K-…`, `ENG1M-…`, or a PDF/MD/TXT/JSON/dir). Scores the 3 options, picks the winner from the numbers (budget = hard gate), builds one `solution_spec.json`, and renders every deliverable from it (2 PDFs, 12-slide PPTX, 3 XLSX with live formulas, 120s MP4). Agent 14 then runs 9 real gates (PASS/WARN/FAIL; exit code 2 on FAIL). Flags: `--out DIR`, `--no-video` (fast), `--spec-only`, `--unit-value CAD`. Read `11_Final_Quality_Control/unresolved_issues.md` before presenting. |
 | **Case Strategy, Deck Blueprint & Formulas** | `docs/CASE_COMPETITION_MASTER_SYSTEM.md` | Consult the 5-Stage Standard, 10-Slide Deck Blueprint, and Unit Economics formulas ($\text{LTV}/\text{CAC} \ge 3.0\times$, $\text{WACC}$, $\text{BEP}$). |
 | **Competition Scoring & Judging Evaluation** | `docs/CASE_COMPETITION_MASTER_SYSTEM.md` | Apply the 100-Point Rubric across Strategy (25%), Financials (25%), Implementation (20%), Risk (15%), and Q&A Defense (15%). |
 | **Interactive Case Simulation & Role-Play** | `data/engineering_1000_case_simulations.json` | Select any case ID (`ENG-0001` through `ENG-1000`). Role-play client executives, withhold answers, demand 3 alternatives, score via 100-pt rubric. |

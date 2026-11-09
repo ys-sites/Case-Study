@@ -1,3 +1,3 @@
 # Consistency Report
 
-Zero variance across PDF, PPTX, XLSX, and MP4 metrics.
+winner, capex, NPV and payback identical across 4 artifacts

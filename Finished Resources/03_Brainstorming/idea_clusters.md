@@ -1,8 +1,8 @@
-# Root Cause Diagnosis & Solution Idea Clusters
+# Root-Cause Hypotheses & Idea Clusters
 
-## 1. Five Whys Decomposition
-1. **Why is throughput lagging?** Micro-stoppages at staging accumulation point.
-2. **Why do stoppages occur?** Variance between primary press cycle and secondary transfer.
-3. **Why does variance cause idle time?** Lack of buffer decoupling between stages.
-4. **Why is buffering rigid?** Monolithic fixed-conveyor architecture without dynamic re-routing.
-5. **Root Cause**: Rigid synchronous coupling between disparate machine cycles without telemetry-driven pacing.
+1. Binding constraint hypothesis: one stage or subsystem limits capacity scaling; confirm with queueing, capacity calculation and bottleneck analysis before committing capital.
+2. Variability, not average capacity, drives the gap: measure cycle/load variance and its share of lost performance.
+3. Control and information gap: performance is managed on lagging data, so deviations are corrected late.
+4. Delivery constraint shaping the solution space: installation restricted to weekends.
+
+Clusters: (A) operate the existing system better, (B) targeted retrofit of the constraint, (C) new capacity / architecture.

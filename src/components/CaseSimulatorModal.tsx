@@ -1148,11 +1148,13 @@ export const CaseSimulatorModal: React.FC<CaseSimulatorModalProps> = ({
                 </div>
 
                 <div className="p-4 rounded-xl border border-stone-200 dark:border-stone-800 bg-stone-50 dark:bg-stone-900 text-center">
-                  <span className="text-xs text-stone-500 font-semibold">LTV / CAC Ratio</span>
+                  <span className="text-xs text-stone-500 font-semibold">Benefit / Cost Ratio</span>
                   <div className="text-2xl font-bold font-mono text-amber-600 dark:text-amber-400 mt-1">
-                    {solutionData.financial_summary.ltv_to_cac_ratio}x
+                    {solutionData.financial_summary.benefit_cost_ratio ?? 'n/a'}x
                   </div>
-                  <span className="text-[11px] text-stone-400">Benchmark: &ge;3.0x</span>
+                  <span className="text-[11px] text-stone-400">
+                    NPV CAD ${solutionData.financial_summary.npv_CAD.toLocaleString()} · Benchmark: &gt;1.0x
+                  </span>
                 </div>
               </div>
             </div>

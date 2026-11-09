@@ -1,10 +1,10 @@
-# Two-Minute Product Demonstration Video Storyboard (120 Seconds)
+# Storyboard (120 s)
 
-| Time Range | Scene Name | Visual Presentation | Audio / Voiceover Narration |
-| :--- | :--- | :--- | :--- |
-| **0:00 - 0:15** | The Problem Hook | Split-screen showing factory floor bottleneck and red throughput warning (1,042 units/day). | "In industrial automation, when line dependencies are locked, a single delay starves the entire plant. At NextGen Automation, rigid cycle variances create costly daily throughput bottlenecks." |
-| **0:15 - 0:35** | Root Cause Diagnosis | Animated Five Whys issue tree identifying mechanical interlock starvation. | "Our diagnosis isolated the root cause: synchronous coupling. Machine variance exceeds 18%, causing staging bottlenecks and 42 minutes of daily idle time." |
-| **0:35 - 1:00** | The Winning Solution | 3D exploded diagram of Modular Micro-Cell Architecture with Edge Telemetry. | "The solution is MM-PEO: Modular Micro-Cells with Predictive Edge Orchestration. By decoupling operations into independent, buffered cells, each station operates at peak efficiency." |
-| **1:00 - 1:35** | Product Walkthrough | Live UI dashboard recording showing dynamic load balancing and real-time telemetry. | "On screen, the edge controller monitors cycle variance in real time. Work-in-progress congestion is down 22.5%, and effective line uptime rises to 96.8%." |
-| **1:35 - 1:50** | Business & Financial Impact | Clear animated proforma chart: 8.4-month payback and +24.5% output surge. | "The numbers are decisive: an 8.4-month capital payback, Year 3 EBITDA of 2.5 million dollars, and zero safety compromise." |
-| **1:50 - 2:00** | Conclusion & Call to Action | Executive title card with key metrics and final competition defense seal. | "Modular, predictive, and immediately accretive. This is how NextGen turns architectural bottlenecks into competitive advantage." |
+| Time | Beat | On screen | Narration |
+| --- | --- | --- | --- |
+| 00:00-00:20 | The problem | 1,190 units/day | Cold-Chain Fulfillment Center — Capacity Scaling (unexpected demand increase). Capacity Scaling is 1,190 units/day, and it has to improve 8.5 percent. |
+| 00:20-00:40 | The diagnosis | Find the binding constraint | We treat the gap as a constraint problem: find the stage that limits performance, and prove it with a pilot before spending at scale. |
+| 00:40-01:00 | Three options | A: 4.6% / B: 6.9% / C: 13% | We costed three alternatives on the same basis and scored them on target attainment, return, payback, resilience and budget headroom. |
+| 01:00-01:20 | Option C wins | Comprehensive architecture replacement for cold-chain… | Option C, Comprehensive architecture replacement for cold-chain fulfillment center, delivers 13 percent for CAD $676,000. |
+| 01:20-01:40 | The numbers | NPV CAD $2,681,053 · payback 11.1 months | Net present value is CAD $2,681,053, with payback in 11.1 months. Under a bear case, NPV is CAD $1,996,871. |
+| 01:40-02:00 | The plan | Horizon 1 → Horizon 2 → Horizon 3 | Three gated horizons over 3 months: pilot, scale, stabilise. Each gate protects the downside. |

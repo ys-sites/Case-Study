@@ -1,915 +1,1388 @@
-"""Autonomous Case Competition Intelligence System Orchestrator.
+"""Autonomous Case Competition Intelligence System Orchestrator (v2).
 
-Implements the 14-Agent Architecture under a Central Orchestrator:
-Agent 00: Master Orchestrator
-Agent 01: Case Intelligence Analyst
-Agent 02: Global Competition Researcher
-Agent 03: Root Cause and Systems Analyst
-Agent 04: Brainstorming and Innovation Agent
-Agent 05: Strategy Evaluation and Decision Agent
-Agent 06: Business and Financial Modeling Agent
-Agent 07: Technical and Product Architecture Agent
-Agent 08: Implementation Blueprint Agent
-Agent 09: Critical Reviewer / Red Team
-Agent 10: PDF Documentation Agent
-Agent 11: PowerPoint Presentation Agent
-Agent 12: Website Development Agent
-Agent 13: Video Production Agent
-Agent 14: Quality Assurance and Integration Agent
+One deterministic engine that turns any case (ENG-xxxx, ENG100K-xxxxxx, ENG1M-xxxxxxx,
+a PDF/MD/TXT/JSON brief, or a case directory) into the canonical Finished Resources set.
+
+Design rules
+------------
+1. Single source of truth: every number in every deliverable is read from `solution_spec`,
+   which is computed once by `build_solution_spec()`. Nothing is hardcoded per deliverable.
+2. Data-driven decision: the three alternatives are scored with an explicit weighted matrix;
+   the winner is whatever the numbers pick (budget is a hard gate).
+3. Honest assumptions: every value not stated in the case is logged in the assumptions
+   register with its source, and the weakest ones are surfaced as unresolved issues.
+4. Real quality gates: Agent 14 re-reads the produced files and reports PASS / WARN / FAIL.
+
+Agent map (stage -> function)
+  00 Master Orchestrator ........ run_agent_pipeline / build_solution_spec
+  01 Case Intelligence .......... load_case_data, write_case_intelligence
+  02 Competition Research ....... write_research
+  03 Root Cause Analyst ......... diagnose
+  04 Brainstorming .............. write_brainstorming
+  05 Strategy Decision .......... evaluate_options, write_evaluation_matrix
+  06 Financial Modeling ......... cash_model, write_financial_workbooks
+  07 Technical Architecture ..... write_strategy (solution_architecture.md)
+  08 Implementation Blueprint ... build_horizons, write_strategy
+  09 Red Team ................... build_red_team, sensitivity
+  10 PDF Documentation .......... generate_pdf_deliverables
+  11 PowerPoint ................. generate_powerpoint_deck
+  12 Website sync ............... sync_frontend
+  13 Video Production ........... generate_video_assets
+  14 Quality Assurance .......... run_quality_gates
 """
 
-import os
-import sys
-import json
-import csv
-import shutil
-import asyncio
-import subprocess
-from pathlib import Path
-from datetime import datetime, timezone
+from __future__ import annotations
 
-# Formatting libraries
-import xlsxwriter
-import pymupdf
-from pptx import Presentation
-from pptx.util import Inches, Pt
-from pptx.dml.color import RGBColor
-from pptx.enum.text import PP_ALIGN
+import argparse
+import csv
+import getpass
+import json
+import re
+import shutil
+import subprocess
+import sys
+import textwrap
+import unicodedata
+from datetime import datetime, timezone
+from pathlib import Path
 
 OUTPUT_ROOT = Path("Finished Resources")
+REPO_ROOT = Path(__file__).resolve().parent.parent
+DATA_DIR = REPO_ROOT / "data"
 
-def create_directory_structure():
-    """Create the 12 canonical directories defined in the master prompt."""
-    dirs = [
-        "00_Project_Overview",
-        "01_Case_Intelligence",
-        "02_Research",
-        "02_Research/global_case_competitions",
-        "03_Brainstorming",
-        "04_Final_Strategy",
-        "05_Financial_Models",
-        "06_PDF_Deliverables",
-        "07_PowerPoint",
-        "08_Website",
-        "08_Website/source",
-        "09_Video",
-        "09_Video/source_project",
-        "10_Agent_Reports",
-        "10_Agent_Reports/agent_outputs",
-        "10_Agent_Reports/handoff_logs",
-        "10_Agent_Reports/review_findings",
-        "11_Final_Quality_Control"
-    ]
-    for d in dirs:
+# --------------------------------------------------------------------------------------
+# Model parameters (all surfaced in the assumptions register)
+# --------------------------------------------------------------------------------------
+WACC = 0.095                 # discount rate
+HORIZON_YEARS = 5            # appraisal horizon
+OM_RATE = 0.05               # annual O&M as share of capex
+PILOT_SHARE = 0.30           # share of full benefit realised while still implementing
+OPERATING_DAYS = 250
+BEAR = {"perf": 0.85, "capex": 1.20}   # performance -15 %, cost +20 % (standard judge challenge)
+BULL = {"perf": 1.15, "capex": 0.90}
+
+# Value of one unit of improvement, by baseline unit. (value CAD, source label)
+UNIT_VALUES = {
+    "units/day": (24.50 * OPERATING_DAYS, "CAD 24.50 contribution/unit x 250 operating days"),
+    "kwh/year": (0.13, "CAD 0.13/kWh blended industrial tariff"),
+    "tonnes co2e/year": (95.0, "CAD 95/tCO2e carbon price"),
+    "cad/month": (12.0, "case datum (monthly CAD x 12)"),
+    "cad/year": (1.0, "case datum (annual CAD)"),
+}
+ECONOMIC_UNITS = {"units/day", "cad/month", "cad/year"}  # objective is profit; others are mandate-driven
+ANCHOR_SHARE = 0.45  # non-monetary metrics: annual value of full target = 45 % of budget
+
+# Parametric options when a case gives names but no costs: (share of budget, x target)
+PARAMETRIC_OPTIONS = [(0.30, 0.65), (0.70, 1.15), (1.15, 1.60)]
+
+CRITERIA = [
+    ("Target attainment", 0.30),
+    ("Financial return (NPV)", 0.25),
+    ("Payback speed", 0.15),
+    ("Downside resilience (-15% perf.)", 0.15),
+    ("Budget headroom", 0.15),
+]
+
+CANONICAL_DIRS = [
+    "00_Project_Overview", "01_Case_Intelligence", "02_Research", "03_Brainstorming",
+    "04_Final_Strategy", "05_Financial_Models", "06_PDF_Deliverables", "07_PowerPoint",
+    "08_Website", "09_Video", "09_Video/source_project", "10_Agent_Reports",
+    "11_Final_Quality_Control",
+]
+
+
+# --------------------------------------------------------------------------------------
+# Formatting helpers
+# --------------------------------------------------------------------------------------
+def cad(x: float | None) -> str:
+    if x is None:
+        return "n/a"
+    sign = "-" if x < 0 else ""
+    return f"{sign}CAD ${abs(round(x)):,}"
+
+
+def num(x: float, digits: int = 2) -> str:
+    return f"{x:,.{digits}f}".rstrip("0").rstrip(".") if digits else f"{x:,.0f}"
+
+
+def months(x: float | None) -> str:
+    return f"{x:.1f} months" if x is not None else f"> {HORIZON_YEARS * 12} months"
+
+
+def pct(x: float | None, digits: int = 1) -> str:
+    return f"{x:.{digits}f}%" if x is not None else "n/a"
+
+
+def _f(row: dict, key: str, default: float) -> float:
+    try:
+        return float(str(row.get(key, default)).replace(",", ""))
+    except (TypeError, ValueError):
+        return float(default)
+
+
+def write_text(path: Path, text: str) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(text.strip() + "\n", encoding="utf-8")
+
+
+def md_table(headers: list[str], rows: list[list]) -> str:
+    out = ["| " + " | ".join(headers) + " |", "|" + "|".join([" --- "] * len(headers)) + "|"]
+    out += ["| " + " | ".join(str(c) for c in r) + " |" for r in rows]
+    return "\n".join(out)
+
+
+# --------------------------------------------------------------------------------------
+# Agent 01: case loading & normalisation
+# --------------------------------------------------------------------------------------
+def create_directory_structure() -> None:
+    for d in CANONICAL_DIRS:
         (OUTPUT_ROOT / d).mkdir(parents=True, exist_ok=True)
-    print(f"Created canonical Finished Resources directory structure at {OUTPUT_ROOT.resolve()}")
 
-def load_case_data(case_identifier: str = "ENG-0001"):
-    """Load case from engineering simulations, custom files, or directories."""
-    input_path = Path(case_identifier)
 
-    # 1. Direct file input (PDF, Markdown, TXT, JSON)
-    if input_path.is_file():
-        text_content = ""
-        case_title = input_path.stem.replace("_", " ").title()
-        
-        if input_path.suffix.lower() == ".pdf":
-            try:
-                doc = pymupdf.open(str(input_path))
-                for page in doc:
-                    text_content += page.get_text() + "\n"
-                doc.close()
-            except Exception as e:
-                print(f"Notice: PDF extraction error: {e}")
-        elif input_path.suffix.lower() == ".json":
-            try:
-                with open(input_path, "r", encoding="utf-8") as f:
-                    return json.load(f)
-            except Exception:
-                pass
-        else:
-            try:
-                text_content = input_path.read_text(encoding="utf-8")
-            except Exception as e:
-                print(f"Notice: File read error: {e}")
-
-        return {
-            "id": f"CASE-{input_path.stem.upper()[:12]}",
-            "title": case_title,
-            "discipline": "Multidisciplinary Engineering & Strategy",
-            "difficulty": "Championship / MBA",
-            "brief": text_content[:500] if text_content else f"Custom case input from {input_path.name}",
-            "decision_question": "What is the optimal strategic and operational intervention to resolve core constraints while maximizing ROI?",
-            "objective": "Deliver an evidence-backed turnaround strategy with 3-year proforma, phased implementation, and judge defense.",
-            "inputs": {
-                "baseline_metric": "Daily Operational Throughput",
-                "baseline_value": 1042.83,
-                "baseline_unit": "units/day",
-                "target_metric": "Target Improvement",
-                "target_value": 24.5,
-                "target_unit": "%",
-                "capital_budget_CAD": 1625000,
-                "timeline_months": 12
-            },
-            "constraints": [
-                "Capital budget <= CAD 1,625,000",
-                "Finish core implementation within 12 months",
-                "Preserve full safety and regulatory compliance",
-                "LTV / CAC ratio must meet or exceed 3.0x"
-            ],
-            "alternatives": [
-                "Option A: Incremental tuning of existing systems",
-                "Option B: Modular Micro-Cell Architecture with Edge Telemetry (Selected)",
-                "Option C: Complete greenfield facility reconstruction"
-            ],
-            "suggested_analysis": "Theory of Constraints + Discrete-Event Simulation + DCF",
-            "source_type": f"file_{input_path.suffix}"
-        }
-
-    # 2. Directory input (e.g. cases/NextGen_Automation_Turnaround)
-    if input_path.is_dir():
-        combined_text = ""
-        for md_file in sorted(input_path.glob("*.md")):
-            combined_text += md_file.read_text(encoding="utf-8") + "\n"
-        
-        return {
-            "id": f"CASE-{input_path.name.upper()[:12]}",
-            "title": input_path.name.replace("_", " ").title(),
-            "discipline": "Industrial Automation & Operations Engineering",
-            "difficulty": "Championship / MBA",
-            "brief": combined_text[:500] if combined_text else "Case package directory input",
-            "decision_question": "How should the organization restructure operations to eliminate the core bottleneck and double profitability?",
-            "objective": "Build an end-to-end strategy blueprint, financial proforma, and 10-slide executive pitch deck.",
-            "inputs": {
-                "baseline_metric": "Daily System Throughput",
-                "baseline_value": 1042.83,
-                "baseline_unit": "units/day",
-                "target_metric": "Throughput Improvement",
-                "target_value": 24.5,
-                "target_unit": "%",
-                "capital_budget_CAD": 1625000,
-                "timeline_months": 12
-            },
-            "constraints": [
-                "Capital budget <= CAD 1,625,000",
-                "Core rollout under 12 months",
-                "Zero safety compromises",
-                "LTV/CAC >= 3.0x"
-            ],
-            "alternatives": [
-                "Option A: Incremental legacy tuning",
-                "Option B: Modular Micro-Cell Architecture with Predictive Telemetry (Selected)",
-                "Option C: Custom greenfield reconstruction"
-            ],
-            "suggested_analysis": "TOC + Discrete Event Simulation + DCF",
-            "source_type": "directory_package"
-        }
-
-    # 3. Lookup in data/engineering_100000_preview.csv
-    if case_identifier.upper().startswith("ENG100K"):
-        csv_100k = Path("data/engineering_100000_preview.csv")
-        if csv_100k.exists():
-            try:
-                with open(csv_100k, "r", encoding="utf-8-sig") as f:
-                    reader = csv.DictReader(f)
-                    for row in reader:
-                        if row.get("Case ID") == case_identifier:
-                            return {
-                                "id": row["Case ID"],
-                                "title": f"{row.get('Archetype', 'Case')} — {row.get('Context', '')} ({row.get('Shock', '')})",
-                                "discipline": row.get("Discipline", "Industrial Engineering"),
-                                "difficulty": row.get("Difficulty", "Beginner"),
-                                "brief": row.get("Decision Brief", ""),
-                                "decision_question": f"Which design should be chosen for {row.get('Archetype', 'the system')} during {row.get('Shock', '')}?",
-                                "objective": f"Achieve {row.get('Target Improvement Percent', 20)}% improvement in {row.get('Target Metric', 'output')} within {row.get('Deadline Months', 12)} months under CAD ${float(row.get('Budget CAD', 1500000)):,}.",
-                                "inputs": {
-                                    "baseline_metric": row.get("Baseline Metric", "Current daily output"),
-                                    "baseline_value": float(row.get("Baseline Value", 1000)),
-                                    "baseline_unit": row.get("Baseline Unit", "units/day"),
-                                    "target_metric": row.get("Target Metric", "Throughput gain"),
-                                    "target_value": float(row.get("Target Improvement Percent", 20)),
-                                    "target_unit": "%",
-                                    "capital_budget_CAD": float(row.get("Budget CAD", 1500000)),
-                                    "timeline_months": int(row.get("Deadline Months", 12))
-                                },
-                                "constraints": [c.strip() for c in row.get("Technical Constraints", "").split("|") if c.strip()],
-                                "alternatives": [
-                                    f"Option A: {row.get('Option A', 'Tuning')} (CAD ${float(row.get('Option A Cost CAD', 500000)):,}, +{row.get('Option A Estimated Improvement Percent', 15)}%)",
-                                    f"Option B: {row.get('Option B', 'Retrofit')} (CAD ${float(row.get('Option B Cost CAD', 1200000)):,}, +{row.get('Option B Estimated Improvement Percent', 25)}%)",
-                                    f"Option C: {row.get('Option C', 'Modernization')} (CAD ${float(row.get('Option C Cost CAD', 1800000)):,}, +{row.get('Option C Estimated Improvement Percent', 35)}%)"
-                                ],
-                                "suggested_analysis": row.get("Suggested Analysis", "Theory of Constraints + Discrete-Event Simulation"),
-                                "judge_challenge": row.get("Judge Challenge", "How does your recommendation change if costs rise 20% or performance falls 15%?"),
-                                "source_type": "100k_preview_simulation"
-                            }
-            except Exception as e:
-                print(f"Notice: Failed to load from 100k preview: {e}")
-
-    # 4. Lookup in data/engineering_1million_additional_preview.csv
-    if case_identifier.upper().startswith("ENG1M"):
-        csv_1m = Path("data/engineering_1million_additional_preview.csv")
-        if csv_1m.exists():
-            try:
-                with open(csv_1m, "r", encoding="utf-8-sig") as f:
-                    reader = csv.DictReader(f)
-                    for row in reader:
-                        if row.get("case_id") == case_identifier:
-                            return {
-                                "id": row["case_id"],
-                                "title": f"{row.get('asset', 'Asset').title()} — {row.get('technical_challenge', '').title()} ({row.get('disruption', '')})",
-                                "discipline": row.get("discipline", "Industrial Engineering"),
-                                "difficulty": row.get("difficulty", "Beginner"),
-                                "brief": f"Operating context: {row.get('operating_context')}. Disruption: {row.get('disruption')}. Constraint: {row.get('constraint')}.",
-                                "decision_question": row.get("decision_question", ""),
-                                "objective": f"Achieve {row.get('required_improvement_pct', 20)}% improvement in {row.get('technical_challenge', 'performance')} under CAD ${float(row.get('budget_cad', 1500000)):,}.",
-                                "inputs": {
-                                    "baseline_metric": f"{row.get('technical_challenge', 'Baseline').title()}",
-                                    "baseline_value": float(row.get("baseline_value", 1000)),
-                                    "baseline_unit": row.get("baseline_unit", "units/day"),
-                                    "target_metric": "Target Improvement",
-                                    "target_value": float(row.get("required_improvement_pct", 20)),
-                                    "target_unit": "%",
-                                    "capital_budget_CAD": float(row.get("budget_cad", 1500000)),
-                                    "timeline_months": int(float(row.get("deadline_months", 12)))
-                                },
-                                "constraints": [
-                                    f"Budget: CAD ${float(row.get('budget_cad', 1500000)):,}",
-                                    f"Deadline: {row.get('deadline_months')} months",
-                                    f"Minimum Availability: {row.get('minimum_availability_pct', 95)}%",
-                                    row.get("constraint", "")
-                                ],
-                                "alternatives": [
-                                    f"Option A: {row.get('option_a')} (CAD ${float(row.get('option_a_capex_cad', 500000)):,}, +{row.get('option_a_estimated_improvement_pct', 15)}%)",
-                                    f"Option B: {row.get('option_b')} (CAD ${float(row.get('option_b_capex_cad', 1200000)):,}, +{row.get('option_b_estimated_improvement_pct', 25)}%)",
-                                    f"Option C: {row.get('option_c')} (CAD ${float(row.get('option_c_capex_cad', 1800000)):,}, +{row.get('option_c_estimated_improvement_pct', 35)}%)"
-                                ],
-                                "suggested_analysis": row.get("analysis_methods", "Theory of Constraints + Discrete-Event Simulation"),
-                                "judge_challenge": row.get("judge_question", "What happens to system throughput if cooling loop downtime spikes during seasonal peak?"),
-                                "source_type": "1m_preview_simulation"
-                            }
-            except Exception as e:
-                print(f"Notice: Failed to load from 1m preview: {e}")
-
-    # 4. Lookup in data/engineering_1000_case_simulations.json
-    simulations_file = Path("data/engineering_1000_case_simulations.json")
-    if simulations_file.exists():
-        try:
-            with open(simulations_file, "r", encoding="utf-8") as f:
-                data = json.load(f)
-                cases = data.get("cases", [])
-                for c in cases:
-                    if c.get("id") == case_identifier:
-                        return {
-                            "id": c["id"],
-                            "title": c.get("case_title", "Engineering Case"),
-                            "discipline": c.get("discipline", "Industrial Engineering"),
-                            "difficulty": c.get("difficulty", "Advanced"),
-                            "brief": c.get("case_brief", ""),
-                            "decision_question": c.get("decision_question", ""),
-                            "objective": c.get("objective", ""),
-                            "inputs": c.get("inputs", {}),
-                            "constraints": c.get("constraints", []),
-                            "alternatives": c.get("alternatives_to_compare", []),
-                            "suggested_analysis": c.get("suggested_analysis", "TOC & Financial Modeling"),
-                            "source_type": "1000_engineering_simulations"
-                        }
-        except Exception as e:
-            print(f"Notice: Failed to load from 1000 simulations: {e}")
-
-    # 4. Fallback Reference Benchmark
-    return {
-        "id": "CASE-NEXTGEN-01",
-        "title": "NextGen Automation Turnaround Strategy",
-        "discipline": "Industrial Robotics & Automation Engineering",
-        "difficulty": "Championship / MBA",
-        "brief": "NextGen Automation faces high customer acquisition friction, 18-month payback lags, and siloed software integrations. Turnaround required within 12 months under CAD $1,625,000 budget.",
-        "decision_question": "How should NextGen Automation restructure its delivery architecture to accelerate breakeven, double system throughput, and achieve LTV/CAC >= 3.5x?",
-        "objective": "Design an end-to-end modular automation platform with 3-year financial model, phased 3-horizon rollout, and judge defense bank.",
-        "inputs": {
-            "baseline_metric": "Daily System Throughput",
-            "baseline_value": 1042.83,
-            "baseline_unit": "units/day",
-            "target_metric": "Throughput Improvement",
-            "target_value": 24.5,
-            "target_unit": "%",
-            "capital_budget_CAD": 1625000,
-            "timeline_months": 12
-        },
-        "constraints": [
-            "Capital budget <= CAD 1,625,000",
-            "Core rollout under 12 months",
-            "Maintain zero safety compromises and full ISO/OSHA compliance",
-            "LTV / CAC ratio must meet or exceed 3.0x threshold"
-        ],
-        "alternatives": [
-            "Option A: Incremental tuning of existing legacy systems",
-            "Option B: Modular Micro-Cell Architecture with Predictive Telemetry (Selected)",
-            "Option C: Complete custom greenfield reconstruction"
-        ],
-        "suggested_analysis": "Theory of Constraints + Discrete Event Simulation + Discounted Cash Flow",
-        "source_type": "reference_benchmark"
+def _case(**kw) -> dict:
+    """Normalised case record. `options` is a list of {label,name,capex,improvement,source}."""
+    base = {
+        "id": "CASE", "title": "Case", "discipline": "Engineering", "difficulty": "Advanced",
+        "context": "", "brief": "", "decision_question": "", "objective": "",
+        "baseline_metric": "Baseline", "baseline_value": 1000.0, "baseline_unit": "units/day",
+        "target_metric": "Target improvement", "target_pct": 20.0, "budget": 1_500_000.0,
+        "timeline_months": 12, "constraints": [], "options": [], "suggested_analysis": "",
+        "judge_questions": [], "rubric": {}, "source_type": "unknown", "provenance": {},
     }
+    base.update(kw)
+    return base
 
-def run_agent_pipeline(case_info: dict):
-    """Executes the 14 agents deterministically, generating all deliverables."""
-    print("=" * 80)
-    print(f"ORCHESTRATING 14 AGENTS FOR CASE: [{case_info['id']}] {case_info['title']}")
-    print("=" * 80)
 
-    # 1. Solution Specification (Shared Source of Truth)
-    solution_spec = {
-        "version": "1.0.0",
-        "generated_at": datetime.now(timezone.utc).isoformat(),
-        "case_identification": {
-            "id": case_info["id"],
-            "title": case_info["title"],
-            "discipline": case_info["discipline"],
-            "difficulty": case_info["difficulty"]
-        },
-        "problem_diagnosis": {
-            "core_bottleneck": "Unsynchronized batch processing and legacy mechanical interlocks creating throughput starvation.",
-            "baseline_value": case_info["inputs"].get("baseline_value", 1000),
-            "baseline_unit": case_info["inputs"].get("baseline_unit", "units/day"),
-            "target_improvement_percent": case_info["inputs"].get("target_value", 20.0),
-            "root_causes": [
-                "Fixed cycle time variance exceeding tolerance thresholds (+/- 18%).",
-                "Sub-optimal material buffering between staging and assembly.",
-                "Lack of closed-loop telemetry and dynamic load balancing."
-            ]
+def _parametric_options(names: list[str], budget: float, target: float) -> list[dict]:
+    names = (names + ["Optimise existing system", "Targeted retrofit", "Full replacement"])[:3]
+    return [
+        {"label": "ABC"[i], "name": re.sub(r"^Option [ABC]:\s*", "", n).strip(),
+         "capex": round(budget * share), "improvement": round(target * mult, 2),
+         "source": f"assumption: {share:.0%} of budget, {mult:.2f}x target"}
+        for i, (n, (share, mult)) in enumerate(zip(names, PARAMETRIC_OPTIONS))
+    ]
+
+
+def _from_json_case(c: dict, source: str) -> dict:
+    inp = c.get("inputs", {})
+    budget = float(inp.get("capital_budget_CAD", 1_500_000))
+    target = float(inp.get("target_value", 20))
+    return _case(
+        id=c.get("id", "CASE-JSON"), title=c.get("case_title") or c.get("title", "Engineering Case"),
+        discipline=c.get("discipline", "Engineering"), difficulty=c.get("difficulty", "Advanced"),
+        context=c.get("scenario_type", ""), brief=c.get("case_brief") or c.get("brief", ""),
+        decision_question=c.get("decision_question", ""), objective=c.get("objective", ""),
+        baseline_metric=inp.get("baseline_metric", "Baseline"),
+        baseline_value=float(inp.get("baseline_value", 1000)),
+        baseline_unit=inp.get("baseline_unit", "units/day"),
+        target_metric=inp.get("target_metric", "Target improvement"), target_pct=target,
+        budget=budget, timeline_months=int(inp.get("timeline_months", 12)),
+        constraints=c.get("constraints", []),
+        options=_parametric_options(c.get("alternatives_to_compare") or c.get("alternatives", []), budget, target),
+        suggested_analysis=c.get("suggested_analysis", ""),
+        judge_questions=c.get("judge_questions", []), rubric=c.get("judge_rubric", {}),
+        source_type=source, provenance={"options": "parametric assumption (case gives no option costs)"},
+    )
+
+
+def _csv_lookup(path: Path, key_col: str, case_id: str) -> dict | None:
+    if not path.exists():
+        return None
+    with open(path, encoding="utf-8-sig", newline="") as f:
+        for row in csv.DictReader(f):
+            if row.get(key_col) == case_id:
+                return row
+    return None
+
+
+def _from_100k(row: dict) -> dict:
+    opts = [{"label": L, "name": row.get(f"Option {L}", f"Option {L}"),
+             "capex": _f(row, f"Option {L} Cost CAD", 0),
+             "improvement": _f(row, f"Option {L} Estimated Improvement Percent", 0),
+             "source": "case datum"} for L in "ABC"]
+    return _case(
+        id=row["Case ID"], title=f"{row.get('Archetype', 'Case')} — {row.get('Context', '')} ({row.get('Shock', '')})",
+        discipline=row.get("Discipline", ""), difficulty=row.get("Difficulty", ""),
+        context=f"{row.get('Context', '')}; shock: {row.get('Shock', '')}", brief=row.get("Decision Brief", ""),
+        decision_question=f"Which design should be chosen for {row.get('Archetype', 'the system').lower()} during {row.get('Shock', 'the disruption')}?",
+        objective=f"Deliver {row.get('Target Improvement Percent')}% {row.get('Target Metric', 'improvement').lower()} within {row.get('Deadline Months')} months.",
+        baseline_metric=row.get("Baseline Metric", "Baseline"), baseline_value=_f(row, "Baseline Value", 1000),
+        baseline_unit=row.get("Baseline Unit", "units/day"), target_metric=row.get("Target Metric", "Improvement"),
+        target_pct=_f(row, "Target Improvement Percent", 20), budget=_f(row, "Budget CAD", 1_500_000),
+        timeline_months=int(_f(row, "Deadline Months", 12)),
+        constraints=[c.strip() for c in row.get("Technical Constraints", "").split("|") if c.strip()]
+        + [f"Availability >= {row.get('Availability Percent')}%", f"Max installation downtime {row.get('Max Installation Downtime Hours')} h"],
+        options=opts, suggested_analysis=row.get("Suggested Analysis", ""),
+        judge_questions=[q for q in [row.get("Judge Challenge")] if q], source_type="100k_preview_simulation",
+    )
+
+
+def _from_1m(row: dict) -> dict:
+    opts = [{"label": L, "name": row.get(f"option_{L.lower()}", f"Option {L}"),
+             "capex": _f(row, f"option_{L.lower()}_capex_cad", 0),
+             "improvement": _f(row, f"option_{L.lower()}_estimated_improvement_pct", 0),
+             "source": "case datum"} for L in "ABC"]
+    return _case(
+        id=row["case_id"], title=f"{row.get('asset', 'Asset').title()} — {row.get('technical_challenge', '').title()} ({row.get('disruption', '')})",
+        discipline=row.get("discipline", ""), difficulty=row.get("difficulty", ""),
+        context=f"{row.get('operating_context', '')}; disruption: {row.get('disruption', '')}",
+        brief=row.get("decision_question", ""), decision_question=row.get("decision_question", ""),
+        objective=f"At least {row.get('required_improvement_pct')}% improvement in {row.get('technical_challenge', 'performance')} within {row.get('deadline_months')} months.",
+        baseline_metric=row.get("technical_challenge", "Baseline").title(), baseline_value=_f(row, "baseline_value", 1000),
+        baseline_unit=row.get("baseline_unit", "units/day"), target_metric=f"{row.get('technical_challenge', 'Performance').title()} improvement",
+        target_pct=_f(row, "required_improvement_pct", 20), budget=_f(row, "budget_cad", 1_500_000),
+        timeline_months=int(_f(row, "deadline_months", 12)),
+        constraints=[c for c in [row.get("constraint", ""), f"Minimum availability {row.get('minimum_availability_pct')}%"] if c],
+        options=opts, suggested_analysis=row.get("analysis_methods", ""),
+        judge_questions=[q for q in [row.get("judge_question")] if q], source_type="1m_preview_simulation",
+    )
+
+
+def _from_text(text: str, case_id: str, title: str, source: str) -> dict:
+    """Best-effort extraction from a free-text brief; every miss is flagged as an assumption."""
+    prov, t = {}, text.replace("\u00a0", " ")
+
+    def grab(pattern, cast, default, key):
+        m = re.search(pattern, t, re.I)
+        if m:
+            try:
+                prov[key] = "extracted from brief"
+                return cast(m)
+            except (ValueError, IndexError):
+                pass
+        prov[key] = "assumption (not found in brief)"
+        return default
+
+    def find_budget() -> float | None:
+        """Pick the money mention closest to budget language (capital/capex/budget/ceiling)."""
+        mult = {"b": 1e9, "bn": 1e9, "billion": 1e9, "m": 1e6, "mn": 1e6, "million": 1e6, "k": 1e3}
+        best, best_score = None, 0
+        for m in re.finditer(r"(?:CAD|C\$|\$)\s*\$?\s*([\d][\d,]*\.?\d*)\s*(billion|bn|b|million|mn|m|k)?\b", t, re.I):
+            value = float(m.group(1).replace(",", "")) * mult.get((m.group(2) or "").lower(), 1)
+            if value < 1_000:
+                continue
+            ctx = t[max(0, m.start() - 60):m.end() + 40].lower()
+            score = sum(k in ctx for k in ("capital", "capex", "budget", "ceiling", "envelope", "investment")) \
+                - sum(k in ctx for k in ("revenue", "/yr", "per year", "annual", "/order", "savings"))
+            if score > best_score:
+                best, best_score = value, score
+        return best
+
+    budget = find_budget()
+    prov["budget"] = "extracted from brief" if budget else "assumption (not found in brief)"
+    budget = budget or 1_500_000.0
+    target = grab(r"(\d+(?:\.\d+)?)\s*%\s*(?:improvement|increase|reduction|gain|uplift)", lambda m: float(m.group(1)), 20.0, "target_pct")
+    timeline = grab(r"(?:within|in|over)\s+(\d{1,2})\s*months", lambda m: int(m.group(1)), 12, "timeline_months")
+    unit_re = r"units/day|kWh/year|tonnes CO2e/year|CAD/month|CAD/year|minutes|days"
+    baseline, unit = grab(rf"(?:baseline|current)[^.\n]{{0,80}}?([\d][\d,]*\.?\d*)\s*({unit_re})", lambda m: (float(m.group(1).replace(",", "")), m.group(2)),
+                          (100.0, "index/100"), "baseline_value")
+    alts = re.findall(r"Option\s+[ABC]\s*[:\-–]\s*([^\n.;]+)", t)
+    return _case(
+        id=case_id, title=title, discipline="Multidisciplinary Engineering & Strategy", difficulty="Championship",
+        brief=re.sub(r"\s+", " ", t).strip()[:700] or title,
+        decision_question="Which intervention resolves the binding constraint at the best risk-adjusted return within budget and deadline?",
+        objective=f"Deliver {target:g}% improvement within {timeline} months under {cad(budget)}.",
+        baseline_metric="Baseline performance", baseline_value=baseline, baseline_unit=unit,
+        target_pct=target, budget=budget, timeline_months=timeline,
+        constraints=[f"Capital budget <= {cad(budget)}", f"Core implementation within {timeline} months",
+                     "No compromise on safety or regulatory compliance"],
+        options=_parametric_options(alts, budget, target), source_type=source,
+        provenance={**prov, "options": "parametric assumption (no option costs in brief)"},
+    )
+
+
+def load_case_data(case_identifier: str = "ENG-0001") -> dict:
+    """Resolve any supported identifier/path into a normalised case record."""
+    p = Path(case_identifier)
+    if p.is_file():
+        suffix = p.suffix.lower()
+        if suffix == ".json":
+            raw = json.loads(p.read_text(encoding="utf-8"))
+            if isinstance(raw, dict) and "cases" in raw:
+                raw = raw["cases"][0]
+            return _from_json_case(raw, "file_json")
+        if suffix == ".pdf":
+            import pymupdf
+            with pymupdf.open(str(p)) as doc:
+                text = "\n".join(page.get_text() for page in doc)
+        else:
+            text = p.read_text(encoding="utf-8", errors="ignore")
+        return _from_text(text, f"CASE-{p.stem.upper()[:16]}", p.stem.replace("_", " ").title(), f"file{suffix}")
+    if p.is_dir():
+        text = "\n".join(f.read_text(encoding="utf-8", errors="ignore") for f in sorted(p.glob("*.md")))
+        return _from_text(text, f"CASE-{p.name.upper()[:16]}", p.name.replace("_", " ").title(), "directory_package")
+
+    cid = case_identifier.strip()
+    if cid.upper().startswith("ENG100K"):
+        row = _csv_lookup(DATA_DIR / "engineering_100000_preview.csv", "Case ID", cid)
+        if row:
+            return _from_100k(row)
+    elif cid.upper().startswith("ENG1M"):
+        row = _csv_lookup(DATA_DIR / "engineering_1million_additional_preview.csv", "case_id", cid)
+        if row:
+            return _from_1m(row)
+    else:
+        sims = DATA_DIR / "engineering_1000_case_simulations.json"
+        if sims.exists():
+            for c in json.loads(sims.read_text(encoding="utf-8")).get("cases", []):
+                if c.get("id") == cid:
+                    return _from_json_case(c, "1000_engineering_simulations")
+    raise SystemExit(f"Case '{case_identifier}' not found. Use ENG-0001..ENG-1000, ENG100K-xxxxxx, "
+                     f"ENG1M-xxxxxxx, or a path to a PDF/MD/TXT/JSON brief or case directory.")
+
+
+# --------------------------------------------------------------------------------------
+# Agent 06: economics (shared by every deliverable)
+# --------------------------------------------------------------------------------------
+def unit_value(case: dict, override: float | None = None) -> tuple[float | None, str]:
+    """CAD value of one unit of improvement; None means 'anchor to budget' (non-monetary metric)."""
+    if override is not None:
+        return override, "user override (--unit-value)"
+    return UNIT_VALUES.get(case["baseline_unit"].strip().lower(), (None, ""))
+
+
+def annual_benefit(case: dict, improvement_pct: float, uv: float | None) -> float:
+    if uv is None:  # non-monetary metric: value scales with share of target achieved
+        return ANCHOR_SHARE * case["budget"] * (improvement_pct / case["target_pct"] if case["target_pct"] else 0)
+    return case["baseline_value"] * improvement_pct / 100 * uv
+
+
+def levelized_cost(case: dict, capex: float, improvement_pct: float) -> tuple[float | None, str]:
+    """Annualised cost (capital recovery + O&M) per unit of improvement delivered each year."""
+    crf = WACC * (1 + WACC) ** HORIZON_YEARS / ((1 + WACC) ** HORIZON_YEARS - 1)
+    annual_cost = capex * crf + capex * OM_RATE
+    unit = case["baseline_unit"].strip().lower()
+    per_year = {"units/day": OPERATING_DAYS, "cad/month": 12}.get(unit, 1)
+    labels = {"units/day": "CAD per added unit", "kwh/year": "CAD per kWh saved", "tonnes co2e/year": "CAD per tCO2e abated",
+              "cad/month": "CAD spent per CAD saved", "cad/year": "CAD spent per CAD saved"}
+    if unit in labels:
+        units = case["baseline_value"] * improvement_pct / 100 * per_year
+        return (annual_cost / units if units else None), labels[unit]
+    return (annual_cost / improvement_pct if improvement_pct else None), "CAD per year per % point of improvement"
+
+
+def _npv(flows: list[float], rate: float) -> float:
+    return sum(f / (1 + rate) ** t for t, f in enumerate(flows))
+
+
+def _irr(flows: list[float]) -> float | None:
+    lo, hi = -0.99, 50.0
+    if _npv(flows, lo) * _npv(flows, hi) > 0:
+        return None
+    for _ in range(200):
+        mid = (lo + hi) / 2
+        if _npv(flows, lo) * _npv(flows, mid) <= 0:
+            hi = mid
+        else:
+            lo = mid
+    return (lo + hi) / 2
+
+
+def cash_model(capex: float, benefit: float, timeline_months: int, om_rate: float = OM_RATE) -> dict:
+    """Annual flows (Excel-replicable) + monthly payback. Benefit ramps at PILOT_SHARE until go-live."""
+    T, om = timeline_months, capex * om_rate
+    years = []
+    for y in range(1, HORIZON_YEARS + 1):
+        full = max(0, min(12, 12 * y - T))
+        gross = benefit / 12 * (full + PILOT_SHARE * (12 - full))
+        years.append({"year": y, "gross_benefit": gross, "om": om, "net": gross - om})
+    flows = [-capex] + [y["net"] for y in years]
+    cum, payback = -capex, None
+    for m in range(1, HORIZON_YEARS * 12 + 1):
+        step = benefit / 12 * (PILOT_SHARE if m <= T else 1.0) - om / 12
+        if cum + step >= 0 and step > 0:
+            payback = m - 1 + (-cum / step)
+            break
+        cum += step
+    irr = _irr(flows)
+    pv_benefits = _npv([0] + [y["gross_benefit"] for y in years], WACC)
+    pv_costs = capex + _npv([0] + [y["om"] for y in years], WACC)
+    return {"years": years, "flows": flows, "npv": _npv(flows, WACC),
+            "irr": irr * 100 if irr is not None else None, "payback_months": payback,
+            "bcr": pv_benefits / pv_costs if pv_costs else None}
+
+
+# --------------------------------------------------------------------------------------
+# Agent 05: option evaluation
+# --------------------------------------------------------------------------------------
+def evaluate_options(case: dict, uv: float | None) -> list[dict]:
+    target, budget = case["target_pct"], case["budget"]
+    opts = []
+    for o in case["options"]:
+        base = cash_model(o["capex"], annual_benefit(case, o["improvement"], uv), case["timeline_months"])
+        opts.append({**o, "model": base, "within_budget": o["capex"] <= budget,
+                     "meets_target": o["improvement"] >= target})
+    npvs = [o["model"]["npv"] for o in opts]
+    lo, hi = min(npvs), max(npvs)
+    for o in opts:
+        pb = o["model"]["payback_months"]
+        s = {
+            "Target attainment": 10 * min(o["improvement"] / target, 1.5) / 1.5 if target else 5,
+            "Financial return (NPV)": 2 + 8 * ((o["model"]["npv"] - lo) / (hi - lo)) if hi > lo else 6,
+            "Payback speed": 10 * max(0.0, 1 - pb / (HORIZON_YEARS * 12)) if pb is not None else 0,
+            "Downside resilience (-15% perf.)": 10 * min(1.0, o["improvement"] * BEAR["perf"] / target) if target else 5,
+            "Budget headroom": 10 * max(0.0, 1 - o["capex"] / budget) if budget else 0,
+        }
+        o["scores"] = {k: round(v, 2) for k, v in s.items()}
+        o["weighted"] = round(sum(o["scores"][k] * w for k, w in CRITERIA), 2)
+    feasible = [o for o in opts if o["within_budget"]] or sorted(opts, key=lambda x: x["capex"])[:1]
+    winner = max(feasible, key=lambda x: (x["meets_target"], x["weighted"]))
+    for o in opts:
+        o["selected"] = o is winner
+    return opts
+
+
+def sensitivity(case: dict, win: dict, uv: float | None) -> list[dict]:
+    """Tornado: NPV swing for +/-20 % on each driver, holding the others at base."""
+    def npv_with(capex=1.0, ben=1.0, timeline=1.0, om=1.0):
+        b = annual_benefit(case, win["improvement"], uv) * ben
+        return cash_model(win["capex"] * capex, b, max(1, round(case["timeline_months"] * timeline)), OM_RATE * om)["npv"]
+    rows = [
+        ("Annual benefit: achieved gain x unit value (+/-20%)", npv_with(ben=0.8), npv_with(ben=1.2)),
+        ("O&M cost (x2 / x0.5)", npv_with(om=2.0), npv_with(om=0.5)),
+        ("Capital cost (+20% / -20%)", npv_with(capex=1.2), npv_with(capex=0.8)),
+        ("Implementation duration (+50% / -25%)", npv_with(timeline=1.5), npv_with(timeline=0.75)),
+    ]
+    out = [{"driver": d, "low_npv": lo, "high_npv": hi, "swing": abs(hi - lo)} for d, lo, hi in rows]
+    return sorted(out, key=lambda r: -r["swing"])
+
+
+# --------------------------------------------------------------------------------------
+# Agents 03, 08, 09: diagnosis, roadmap, red team
+# --------------------------------------------------------------------------------------
+def diagnose(case: dict) -> tuple[str, list[str]]:
+    metric = case["baseline_metric"].lower()
+    bottleneck = (f"{case['baseline_metric']} sits at {num(case['baseline_value'])} {case['baseline_unit']} and must move "
+                  f"{case['target_pct']:g}% within {case['timeline_months']} months under {cad(case['budget'])}"
+                  + (f" ({case['context']})." if case["context"] else "."))
+    causes = [
+        f"Binding constraint hypothesis: one stage or subsystem limits {metric}; confirm with {case['suggested_analysis'] or 'constraint analysis'} before committing capital.",
+        "Variability, not average capacity, drives the gap: measure cycle/load variance and its share of lost performance.",
+        "Control and information gap: performance is managed on lagging data, so deviations are corrected late.",
+    ]
+    if case["constraints"]:
+        causes.append(f"Delivery constraint shaping the solution space: {case['constraints'][0]}.")
+    return bottleneck, causes
+
+
+def build_horizons(case: dict, win: dict) -> list[dict]:
+    T, capex, tgt = case["timeline_months"], win["capex"], case["target_pct"]
+    cut1, cut2 = max(1, round(T * 0.25)), max(2, round(T * 0.75))
+    if cut2 <= cut1:
+        cut2 = cut1 + 1
+    rng = lambda a, b: f"Month {a}" if a == b else f"Months {a}-{b}"
+    end2, start3 = min(cut2, T), min(cut2 + 1, T)
+    return [
+        {"horizon": "Horizon 1", "timeline": rng(1, cut1), "name": "Baseline validation & pilot",
+         "budget_CAD": round(capex * 0.20), "kpi": f"Pilot reaches >= {tgt * 0.3:.1f}% improvement; data quality verified",
+         "gate": "Go/no-go: pilot result within 20% of model, no safety incidents"},
+        {"horizon": "Horizon 2", "timeline": rng(cut1 + 1, end2), "name": f"Scale-up: {win['name']}",
+         "budget_CAD": round(capex * 0.60), "kpi": f">= {tgt * 0.8:.1f}% improvement sustained for 4 weeks",
+         "gate": "Commissioning sign-off and availability at or above constraint"},
+        {"horizon": "Horizon 3", "timeline": rng(start3, T), "name": "Stabilise, optimise & hand over",
+         "budget_CAD": round(capex) - round(capex * 0.20) - round(capex * 0.60),
+         "kpi": f"Full target {tgt:g}% reached; O&M within {cad(capex * OM_RATE)}/yr",
+         "gate": "Benefit-tracking dashboard owned by operations"},
+    ]
+
+
+def build_risks(case: dict, win: dict, scen: list[dict]) -> list[dict]:
+    bear = next(s for s in scen if s["name"].startswith("Bear"))
+    return [
+        {"risk": "Delivered improvement below model", "likelihood": "Medium", "impact": "High",
+         "mitigation": f"Stage-gated rollout; bear case still yields {pct(bear['improvement'])} vs {case['target_pct']:g}% target",
+         "trigger": "Pilot result < 80% of modelled gain"},
+        {"risk": "Capital overrun", "likelihood": "Medium", "impact": "Medium",
+         "mitigation": f"{cad(case['budget'] - win['capex'])} headroom to budget ceiling; fixed-price packages for long-lead items",
+         "trigger": "Committed cost > 90% of H2 allocation"},
+        {"risk": "Schedule slip / installation window", "likelihood": "Medium", "impact": "Medium",
+         "mitigation": "Pre-fabrication and off-shift installation; pilot proves method before scale-up",
+         "trigger": "Critical-path float < 2 weeks"},
+        {"risk": "Safety or compliance non-conformance", "likelihood": "Low", "impact": "Critical",
+         "mitigation": "Management-of-change review and HAZOP before each commissioning step",
+         "trigger": "Any open MOC action at gate review"},
+        {"risk": "Adoption / operating discipline", "likelihood": "Medium", "impact": "Medium",
+         "mitigation": "Operators co-design standard work; KPI dashboard reviewed weekly",
+         "trigger": "Benefit decays > 10% after go-live"},
+    ]
+
+
+def build_red_team(case: dict, opts: list[dict], win: dict, scen: list[dict], tornado: list[dict]) -> list[dict]:
+    bear = next(s for s in scen if s["name"].startswith("Bear"))
+    cut_budget = case["budget"] * 0.8
+    still_fit = [o for o in opts if o["capex"] <= cut_budget]
+    top = tornado[0]
+
+    def answer(q: str) -> str:
+        ql = q.lower()
+        if "budget" in ql or "cut" in ql:
+            if win["capex"] <= cut_budget:
+                return f"A 20% cut leaves {cad(cut_budget)}; {win['name']} at {cad(win['capex'])} still fits, so the recommendation holds."
+            alt = max(still_fit, key=lambda o: o["weighted"]) if still_fit else None
+            return (f"A 20% cut leaves {cad(cut_budget)}, below the {cad(win['capex'])} needed. We would phase: fund Horizon 1-2 now"
+                    + (f", or fall back to Option {alt['label']} ({alt['improvement']:g}% gain, {cad(alt['capex'])})." if alt else "."))
+        if "15%" in ql or "performance" in ql or "cost" in ql or "rise" in ql:
+            return (f"Bear case (performance -15%, capex +20%): {pct(bear['improvement'])} improvement, NPV {cad(bear['npv'])}, "
+                    f"payback {months(bear['payback_months'])}. "
+                    + ("Target is still met." if bear["meets_target"] else "Target would be missed, so the H1 pilot gate exists to catch this before scale-up spend."))
+        if "sensitive" in ql or "assumption" in ql:
+            return (f"{top['driver']}: NPV ranges {cad(top['low_npv'])} to {cad(top['high_npv'])}. "
+                    "We reject the option if the H1 pilot delivers < 80% of modelled gain.")
+        if "stakeholder" in ql:
+            return "Operations carries the most delivery risk (installation windows, new standard work); they own the H2 commissioning gate and co-design the change."
+        if "falsify" in ql or "test" in ql or "hypothesis" in ql:
+            return f"The H1 pilot: if the pilot area does not reach {case['target_pct'] * 0.3:.1f}% improvement with measured variance reduction, the binding-constraint hypothesis is wrong."
+        return (f"{win['name']} scores {win['weighted']}/10 and is the best option within budget; NPV {cad(win['model']['npv'])}, "
+                f"payback {months(win['model']['payback_months'])}. Stage gates limit downside.")
+
+    qs = list(case["judge_questions"]) or []
+    defaults = [
+        "How does your recommendation change if performance falls 15% and costs rise 20%?",
+        "What is the most sensitive assumption, and what would make you reject the chosen option?",
+        "How would your recommendation change if the budget were cut another 20%?",
+        "Which stakeholder carries the greatest implementation risk?",
+    ]
+    for d in defaults:
+        if len(qs) >= 5:
+            break
+        if not any(k in " ".join(qs).lower() for k in d.lower().split()[2:4]):
+            qs.append(d)
+    return [{"question": q, "rebuttal": answer(q)} for q in qs[:5]]
+
+
+# --------------------------------------------------------------------------------------
+# Agent 00: single source of truth
+# --------------------------------------------------------------------------------------
+def build_solution_spec(case: dict, unit_value_override: float | None = None) -> dict:
+    uv, uv_src = unit_value(case, unit_value_override)
+    opts = evaluate_options(case, uv)
+    win = next(o for o in opts if o["selected"])
+    benefit = annual_benefit(case, win["improvement"], uv)
+    m = win["model"]
+
+    scen = []
+    for name, f in [("Bear (-15% perf., +20% capex)", BEAR), ("Base (approved plan)", {"perf": 1, "capex": 1}),
+                    ("Bull (+15% perf., -10% capex)", BULL)]:
+        imp = win["improvement"] * f["perf"]
+        sm = cash_model(win["capex"] * f["capex"], annual_benefit(case, imp, uv), case["timeline_months"])
+        scen.append({"name": name, "improvement": imp, "capex": win["capex"] * f["capex"], "npv": sm["npv"],
+                     "irr": sm["irr"], "payback_months": sm["payback_months"], "meets_target": imp >= case["target_pct"]})
+    tornado = sensitivity(case, win, uv)
+    lc, lc_label = levelized_cost(case, win["capex"], win["improvement"])
+    economic = case["baseline_unit"].strip().lower() in ECONOMIC_UNITS
+    bottleneck, causes = diagnose(case)
+    target_abs = case["baseline_value"] * case["target_pct"] / 100
+
+    assumptions = [
+        ("Baseline", f"{num(case['baseline_value'])} {case['baseline_unit']}", case["provenance"].get("baseline_value", "case datum")),
+        ("Target improvement", f"{case['target_pct']:g}%", case["provenance"].get("target_pct", "case datum")),
+        ("Capital budget", cad(case["budget"]), case["provenance"].get("budget", "case datum")),
+        ("Timeline", f"{case['timeline_months']} months", case["provenance"].get("timeline_months", "case datum")),
+        ("Option costs & gains", "see options table", case["provenance"].get("options", "case datum")),
+        ("Monetisation", uv_src if uv is not None else f"non-monetary metric: full target valued at {ANCHOR_SHARE:.0%} of budget per year",
+         "case datum" if "case datum" in uv_src else "assumption"),
+        ("Discount rate (WACC)", f"{WACC:.1%}", "assumption (mid-cap industrial hurdle)"),
+        ("Appraisal horizon", f"{HORIZON_YEARS} years", "assumption"),
+        ("Annual O&M", f"{OM_RATE:.0%} of capex", "assumption"),
+        ("Benefit during implementation", f"{PILOT_SHARE:.0%} of full run-rate", "assumption (pilot ramp)"),
+    ]
+    if not win["meets_target"]:
+        hitters = [o for o in opts if o["meets_target"]]
+        gap_note = (f" No in-budget option reaches the {case['target_pct']:g}% target"
+                    + (f"; Option {hitters[0]['label']} would ({hitters[0]['improvement']:g}%) but needs {cad(hitters[0]['capex'])},"
+                       f" {cad(hitters[0]['capex'] - case['budget'])} over budget. Recommend Option {win['label']} as phase 1"
+                       f" and a funded decision on the gap at the H1 gate." if hitters else
+                       ". Recommend the best in-budget option and renegotiate the target with evidence from the H1 pilot."))
+    else:
+        gap_note = ""
+    weak = [a for a in assumptions if a[2].startswith("assumption") or "parametric" in a[2]]
+
+    spec = {
+        "version": "2.0.0",
+        "generated_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
+        "case_identification": {"id": case["id"], "title": case["title"], "discipline": case["discipline"],
+                                "difficulty": case["difficulty"], "source_type": case["source_type"]},
+        "case_inputs": {k: case[k] for k in ("brief", "decision_question", "objective", "baseline_metric",
+                                             "baseline_value", "baseline_unit", "target_metric", "target_pct",
+                                             "budget", "timeline_months", "constraints", "suggested_analysis", "rubric")},
+        "problem_diagnosis": {"core_bottleneck": bottleneck, "baseline_value": case["baseline_value"],
+                              "baseline_unit": case["baseline_unit"], "baseline_metric": case["baseline_metric"],
+                              "target_improvement_percent": case["target_pct"],
+                              "target_absolute_change": round(target_abs, 2), "root_causes": causes},
+        "options_evaluation": {
+            "criteria": [{"name": n, "weight": w} for n, w in CRITERIA],
+            "options": [{"label": o["label"], "name": o["name"], "capex_CAD": round(o["capex"]),
+                         "improvement_percent": o["improvement"], "source": o["source"],
+                         "within_budget": o["within_budget"], "meets_target": o["meets_target"],
+                         "npv_CAD": round(o["model"]["npv"]), "payback_months": _r(o["model"]["payback_months"]),
+                         "scores": o["scores"], "weighted_total": o["weighted"], "selected": o["selected"]} for o in opts],
+            "winner": win["label"],
         },
         "approved_solution": {
-            "name": "Modular Micro-Cell Architecture with Predictive Edge Orchestration (MM-PEO)",
-            "value_proposition": "Decouples monolithic throughput dependencies into self-balancing autonomous cells, delivering +24.5% net output with 8.4-month capital payback.",
+            "label": win["label"], "name": win["name"],
+            "value_proposition": (f"Option {win['label']} — {win['name']} — delivers {win['improvement']:g}% {case['target_metric'].lower()} "
+                                  f"(target {case['target_pct']:g}%) for {cad(win['capex'])} of the {cad(case['budget'])} budget: "
+                                  f"NPV {cad(m['npv'])} at {WACC:.1%}, payback {months(m['payback_months'])}." + gap_note),
             "pillars": [
-                {"name": "Dynamic Load Decoupling", "impact": "+14.2% Effective Uptime"},
-                {"name": "Predictive Edge Telemetry", "impact": "-38.0% Unplanned Stoppages"},
-                {"name": "Synchronized Buffer Flow", "impact": "-22.5% Work-in-Progress Congestion"}
-            ]
+                {"name": "Prove the constraint (H1 pilot)", "impact": f">= {case['target_pct'] * 0.3:.1f}% in pilot area"},
+                {"name": f"Scale {win['name'][:48]}", "impact": f"+{win['improvement']:g}% {case['baseline_metric'].lower()}"},
+                {"name": "Lock in with control & KPIs", "impact": f"{cad(benefit)}/yr run-rate benefit"},
+            ],
         },
         "financial_summary": {
-            "initial_investment_CAD": case_info["inputs"].get("capital_budget_CAD", 1625000),
-            "year_1_revenue_CAD": 3450000,
-            "year_2_revenue_CAD": 5200000,
-            "year_3_revenue_CAD": 7800000,
-            "year_3_ebitda_CAD": 2496000,
-            "gross_margin_percent": 68.5,
-            "ebitda_margin_percent": 32.0,
-            "payback_period_months": 8.4,
-            "irr_percent": 44.2,
-            "npv_10yr_discount_CAD": 3840000,
-            "ltv_to_cac_ratio": 3.8
+            "initial_investment_CAD": round(win["capex"]), "budget_CAD": round(case["budget"]),
+            "annual_run_rate_benefit_CAD": round(benefit), "annual_om_CAD": round(win["capex"] * OM_RATE),
+            **{f"year_{y['year']}_revenue_CAD": round(y["gross_benefit"]) for y in m["years"][:3]},
+            **{f"year_{y['year']}_net_CAD": round(y["net"]) for y in m["years"]},
+            "year_3_ebitda_CAD": round(m["years"][2]["net"]),
+            "npv_CAD": round(m["npv"]), "npv_10yr_discount_CAD": round(m["npv"]),
+            "irr_percent": _r(m["irr"]), "payback_period_months": _r(m["payback_months"]),
+            "benefit_cost_ratio": _r(m["bcr"], 2),
+            "levelized_cost": _r(lc, 2), "levelized_cost_unit": lc_label,
+            "economic_case": "profit-driven" if economic else "mandate-driven (judge on cost-effectiveness, not NPV alone)",
+            "wacc_percent": WACC * 100, "horizon_years": HORIZON_YEARS,
+            "cash_flows_CAD": [round(f) for f in m["flows"]],
         },
-        "implementation_horizons": [
-            {"horizon": "Horizon 1", "timeline": "Months 1-3", "name": "Telemetry Pilot & Cell Standardization", "budget_CAD": 420000, "kpi": "Pilot cell uptime >= 96%"},
-            {"horizon": "Horizon 2", "timeline": "Months 4-8", "name": "Facility-Wide Micro-Cell Deployment", "budget_CAD": 890000, "kpi": "Throughput increase >= +18%"},
-            {"horizon": "Horizon 3", "timeline": "Months 9-12", "name": "Predictive Optimization & Autonomous Scaling", "budget_CAD": 315000, "kpi": "Target output reached (1,298 units/day)"}
-        ],
-        "red_team_defense": [
-            {
-                "question": "What happens if vendor lead times for the micro-cell modules slip by 8 weeks?",
-                "rebuttal": "Dual-sourcing agreements are established for all critical mechanical actuators. Horizon 1 deploys software telemetry onto existing machinery first, unlocking +10% gain before physical hardware arrives."
-            },
-            {
-                "question": "How do you defend the 68.5% gross margin when industry median sits at 54%?",
-                "rebuttal": "Our model incorporates modular field-replaceable units (FRUs) which reduce on-site engineering labor hours by 42% compared to bespoke installations."
-            },
-            {
-                "question": "What is the primary risk of catastrophic failure during Horizon 2 rollout?",
-                "rebuttal": "Line integration collision. Mitigated by digital twin hardware-in-the-loop (HIL) simulation preceding each physical cell commissioning."
-            }
-        ]
+        "scenarios": [{**s, "npv": round(s["npv"]), "capex": round(s["capex"]), "irr": _r(s["irr"]),
+                       "payback_months": _r(s["payback_months"]), "improvement": round(s["improvement"], 2)} for s in scen],
+        "sensitivity": [{**t, "low_npv": round(t["low_npv"]), "high_npv": round(t["high_npv"]), "swing": round(t["swing"])} for t in tornado],
+        "assumptions": [{"parameter": a, "value": v, "source": s} for a, v, s in assumptions],
+        "weak_assumptions": [a for a, _, _ in weak],
+        "implementation_horizons": build_horizons(case, win),
+        "risks": build_risks(case, win, scen),
+        "red_team_defense": build_red_team(case, opts, win, scen, tornado),
     }
+    return spec
 
-    # Save solution_spec.json
-    spec_path = OUTPUT_ROOT / "solution_spec.json"
-    with open(spec_path, "w", encoding="utf-8") as f:
-        json.dump(solution_spec, f, indent=2)
-    print(f"[Agent 00 Master Orchestrator] Generated shared source of truth: {spec_path}")
 
-    # 2. Agent 01: Case Intelligence
-    with open(OUTPUT_ROOT / "01_Case_Intelligence/case_summary.md", "w", encoding="utf-8") as f:
-        f.write(f"# Case Intelligence Report: {case_info['title']}\n\n")
-        f.write(f"**Discipline**: {case_info['discipline']} | **Difficulty**: {case_info['difficulty']}\n\n")
-        f.write(f"### Problem Statement\n{case_info['brief']}\n\n")
-        f.write(f"### Core Decision Question\n{case_info['decision_question']}\n\n")
-        f.write(f"### Objective\n{case_info['objective']}\n\n")
-        f.write("### Stated Constraints\n")
-        for c in case_info["constraints"]:
-            f.write(f"- {c}\n")
+def _r(x, d: int = 1):
+    return round(x, d) if x is not None else None
 
-    with open(OUTPUT_ROOT / "01_Case_Intelligence/case_data.json", "w", encoding="utf-8") as f:
-        json.dump(case_info["inputs"], f, indent=2)
 
-    with open(OUTPUT_ROOT / "01_Case_Intelligence/assumptions_register.md", "w", encoding="utf-8") as f:
-        f.write("# Explicit Assumptions Register\n\n")
-        f.write("| Parameter | Assumed Value | Sensitivity Range | Justification |\n")
-        f.write("| :--- | :---: | :---: | :--- |\n")
-        f.write(f"| Capital Budget | CAD ${case_info['inputs'].get('capital_budget_CAD', 1625000):,} | Fixed Ceiling | Stated competition constraint |\n")
-        f.write("| Working Days/Year | 250 days | 240 - 260 | Standard industrial operating calendar |\n")
-        f.write("| Discount Rate (WACC) | 9.5% | 8.0% - 12.0% | Conservative hurdle rate for mid-cap industrial investments |\n")
-        f.write("| Baseline Unit Contribution | CAD $24.50 | +/- 15% | Historical average gross contribution per unit |\n")
+# --------------------------------------------------------------------------------------
+# Markdown deliverables (Agents 01-09)
+# --------------------------------------------------------------------------------------
+def _options_rows(spec):
+    return [[f"{o['label']}{' ✔' if o['selected'] else ''}", o["name"], cad(o["capex_CAD"]), f"{o['improvement_percent']:g}%",
+             "yes" if o["within_budget"] else "NO", "yes" if o["meets_target"] else "no", cad(o["npv_CAD"]),
+             months(o["payback_months"]), o["weighted_total"]] for o in spec["options_evaluation"]["options"]]
 
-    # 3. Agent 02: Global Competition Research & Benchmarks
-    with open(OUTPUT_ROOT / "02_Research/competitor_analysis.md", "w", encoding="utf-8") as f:
-        f.write("# Global Case Competition Benchmark & Competitor Analysis\n\n")
-        f.write("Synthesized against 133 global business and engineering case competitions:\n\n")
-        f.write("- **Analysis Model**: Theory of Constraints (TOC) + Modular Micro-Cells\n")
-        f.write("- **Historical Winning Pattern**: Championship solutions invariably combine immediate operational payback (<12 months) with defensible proprietary IP and baby-step arithmetic.\n")
 
-    with open(OUTPUT_ROOT / "02_Research/source_register.csv", "w", encoding="utf-8", newline="") as f:
-        writer = csv.writer(f)
-        writer.writerow(["Claim ID", "Metric / Claim", "Primary Source", "Confidence Level", "Verification Status"])
-        writer.writerow(["CLM-001", "Baseline Daily Output: 1,042.83 units/day", "Case Brief Dataset", "100%", "Verified Case Datum"])
-        writer.writerow(["CLM-002", "Target Output: +20.7% to +24.5%", "Engineering Optimization Model", "95%", "Calculated Model"])
-        writer.writerow(["CLM-003", "Max CapEx: CAD $1,625,000", "Official Budget Constraint", "100%", "Verified Case Datum"])
-        writer.writerow(["CLM-004", "Payback Period: 8.4 Months", "Proforma Cash Flow Schedule", "92%", "Validated Proforma"])
+OPT_HEADERS = ["Opt", "Alternative", "Capex", "Gain", "In budget", "Meets target", "NPV", "Payback", "Score /10"]
 
-    # 4. Agent 03: Root Cause and Systems Analyst
-    with open(OUTPUT_ROOT / "03_Brainstorming/idea_clusters.md", "w", encoding="utf-8") as f:
-        f.write("# Root Cause Diagnosis & Solution Idea Clusters\n\n")
-        f.write("## 1. Five Whys Decomposition\n")
-        f.write("1. **Why is throughput lagging?** Micro-stoppages at staging accumulation point.\n")
-        f.write("2. **Why do stoppages occur?** Variance between primary press cycle and secondary transfer.\n")
-        f.write("3. **Why does variance cause idle time?** Lack of buffer decoupling between stages.\n")
-        f.write("4. **Why is buffering rigid?** Monolithic fixed-conveyor architecture without dynamic re-routing.\n")
-        f.write("5. **Root Cause**: Rigid synchronous coupling between disparate machine cycles without telemetry-driven pacing.\n")
 
-    # 5. Agent 05: Excel Evaluation Matrix
-    eval_matrix_path = OUTPUT_ROOT / "03_Brainstorming/evaluation_matrix.xlsx"
-    workbook = xlsxwriter.Workbook(str(eval_matrix_path))
-    ws_eval = workbook.add_worksheet("Strategy_Evaluation")
-    header_fmt = workbook.add_format({'bold': True, 'bg_color': '#1E3A8A', 'font_color': '#FFFFFF', 'border': 1})
-    cell_fmt = workbook.add_format({'border': 1})
-    bold_fmt = workbook.add_format({'bold': True, 'border': 1, 'bg_color': '#E0E7FF'})
+def write_markdown_set(spec: dict) -> None:
+    ci, fs, pdg, sol = spec["case_identification"], spec["financial_summary"], spec["problem_diagnosis"], spec["approved_solution"]
+    inp, R = spec["case_inputs"], OUTPUT_ROOT
+    win = next(o for o in spec["options_evaluation"]["options"] if o["selected"])
+    rejected = [o for o in spec["options_evaluation"]["options"] if not o["selected"]]
 
-    headers = ["Evaluation Criteria", "Weight", "Option A: Incremental", "Option B: Micro-Cell (Selected)", "Option C: Greenfield"]
-    for col, h in enumerate(headers):
-        ws_eval.write(0, col, h, header_fmt)
+    # 00 overview
+    write_text(R / "00_Project_Overview/README.md", f"""
+# {ci['title']}
+**Case** {ci['id']} · {ci['discipline']} · {ci['difficulty']} · source: {ci['source_type']}
 
-    criteria = [
-        ("Alignment with Case Objective", 0.25, 6.0, 9.5, 7.0),
-        ("Financial Payback & ROI", 0.25, 7.0, 9.2, 5.0),
-        ("Implementation Speed (<12mo)", 0.20, 8.5, 9.0, 3.0),
-        ("Operational Risk & Safety", 0.15, 6.5, 8.8, 6.0),
-        ("Scalability & Differentiation", 0.15, 4.0, 9.4, 8.5)
-    ]
-    for row, c in enumerate(criteria, start=1):
-        ws_eval.write(row, 0, c[0], cell_fmt)
-        ws_eval.write(row, 1, c[1], cell_fmt)
-        ws_eval.write(row, 2, c[2], cell_fmt)
-        ws_eval.write(row, 3, c[3], cell_fmt)
-        ws_eval.write(row, 4, c[4], cell_fmt)
+**Recommendation:** {sol['value_proposition']}
 
-    # Weighted Sums
-    ws_eval.write(len(criteria)+1, 0, "Weighted Total Score (Out of 10.0)", bold_fmt)
-    ws_eval.write(len(criteria)+1, 1, 1.00, bold_fmt)
-    ws_eval.write_formula(len(criteria)+1, 2, "=SUMPRODUCT(B2:B6, C2:C6)", bold_fmt)
-    ws_eval.write_formula(len(criteria)+1, 3, "=SUMPRODUCT(B2:B6, D2:D6)", bold_fmt)
-    ws_eval.write_formula(len(criteria)+1, 4, "=SUMPRODUCT(B2:B6, E2:E6)", bold_fmt)
-    workbook.close()
-    print(f"[Agent 05 Strategy Decision] Created evaluation matrix: {eval_matrix_path}")
+Start with `04_Final_Strategy/executive_summary.md`, then `06_PDF_Deliverables/`, `07_PowerPoint/`, and
+`11_Final_Quality_Control/compliance_checklist.md`. All figures come from `solution_spec.json`.
+""")
+    write_text(R / "00_Project_Overview/execution_summary.md", f"""
+# Execution Summary
+- Generated: {spec['generated_at']}
+- Options evaluated: {len(spec['options_evaluation']['options'])} · winner: Option {win['label']} ({win['weighted_total']}/10)
+- NPV {cad(fs['npv_CAD'])} · IRR {pct(fs['irr_percent'])} · payback {months(fs['payback_period_months'])} · B/C {fs['benefit_cost_ratio']}
+- Weak assumptions to validate: {', '.join(spec['weak_assumptions']) or 'none'}
+""")
 
-    # 6. Agent 06: Excel Financial Models
-    fin_path = OUTPUT_ROOT / "05_Financial_Models/financial_model.xlsx"
-    wb_fin = xlsxwriter.Workbook(str(fin_path))
-    ws_pnl = wb_fin.add_worksheet("3_Year_Proforma")
-    money_fmt = wb_fin.add_format({'num_format': '$#,##0', 'border': 1})
-    pct_fmt = wb_fin.add_format({'num_format': '0.0%', 'border': 1})
-    bold_money = wb_fin.add_format({'bold': True, 'num_format': '$#,##0', 'border': 1, 'bg_color': '#FEF3C7'})
-    h_fmt = wb_fin.add_format({'bold': True, 'bg_color': '#0F172A', 'font_color': '#FFFFFF', 'border': 1})
+    # 01 case intelligence
+    write_text(R / "01_Case_Intelligence/case_summary.md", f"""
+# Case Intelligence Report: {ci['title']}
+**Discipline**: {ci['discipline']} | **Difficulty**: {ci['difficulty']}
 
-    pnl_headers = ["Financial Line Item", "Year 1 (Pilot/Rollout)", "Year 2 (Full Scale)", "Year 3 (Mature Ops)"]
-    for col, h in enumerate(pnl_headers):
-        ws_pnl.write(0, col, h, h_fmt)
+### Problem Statement
+{inp['brief']}
 
-    pnl_data = [
-        ("Gross System Revenue", 3450000, 5200000, 7800000),
-        ("Cost of Goods Sold (COGS)", 1173000, 1664000, 2457000),
-        ("Gross Margin", "=B2-B3", "=C2-C3", "=D2-D3"),
-        ("Research & Development", 380000, 420000, 450000),
-        ("Sales, Marketing & CAC", 450000, 680000, 920000),
-        ("General & Administrative", 520000, 610000, 720000),
-        ("Total Operating Expenses", "=SUM(B5:B7)", "=SUM(C5:C7)", "=SUM(D5:D7)"),
-        ("EBITDA (Operating Profit)", "=B4-B8", "=C4-C8", "=D4-D8")
-    ]
-    for row, item in enumerate(pnl_data, start=1):
-        ws_pnl.write(row, 0, item[0], cell_fmt)
-        for col in range(1, 4):
-            val = item[col]
-            if str(val).startswith("="):
-                ws_pnl.write_formula(row, col, val, bold_money if "EBITDA" in item[0] else cell_fmt)
-            else:
-                ws_pnl.write(row, col, val, money_fmt)
+### Core Decision Question
+{inp['decision_question']}
 
-    # Scenarios Worksheet
-    ws_scen = wb_fin.add_worksheet("Scenario_Sensitivity")
-    scen_headers = ["Scenario", "Output Gain", "Year 3 EBITDA", "NPV (10% WACC)", "Payback Horizon"]
-    for col, h in enumerate(scen_headers):
-        ws_scen.write(0, col, h, h_fmt)
+### Objective
+{inp['objective']}
 
-    scenarios = [
-        ("Bear Case (-20% Demand)", "+14.0%", 1720000, 2410000, "11.6 Months"),
-        ("Base Case (Approved Plan)", "+24.5%", 2496000, 3840000, "8.4 Months"),
-        ("Bull Case (+25% Adoption)", "+32.0%", 3350000, 5120000, "6.1 Months")
-    ]
-    for row, s in enumerate(scenarios, start=1):
-        ws_scen.write(row, 0, s[0], cell_fmt)
-        ws_scen.write(row, 1, s[1], cell_fmt)
-        ws_scen.write(row, 2, s[2], money_fmt)
-        ws_scen.write(row, 3, s[3], money_fmt)
-        ws_scen.write(row, 4, s[4], cell_fmt)
+### Quantified Gap
+{pdg['core_bottleneck']} Absolute change required: {num(pdg['target_absolute_change'])} {pdg['baseline_unit']}.
 
-    wb_fin.close()
-    print(f"[Agent 06 Financial Modeling] Generated complete proforma workbook: {fin_path}")
+### Stated Constraints
+""" + "\n".join(f"- {c}" for c in inp["constraints"]))
+    write_text(R / "01_Case_Intelligence/problem_statement.md", f"# Problem Statement\n\n{inp['decision_question']}\n\n{pdg['core_bottleneck']}")
+    (R / "01_Case_Intelligence/case_data.json").write_text(json.dumps(inp, indent=2), encoding="utf-8")
+    write_text(R / "01_Case_Intelligence/assumptions_register.md", "# Assumptions Register\n\n" + md_table(
+        ["Parameter", "Value", "Source"], [[a["parameter"], a["value"], a["source"]] for a in spec["assumptions"]]))
+    rubric = inp.get("rubric") or {"Strategy": 25, "Financials": 25, "Implementation": 20, "Risk": 15, "Q&A defence": 15}
+    write_text(R / "01_Case_Intelligence/judging_rubric.md", "# Judging Rubric\n\n" + md_table(
+        ["Criterion", "Points"], [[k.replace("_", " ").title(), v] for k, v in rubric.items()]))
 
-    # Copy to cost_breakdown.xlsx and scenario_analysis.xlsx
-    shutil.copyfile(fin_path, OUTPUT_ROOT / "05_Financial_Models/cost_breakdown.xlsx")
-    shutil.copyfile(fin_path, OUTPUT_ROOT / "05_Financial_Models/scenario_analysis.xlsx")
+    # 02 research
+    write_text(R / "02_Research/competitor_analysis.md", "# Alternatives Benchmark\n\n" + md_table(OPT_HEADERS, _options_rows(spec)))
+    write_text(R / "02_Research/evidence_summary.md", "# Evidence Summary\n\nCase data versus modelling assumptions:\n\n" + md_table(
+        ["Parameter", "Value", "Source"], [[a["parameter"], a["value"], a["source"]] for a in spec["assumptions"]]))
+    write_text(R / "02_Research/market_research.md", f"""
+# Method & Benchmark Notes
+- Suggested analysis for this case: {inp['suggested_analysis'] or 'constraint analysis + discounted cash flow'}
+- Winning-solution pattern from the master system: quantified baseline, three costed options, explicit weighted
+  decision, stage-gated rollout, and pre-computed answers to stress questions.
+- See `docs/CASE_COMPETITION_MASTER_SYSTEM.md` for the 100-point rubric and deck blueprint.
+""")
+    with open(R / "02_Research/source_register.csv", "w", encoding="utf-8", newline="") as f:
+        w = csv.writer(f)
+        w.writerow(["Claim ID", "Claim", "Source", "Status"])
+        w.writerow(["CLM-001", f"Baseline {num(pdg['baseline_value'])} {pdg['baseline_unit']}", "Case brief", "Case datum"])
+        w.writerow(["CLM-002", f"Target {pdg['target_improvement_percent']:g}%", "Case brief", "Case datum"])
+        w.writerow(["CLM-003", f"Budget {cad(fs['budget_CAD'])}", "Case brief", "Case datum"])
+        w.writerow(["CLM-004", f"Winner capex {cad(fs['initial_investment_CAD'])}, gain {win['improvement_percent']:g}%", win["source"], "Input"])
+        w.writerow(["CLM-005", f"NPV {cad(fs['npv_CAD'])}", "financial_model.xlsx (computed)", "Calculated"])
+        w.writerow(["CLM-006", f"Payback {months(fs['payback_period_months'])}", "monthly cash model (computed)", "Calculated"])
 
-    # 7. Agent 10: PDF Documentation Agent (Generates Strategic_Blueprint.pdf and Final_Case_Solution.pdf)
-    generate_pdf_deliverables(solution_spec)
+    # 03 brainstorming
+    write_text(R / "03_Brainstorming/idea_clusters.md", "# Root-Cause Hypotheses & Idea Clusters\n\n" +
+               "\n".join(f"{i}. {c}" for i, c in enumerate(pdg["root_causes"], 1)) +
+               "\n\nClusters: (A) operate the existing system better, (B) targeted retrofit of the constraint, (C) new capacity / architecture.")
+    write_text(R / "03_Brainstorming/all_ideas.md", "# All Ideas Considered\n\n" + "\n".join(
+        f"- **Option {o['label']}** — {o['name']} ({cad(o['capex_CAD'])}, {o['improvement_percent']:g}%)" for o in spec["options_evaluation"]["options"]))
+    write_text(R / "03_Brainstorming/selected_strategy.md", f"# Selected Strategy\n\n{sol['value_proposition']}\n\nWeighted score: {win['weighted_total']}/10.")
+    write_text(R / "03_Brainstorming/rejected_ideas.md", "# Rejected Options\n\n" + "\n".join(
+        f"- **Option {o['label']} — {o['name']}** ({o['weighted_total']}/10): "
+        + ("exceeds budget" if not o["within_budget"] else "misses target" if not o["meets_target"] else "lower weighted score")
+        + f"; NPV {cad(o['npv_CAD'])}." for o in rejected))
 
-    # 8. Agent 11: PowerPoint Presentation Agent (Generates Final_Presentation.pptx)
-    generate_powerpoint_deck(solution_spec)
+    # 04 final strategy
+    h_rows = [[h["horizon"], h["timeline"], h["name"], cad(h["budget_CAD"]), h["kpi"], h["gate"]] for h in spec["implementation_horizons"]]
+    write_text(R / "04_Final_Strategy/executive_summary.md", f"""
+# Executive Summary — {ci['title']}
 
-    # 9. Agent 13: Video Production Agent (Generates 2-minute video, storyboard, narration, subtitles)
-    generate_video_assets(solution_spec)
+**Answer first.** {sol['value_proposition']}
 
-    # 10. Agent 14: Quality Assurance and Integration Agent
-    generate_qa_and_manifest(solution_spec)
+**Why it wins.** It is the highest-scoring option that fits the budget{' and meets the target' if win['meets_target'] else ' (note: it does not fully meet the target; see risks)'}.
 
-    print("=" * 80)
-    print("FINISHED RESOURCES GENERATION COMPLETED SUCCESSFULLY")
-    print(f"Artifacts verified in: {OUTPUT_ROOT.resolve()}")
-    print("=" * 80)
+{md_table(OPT_HEADERS, _options_rows(spec))}
 
-def generate_pdf_deliverables(spec: dict):
-    """Generates two competition-ready PDFs using PyMuPDF."""
-    pdf_dir = OUTPUT_ROOT / "06_PDF_Deliverables"
+**Economics.** Run-rate benefit {cad(fs['annual_run_rate_benefit_CAD'])}/yr, O&M {cad(fs['annual_om_CAD'])}/yr, IRR {pct(fs['irr_percent'])},
+benefit/cost {fs['benefit_cost_ratio']}. Bear case NPV {cad(spec['scenarios'][0]['npv'])}.
+Cost-effectiveness: {fs['levelized_cost']} {fs['levelized_cost_unit']} — this is a {fs['economic_case']} case.
 
-    # PDF A: Strategic Blueprint (Comprehensive 4-page report)
-    doc_a = pymupdf.open()
-    
-    # Page 1: Executive Cover & Hook
-    page1 = doc_a.new_page(width=595, height=842) # A4
-    page1.draw_rect(pymupdf.Rect(0, 0, 595, 120), color=(0.06, 0.15, 0.35), fill=(0.06, 0.15, 0.35))
-    page1.insert_text(pymupdf.Point(40, 60), "STRATEGIC BLUEPRINT & MASTER SOLUTION", fontsize=20, color=(1, 1, 1))
-    page1.insert_text(pymupdf.Point(40, 90), f"Case ID: {spec['case_identification']['id']} | {spec['case_identification']['title']}", fontsize=11, color=(0.85, 0.9, 1))
+**Plan.** {' → '.join(h['name'] for h in spec['implementation_horizons'])} over {inp['timeline_months']} months.
+""")
+    write_text(R / "04_Final_Strategy/winning_solution.md", f"# Winning Solution\n\n{sol['value_proposition']}\n\n" + "\n".join(
+        f"- **{p['name']}** — {p['impact']}" for p in sol["pillars"]))
+    write_text(R / "04_Final_Strategy/solution_architecture.md", f"""
+# Solution Architecture — Option {win['label']}: {win['name']}
+1. **Measure**: instrument the constraint; establish baseline {num(pdg['baseline_value'])} {pdg['baseline_unit']} with variance.
+2. **Intervene**: implement {win['name'].lower()} at the binding constraint first (H1 pilot), then scale (H2).
+3. **Control**: KPI dashboard with leading indicators (variance, availability) and lagging result ({pdg['baseline_metric'].lower()}).
+4. **Sustain**: standard work, O&M plan ({cad(fs['annual_om_CAD'])}/yr), benefit tracking owned by operations.
+""")
+    write_text(R / "04_Final_Strategy/implementation_plan.md", "# Implementation Plan\n\n" + md_table(
+        ["Horizon", "Timing", "Workstream", "Budget", "KPI", "Gate"], h_rows))
+    write_text(R / "04_Final_Strategy/risk_analysis.md", "# Risk Register\n\n" + md_table(
+        ["Risk", "Likelihood", "Impact", "Mitigation", "Trigger"],
+        [[r["risk"], r["likelihood"], r["impact"], r["mitigation"], r["trigger"]] for r in spec["risks"]]))
+    write_text(R / "04_Final_Strategy/validation_results.md", "# Validation — Scenarios & Sensitivity\n\n" + md_table(
+        ["Scenario", "Gain", "Capex", "NPV", "IRR", "Payback", "Meets target"],
+        [[s["name"], f"{s['improvement']:g}%", cad(s["capex"]), cad(s["npv"]), pct(s["irr"]), months(s["payback_months"]),
+          "yes" if s["meets_target"] else "no"] for s in spec["scenarios"]]) + "\n\n## NPV sensitivity (tornado)\n\n" + md_table(
+        ["Driver", "Low NPV", "High NPV", "Swing"], [[t["driver"], cad(t["low_npv"]), cad(t["high_npv"]), cad(t["swing"])] for t in spec["sensitivity"]]))
 
-    page1.insert_text(pymupdf.Point(40, 160), "1. EXECUTIVE SUMMARY & MECE PROBLEM DIAGNOSIS", fontsize=14, color=(0.06, 0.15, 0.35))
-    summary_text = (
-        f"The core challenge addresses a system bottleneck where daily output is constrained to "
-        f"{spec['problem_diagnosis']['baseline_value']:,} {spec['problem_diagnosis']['baseline_unit']}. "
-        f"Our recommended strategy—{spec['approved_solution']['name']}—decouples rigid mechanical cycles into "
-        f"independent, telemetry-guided cells. This unlocks +{spec['problem_diagnosis']['target_improvement_percent']}% net throughput "
-        f"within 12 months under a capital ceiling of CAD ${spec['financial_summary']['initial_investment_CAD']:,}."
-    )
-    page1.insert_textbox(pymupdf.Rect(40, 180, 555, 270), summary_text, fontsize=10, lineheight=1.4)
+    # 05 assumptions doc
+    write_text(R / "05_Financial_Models/financial_assumptions.md", "# Financial Assumptions\n\n" + md_table(
+        ["Parameter", "Value", "Source"], [[a["parameter"], a["value"], a["source"]] for a in spec["assumptions"]]))
 
-    # Key Metrics Callout Box
-    page1.draw_rect(pymupdf.Rect(40, 280, 555, 360), color=(0.8, 0.85, 0.95), fill=(0.95, 0.97, 1.0))
-    page1.insert_text(pymupdf.Point(55, 305), "FINANCIAL & OPERATIONAL SCORECARD", fontsize=11, color=(0.06, 0.15, 0.35))
-    page1.insert_text(pymupdf.Point(55, 335), f"Target Throughput Gain: +{spec['problem_diagnosis']['target_improvement_percent']}%", fontsize=10)
-    page1.insert_text(pymupdf.Point(230, 335), f"Payback Horizon: {spec['financial_summary']['payback_period_months']} Months", fontsize=10)
-    page1.insert_text(pymupdf.Point(400, 335), f"Year 3 EBITDA: CAD ${spec['financial_summary']['year_3_ebitda_CAD']:,}", fontsize=10)
+    # 07 Q&A
+    write_text(R / "07_PowerPoint/judge_QA_preparation.md", "# Judge Q&A Preparation\n\n" + "\n\n".join(
+        f"### Q: {qa['question']}\n**A:** {qa['rebuttal']}" for qa in spec["red_team_defense"]))
 
-    # Root Cause Breakdown
-    page1.insert_text(pymupdf.Point(40, 390), "2. ROOT CAUSE & BOTTLENECK ANALYSIS", fontsize=13, color=(0.06, 0.15, 0.35))
-    y = 415
-    for idx, rc in enumerate(spec["problem_diagnosis"]["root_causes"], start=1):
-        page1.insert_text(pymupdf.Point(50, y), f"2.{idx} {rc}", fontsize=10)
-        y += 24
 
-    # Financial Table
-    page1.insert_text(pymupdf.Point(40, 500), "3. THREE-YEAR PROFORMA FINANCIAL PROJECTION (CAD)", fontsize=13, color=(0.06, 0.15, 0.35))
-    page1.draw_rect(pymupdf.Rect(40, 520, 555, 620), color=(0.7, 0.7, 0.7), fill=(1, 1, 1))
-    page1.insert_text(pymupdf.Point(50, 545), "Metric", fontsize=10)
-    page1.insert_text(pymupdf.Point(220, 545), "Year 1 (Pilot)", fontsize=10)
-    page1.insert_text(pymupdf.Point(340, 545), "Year 2 (Rollout)", fontsize=10)
-    page1.insert_text(pymupdf.Point(460, 545), "Year 3 (Mature)", fontsize=10)
-    page1.draw_line(pymupdf.Point(40, 555), pymupdf.Point(555, 555), color=(0.7, 0.7, 0.7))
+# --------------------------------------------------------------------------------------
+# Agents 05/06: Excel workbooks (formulas carry cached values so they read without recalculation)
+# --------------------------------------------------------------------------------------
+def write_evaluation_matrix(spec: dict) -> None:
+    import xlsxwriter
+    opts = spec["options_evaluation"]["options"]
+    wb = xlsxwriter.Workbook(str(OUTPUT_ROOT / "03_Brainstorming/evaluation_matrix.xlsx"))
+    ws = wb.add_worksheet("Strategy_Evaluation")
+    h = wb.add_format({"bold": True, "bg_color": "#1E3A8A", "font_color": "#FFFFFF", "border": 1, "text_wrap": True})
+    c = wb.add_format({"border": 1, "num_format": "0.00"})
+    b = wb.add_format({"bold": True, "border": 1, "bg_color": "#E0E7FF", "num_format": "0.00"})
+    ws.write_row(0, 0, ["Criterion", "Weight"] + [f"Option {o['label']}: {o['name']}" for o in opts], h)
+    for r, (name, weight) in enumerate(CRITERIA, start=1):
+        ws.write(r, 0, name, c)
+        ws.write(r, 1, weight, c)
+        for j, o in enumerate(opts):
+            ws.write(r, 2 + j, o["scores"][name], c)
+    last = len(CRITERIA) + 1
+    ws.write(last, 0, "Weighted total (/10)", b)
+    ws.write_formula(last, 1, f"=SUM(B2:B{last})", b, 1.0)
+    for j, o in enumerate(opts):
+        col = chr(ord("C") + j)
+        ws.write_formula(last, 2 + j, f"=SUMPRODUCT($B$2:$B${last},{col}2:{col}{last})", b, o["weighted_total"])
+    ws.write(last + 2, 0, f"Selected: Option {spec['options_evaluation']['winner']} (highest score within budget)")
+    ws.set_column(0, 0, 34)
+    ws.set_column(1, 1, 9)
+    ws.set_column(2, 4, 30)
+    wb.close()
 
-    page1.insert_text(pymupdf.Point(50, 575), "Gross Revenue", fontsize=9)
-    page1.insert_text(pymupdf.Point(220, 575), f"${spec['financial_summary']['year_1_revenue_CAD']:,}", fontsize=9)
-    page1.insert_text(pymupdf.Point(340, 575), f"${spec['financial_summary']['year_2_revenue_CAD']:,}", fontsize=9)
-    page1.insert_text(pymupdf.Point(460, 575), f"${spec['financial_summary']['year_3_revenue_CAD']:,}", fontsize=9)
 
-    page1.insert_text(pymupdf.Point(50, 600), "EBITDA Margin", fontsize=9)
-    page1.insert_text(pymupdf.Point(220, 600), "26.4%", fontsize=9)
-    page1.insert_text(pymupdf.Point(340, 600), "29.8%", fontsize=9)
-    page1.insert_text(pymupdf.Point(460, 600), f"{spec['financial_summary']['ebitda_margin_percent']}%", fontsize=9)
+def write_financial_workbooks(spec: dict) -> None:
+    import xlsxwriter
+    fs, d = spec["financial_summary"], OUTPUT_ROOT / "05_Financial_Models"
+    T = spec["case_inputs"]["timeline_months"]
 
-    # 3-Horizon Implementation
-    page1.insert_text(pymupdf.Point(40, 650), "4. THREE-HORIZON IMPLEMENTATION ROADMAP", fontsize=13, color=(0.06, 0.15, 0.35))
-    hy = 675
-    for h in spec["implementation_horizons"]:
-        page1.insert_text(pymupdf.Point(50, hy), f"• {h['horizon']} ({h['timeline']}): {h['name']} | Budget: CAD ${h['budget_CAD']:,}", fontsize=9)
-        page1.insert_text(pymupdf.Point(65, hy + 15), f"Milestone KPI: {h['kpi']}", fontsize=8, color=(0.3, 0.3, 0.3))
-        hy += 35
+    wb = xlsxwriter.Workbook(str(d / "financial_model.xlsx"))
+    h = wb.add_format({"bold": True, "bg_color": "#0F172A", "font_color": "#FFFFFF", "border": 1})
+    money = wb.add_format({"num_format": "$#,##0;[Red]-$#,##0", "border": 1})
+    bmoney = wb.add_format({"bold": True, "num_format": "$#,##0;[Red]-$#,##0", "border": 1, "bg_color": "#FEF3C7"})
+    pctf = wb.add_format({"num_format": "0.0%", "border": 1})
+    inp = wb.add_format({"border": 1, "bg_color": "#DBEAFE"})
+    cell = wb.add_format({"border": 1})
 
-    doc_a.save(str(pdf_dir / "Strategic_Blueprint.pdf"))
-    doc_a.close()
+    a = wb.add_worksheet("Assumptions")
+    a.write_row(0, 0, ["Input (blue = editable)", "Value"], h)
+    rows = [("Capex (CAD)", fs["initial_investment_CAD"], money), ("Run-rate annual benefit (CAD)", fs["annual_run_rate_benefit_CAD"], money),
+            ("O&M rate (share of capex)", OM_RATE, pctf), ("Benefit share during implementation", PILOT_SHARE, pctf),
+            ("Implementation months", T, cell), ("WACC", WACC, pctf)]
+    for i, (k, v, fm) in enumerate(rows, start=1):
+        a.write(i, 0, k, cell)
+        a.write(i, 1, v, inp if fm is cell else wb.add_format({**{"bg_color": "#DBEAFE", "border": 1}, "num_format": fm.num_format}))
+    a.set_column(0, 0, 38)
+    a.set_column(1, 1, 16)
+    # Named cells: B2 capex, B3 benefit, B4 om, B5 pilot, B6 months, B7 wacc
 
-    # PDF B: Final Case Solution (Polished 2-Page Executive Memorandum)
-    doc_b = pymupdf.open()
-    page_b = doc_b.new_page(width=595, height=842)
-    page_b.draw_rect(pymupdf.Rect(0, 0, 595, 90), color=(0.1, 0.12, 0.18), fill=(0.1, 0.12, 0.18))
-    page_b.insert_text(pymupdf.Point(40, 45), "EXECUTIVE CASE COMPETITION MEMORANDUM", fontsize=18, color=(1, 1, 1))
-    page_b.insert_text(pymupdf.Point(40, 70), "CONFIDENTIAL | CHAMPIONSHIP SOLUTION DEFENSE", fontsize=9, color=(0.8, 0.85, 0.9))
+    cf = wb.add_worksheet("Cash_Flow_5yr")
+    cf.write_row(0, 0, ["CAD", "Year 0"] + [f"Year {y}" for y in range(1, HORIZON_YEARS + 1)], h)
+    labels = ["Full-run-rate months", "Gross benefit", "O&M", "Net operating benefit", "Capex", "Net cash flow", "Cumulative"]
+    for i, lab in enumerate(labels, start=1):
+        cf.write(i, 0, lab, cell)
+    cf.write_formula(5, 1, "=-Assumptions!B2", money, -fs["initial_investment_CAD"])
+    cf.write_formula(6, 1, "=B6", bmoney, -fs["initial_investment_CAD"])
+    cf.write_formula(7, 1, "=B7", money, -fs["initial_investment_CAD"])
+    years = [fs[f"year_{y}_net_CAD"] for y in range(1, HORIZON_YEARS + 1)]
+    cum = -fs["initial_investment_CAD"]
+    for y in range(1, HORIZON_YEARS + 1):
+        col, cl = 1 + y, chr(ord("B") + y)
+        full = max(0, min(12, 12 * y - T))
+        gross = fs["annual_run_rate_benefit_CAD"] / 12 * (full + PILOT_SHARE * (12 - full))
+        cf.write_formula(1, col, f"=MAX(0,MIN(12,12*{y}-Assumptions!$B$6))", cell, full)
+        cf.write_formula(2, col, f"=Assumptions!$B$3/12*({cl}2+Assumptions!$B$5*(12-{cl}2))", money, round(gross))
+        cf.write_formula(3, col, "=-Assumptions!$B$2*Assumptions!$B$4", money, -fs["annual_om_CAD"])
+        cf.write_formula(4, col, f"={cl}3+{cl}4", money, years[y - 1])
+        cf.write(5, col, 0, money)
+        cf.write_formula(6, col, f"={cl}5+{cl}6", bmoney, years[y - 1])
+        cum += years[y - 1]
+        prev = chr(ord(cl) - 1)
+        cf.write_formula(7, col, f"={prev}8+{cl}7", money, round(cum))
+    end = chr(ord("B") + HORIZON_YEARS)
+    cf.write(9, 0, "NPV @ WACC", h)
+    cf.write_formula(9, 1, f"=B7+NPV(Assumptions!B7,C7:{end}7)", bmoney, fs["npv_CAD"])
+    cf.write(10, 0, "IRR", h)
+    cf.write_formula(10, 1, f"=IFERROR(IRR(B7:{end}7),\"n/a\")", pctf, (fs["irr_percent"] or 0) / 100)
+    cf.write(11, 0, "Payback (months, monthly model)", h)
+    cf.write(11, 1, fs["payback_period_months"] if fs["payback_period_months"] is not None else f"> {HORIZON_YEARS * 12}", cell)
+    cf.set_column(0, 0, 32)
+    cf.set_column(1, 1 + HORIZON_YEARS, 15)
 
-    page_b.insert_text(pymupdf.Point(40, 130), "THE WINNING PROPOSAL", fontsize=14, color=(0.06, 0.15, 0.35))
-    page_b.insert_textbox(pymupdf.Rect(40, 150, 555, 230), spec["approved_solution"]["value_proposition"], fontsize=11, lineheight=1.4)
+    sc = wb.add_worksheet("Scenarios")
+    sc.write_row(0, 0, ["Scenario", "Improvement %", "Capex", "NPV", "IRR %", "Payback (months)", "Meets target"], h)
+    for i, s in enumerate(spec["scenarios"], start=1):
+        sc.write_row(i, 0, [s["name"], s["improvement"]], cell)
+        sc.write(i, 2, s["capex"], money)
+        sc.write(i, 3, s["npv"], money)
+        sc.write_row(i, 4, [s["irr"] if s["irr"] is not None else "n/a",
+                            s["payback_months"] if s["payback_months"] is not None else "n/a",
+                            "yes" if s["meets_target"] else "no"], cell)
+    sc.write_row(5, 0, ["Sensitivity driver", "Low NPV", "High NPV", "Swing"], h)
+    for i, t in enumerate(spec["sensitivity"], start=6):
+        sc.write(i, 0, t["driver"], cell)
+        sc.write_row(i, 1, [t["low_npv"], t["high_npv"], t["swing"]], money)
+    sc.set_column(0, 0, 38)
+    sc.set_column(1, 6, 16)
+    wb.close()
 
-    page_b.insert_text(pymupdf.Point(40, 250), "CORE STRATEGIC PILLARS", fontsize=12, color=(0.06, 0.15, 0.35))
-    py = 275
-    for pillar in spec["approved_solution"]["pillars"]:
-        page_b.insert_text(pymupdf.Point(55, py), f"✓ {pillar['name']}", fontsize=10)
-        page_b.insert_text(pymupdf.Point(320, py), f"Measured Result: {pillar['impact']}", fontsize=10, color=(0.1, 0.5, 0.2))
-        py += 24
+    # cost_breakdown.xlsx — capex by horizon and category
+    wb = xlsxwriter.Workbook(str(d / "cost_breakdown.xlsx"))
+    ws = wb.add_worksheet("Capex_by_Horizon")
+    h = wb.add_format({"bold": True, "bg_color": "#0F172A", "font_color": "#FFFFFF", "border": 1})
+    money = wb.add_format({"num_format": "$#,##0", "border": 1})
+    ws.write_row(0, 0, ["Horizon", "Timing", "Workstream", "Budget (CAD)"], h)
+    for i, hz in enumerate(spec["implementation_horizons"], start=1):
+        ws.write_row(i, 0, [hz["horizon"], hz["timeline"], hz["name"]])
+        ws.write(i, 3, hz["budget_CAD"], money)
+    ws.write(4, 2, "Total")
+    ws.write_formula(4, 3, "=SUM(D2:D4)", money, fs["initial_investment_CAD"])
+    ws.write(5, 2, "Headroom to budget")
+    ws.write_formula(5, 3, f"={fs['budget_CAD']}-D5", money, fs["budget_CAD"] - fs["initial_investment_CAD"])
+    ws.write_row(7, 0, ["Category (assumed split)", "Share", "", "CAD"], h)
+    for i, (cat, share) in enumerate([("Equipment & materials", 0.55), ("Engineering & integration", 0.25),
+                                      ("Installation & commissioning", 0.10), ("Contingency", 0.10)], start=8):
+        ws.write_row(i, 0, [cat, share])
+        ws.write_formula(i, 3, f"=$D$5*B{i + 1}", money, round(fs["initial_investment_CAD"] * share))
+    ws.write(13, 0, "Annual O&M")
+    ws.write(13, 3, fs["annual_om_CAD"], money)
+    ws.set_column(0, 2, 32)
+    ws.set_column(3, 3, 16)
+    wb.close()
+    shutil.copyfile(d / "financial_model.xlsx", d / "scenario_analysis.xlsx")
 
-    page_b.insert_text(pymupdf.Point(40, 380), "ADVERSARIAL JUDGE DEFENSE SUMMARY", fontsize=12, color=(0.06, 0.15, 0.35))
-    qy = 410
-    for qa in spec["red_team_defense"][:2]:
-        page_b.insert_text(pymupdf.Point(50, qy), f"Judge Question: \"{qa['question']}\"", fontsize=9)
-        page_b.insert_textbox(pymupdf.Rect(50, qy + 12, 540, qy + 55), f"Defense: {qa['rebuttal']}", fontsize=8.5, lineheight=1.3)
-        qy += 60
 
-    doc_b.save(str(pdf_dir / "Final_Case_Solution.pdf"))
-    doc_b.close()
-    print(f"[Agent 10 PDF Documentation] Generated Strategic_Blueprint.pdf and Final_Case_Solution.pdf in {pdf_dir}")
+# --------------------------------------------------------------------------------------
+# Agent 10: PDFs via PyMuPDF Story (auto layout & pagination)
+# --------------------------------------------------------------------------------------
+PDF_CSS = """
+body { font-family: sans-serif; font-size: 9.5pt; color: #1e293b; }
+h1 { font-size: 18pt; color: #0f172a; margin: 0 0 4pt 0; }
+h2 { font-size: 12pt; color: #1e3a8a; margin: 12pt 0 4pt 0; border-bottom: 1px solid #cbd5e1; }
+p { margin: 3pt 0; line-height: 1.35; }
+.meta { color: #64748b; font-size: 8.5pt; }
+.callout { background-color: #eff6ff; padding: 6pt; border: 1px solid #bfdbfe; }
+table { border-collapse: collapse; width: 100%; margin: 4pt 0; }
+th { background-color: #0f172a; color: #ffffff; font-size: 8pt; padding: 3pt; text-align: left; }
+td { border: 1px solid #cbd5e1; font-size: 8pt; padding: 3pt; }
+li { margin: 2pt 0; }
+"""
 
-def generate_powerpoint_deck(spec: dict):
-    """Generates the 12-slide executive presentation using python-pptx."""
+
+def _esc(s) -> str:
+    return str(s).replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
+
+
+def _html_table(headers, rows) -> str:
+    return ("<table><tr>" + "".join(f"<th>{_esc(h)}</th>" for h in headers) + "</tr>"
+            + "".join("<tr>" + "".join(f"<td>{_esc(c)}</td>" for c in r) + "</tr>" for r in rows) + "</table>")
+
+
+def _render_pdf(html: str, path: Path) -> None:
+    import pymupdf
+    story = pymupdf.Story(html=html, user_css=PDF_CSS)
+    writer = pymupdf.DocumentWriter(str(path))
+    page_rect, body = pymupdf.paper_rect("a4"), pymupdf.paper_rect("a4") + (42, 48, -42, -48)
+    more = True
+    while more:
+        dev = writer.begin_page(page_rect)
+        more, _ = story.place(body)
+        story.draw(dev)
+        writer.end_page()
+    writer.close()
+
+
+def generate_pdf_deliverables(spec: dict) -> None:
+    ci, fs, pdg, sol, inp = (spec["case_identification"], spec["financial_summary"], spec["problem_diagnosis"],
+                             spec["approved_solution"], spec["case_inputs"])
+    head = f"<h1>{_esc(ci['title'])}</h1><p class='meta'>{_esc(ci['id'])} · {_esc(ci['discipline'])} · Strategy Consulting Hub</p>"
+    kpis = _html_table(["Capex", "NPV @ WACC", "IRR", "Payback", "Benefit/Cost", "Run-rate benefit", "Levelized cost"],
+                       [[cad(fs["initial_investment_CAD"]), cad(fs["npv_CAD"]), pct(fs["irr_percent"]),
+                         months(fs["payback_period_months"]), fs["benefit_cost_ratio"], cad(fs["annual_run_rate_benefit_CAD"]) + "/yr",
+                         f"{fs['levelized_cost']} {fs['levelized_cost_unit']}"]])
+    blueprint = f"""{head}
+<div class='callout'><p><b>Recommendation.</b> {_esc(sol['value_proposition'])}</p></div>
+{kpis}
+<h2>1. Problem diagnosis</h2><p>{_esc(pdg['core_bottleneck'])}</p>
+<ul>{''.join(f'<li>{_esc(c)}</li>' for c in pdg['root_causes'])}</ul>
+<h2>2. Options and decision</h2>{_html_table(OPT_HEADERS, _options_rows(spec))}
+<p>Criteria and weights: {_esc(', '.join(f"{c['name']} {c['weight']:.0%}" for c in spec['options_evaluation']['criteria']))}. Budget is a hard gate.</p>
+<h2>3. Five-year cash flow (CAD)</h2>{_html_table(['Year 0'] + [f'Year {y}' for y in range(1, HORIZON_YEARS + 1)], [[cad(f) for f in fs['cash_flows_CAD']]])}
+<h2>4. Scenarios</h2>{_html_table(['Scenario', 'Gain', 'Capex', 'NPV', 'IRR', 'Payback', 'Meets target'],
+    [[s['name'], f"{s['improvement']:g}%", cad(s['capex']), cad(s['npv']), pct(s['irr']), months(s['payback_months']), 'yes' if s['meets_target'] else 'no'] for s in spec['scenarios']])}
+<h2>5. Sensitivity (NPV tornado)</h2>{_html_table(['Driver', 'Low NPV', 'High NPV', 'Swing'], [[t['driver'], cad(t['low_npv']), cad(t['high_npv']), cad(t['swing'])] for t in spec['sensitivity']])}
+<h2>6. Implementation roadmap</h2>{_html_table(['Horizon', 'Timing', 'Workstream', 'Budget', 'KPI', 'Gate'], [[h['horizon'], h['timeline'], h['name'], cad(h['budget_CAD']), h['kpi'], h['gate']] for h in spec['implementation_horizons']])}
+<h2>7. Risk register</h2>{_html_table(['Risk', 'L', 'I', 'Mitigation', 'Trigger'], [[r['risk'], r['likelihood'], r['impact'], r['mitigation'], r['trigger']] for r in spec['risks']])}
+<h2>8. Judge defence</h2>{''.join(f"<p><b>Q: {_esc(q['question'])}</b><br/>{_esc(q['rebuttal'])}</p>" for q in spec['red_team_defense'])}
+<h2>9. Assumptions</h2>{_html_table(['Parameter', 'Value', 'Source'], [[a['parameter'], a['value'], a['source']] for a in spec['assumptions']])}
+"""
+    _render_pdf(blueprint, OUTPUT_ROOT / "06_PDF_Deliverables/Strategic_Blueprint.pdf")
+
+    memo = f"""{head}
+<h2>Decision</h2><div class='callout'><p>{_esc(sol['value_proposition'])}</p></div>
+<h2>Why this option</h2><p>{_esc(inp['decision_question'])}</p>{_html_table(OPT_HEADERS, _options_rows(spec))}
+<h2>Economics</h2>{kpis}
+<p>Bear case (performance -15%, capex +20%): NPV {cad(spec['scenarios'][0]['npv'])}, payback {months(spec['scenarios'][0]['payback_months'])}.</p>
+<h2>Plan</h2><ul>{''.join(f"<li><b>{_esc(h['horizon'])} ({_esc(h['timeline'])})</b> — {_esc(h['name'])}, {cad(h['budget_CAD'])}. KPI: {_esc(h['kpi'])}</li>" for h in spec['implementation_horizons'])}</ul>
+<h2>Top judge questions</h2>{''.join(f"<p><b>Q: {_esc(q['question'])}</b><br/>{_esc(q['rebuttal'])}</p>" for q in spec['red_team_defense'][:3])}
+"""
+    _render_pdf(memo, OUTPUT_ROOT / "06_PDF_Deliverables/Final_Case_Solution.pdf")
+
+
+# --------------------------------------------------------------------------------------
+# Agent 11: PowerPoint (12 slides, real content, editable tables)
+# --------------------------------------------------------------------------------------
+def generate_powerpoint_deck(spec: dict) -> None:
+    from pptx import Presentation
+    from pptx.dml.color import RGBColor
+    from pptx.util import Inches, Pt
+
+    NAVY, GOLD, WHITE, GRAY, INK, LIGHT = (RGBColor(15, 23, 42), RGBColor(217, 119, 6), RGBColor(255, 255, 255),
+                                           RGBColor(100, 116, 139), RGBColor(30, 41, 59), RGBColor(248, 250, 252))
+    ci, fs, pdg, sol, inp = (spec["case_identification"], spec["financial_summary"], spec["problem_diagnosis"],
+                             spec["approved_solution"], spec["case_inputs"])
     prs = Presentation()
-    prs.slide_width = Inches(13.333)
-    prs.slide_height = Inches(7.5) # 16:9 widescreen
-    blank_layout = prs.slide_layouts[6]
+    prs.slide_width, prs.slide_height = Inches(13.333), Inches(7.5)
+    notes_md = ["# Speaker Notes\n"]
 
-    NAVY = RGBColor(15, 23, 42)
-    GOLD = RGBColor(217, 119, 6)
-    WHITE = RGBColor(255, 255, 255)
-    GRAY = RGBColor(100, 116, 139)
-    LIGHT_BG = RGBColor(248, 250, 252)
-
-    slides_data = [
-        {"title": f"Strategic Turnaround: {spec['case_identification']['title']}", "subtitle": "Winning Case Strategy Deck | Executive Presentation", "bg": NAVY, "fg": WHITE},
-        {"title": "1. Executive Summary & Big Idea", "subtitle": spec['approved_solution']['value_proposition'], "bg": LIGHT_BG, "fg": NAVY},
-        {"title": "2. MECE Problem Diagnosis", "subtitle": "Distinguishing surface symptoms from core architectural constraints", "bg": LIGHT_BG, "fg": NAVY},
-        {"title": "3. The Core Bottleneck & TOC Framing", "subtitle": f"Baseline output: {spec['problem_diagnosis']['baseline_value']} {spec['problem_diagnosis']['baseline_unit']}", "bg": LIGHT_BG, "fg": NAVY},
-        {"title": "4. Strategic Alternatives Comparison", "subtitle": "Multi-criteria weighted evaluation of 3 competing proposals", "bg": LIGHT_BG, "fg": NAVY},
-        {"title": "5. The Recommended Solution Architecture", "subtitle": spec['approved_solution']['name'], "bg": NAVY, "fg": WHITE},
-        {"title": "6. Operational Workflow & System Decoupling", "subtitle": "Transitioning from rigid batch flow to asynchronous micro-cells", "bg": LIGHT_BG, "fg": NAVY},
-        {"title": "7. Unit Economics & Capital Efficiency", "subtitle": f"Payback: {spec['financial_summary']['payback_period_months']} Months | LTV/CAC: {spec['financial_summary']['ltv_to_cac_ratio']}x", "bg": LIGHT_BG, "fg": NAVY},
-        {"title": "8. Three-Year Proforma Projections", "subtitle": f"Year 3 EBITDA: CAD ${spec['financial_summary']['year_3_ebitda_CAD']:,} ({spec['financial_summary']['ebitda_margin_percent']}%)", "bg": LIGHT_BG, "fg": NAVY},
-        {"title": "9. Three-Horizon Implementation Roadmap", "subtitle": "Phased de-risking across Pilot (H1), Rollout (H2), and Scaling (H3)", "bg": LIGHT_BG, "fg": NAVY},
-        {"title": "10. Risk Pre-Mortem & Mitigation Matrix", "subtitle": "Proactive buffers against supply chain, integration, and adoption friction", "bg": LIGHT_BG, "fg": NAVY},
-        {"title": "11. Judge Defense Bank & Stress-Test Rebuttals", "subtitle": "Evidence-backed rebuttals prepared for rapid Q&A defense", "bg": NAVY, "fg": WHITE}
-    ]
-
-    for s_idx, s in enumerate(slides_data, start=1):
-        slide = prs.slides.add_slide(blank_layout)
-        
-        # Background fill
-        bg_shape = slide.shapes.add_shape(1, 0, 0, Inches(13.333), Inches(7.5)) # Rectangle
-        bg_shape.fill.solid()
-        bg_shape.fill.fore_color.rgb = s["bg"]
-        bg_shape.line.fill.background()
-
-        # Title Box
-        title_box = slide.shapes.add_textbox(Inches(1.0), Inches(1.0), Inches(11.333), Inches(1.5))
-        tf = title_box.text_frame
+    def slide(title, subtitle="", bullets=None, dark=False, table=None, note=""):
+        s = prs.slides.add_slide(prs.slide_layouts[6])
+        bg = s.shapes.add_shape(1, 0, 0, prs.slide_width, prs.slide_height)
+        bg.fill.solid()
+        bg.fill.fore_color.rgb = NAVY if dark else LIGHT
+        bg.line.fill.background()
+        bar = s.shapes.add_shape(1, Inches(0.6), Inches(0.55), Inches(0.12), Inches(0.9))
+        bar.fill.solid()
+        bar.fill.fore_color.rgb = GOLD
+        bar.line.fill.background()
+        tf = s.shapes.add_textbox(Inches(0.9), Inches(0.45), Inches(11.8), Inches(1.4)).text_frame
         tf.word_wrap = True
-        p = tf.paragraphs[0]
-        p.text = s["title"]
-        p.font.size = Pt(32)
-        p.font.bold = True
-        p.font.color.rgb = s["fg"]
+        tf.paragraphs[0].text = title
+        tf.paragraphs[0].font.size, tf.paragraphs[0].font.bold = Pt(30), True
+        tf.paragraphs[0].font.color.rgb = WHITE if dark else NAVY
+        if subtitle:
+            p = tf.add_paragraph()
+            p.text = subtitle
+            p.font.size, p.font.color.rgb = Pt(15), GOLD if dark else GRAY
+        top = Inches(2.05)
+        if table:
+            headers, rows = table
+            shp = s.shapes.add_table(len(rows) + 1, len(headers), Inches(0.9), top, Inches(11.6), Inches(0.4) * (len(rows) + 1))
+            for j, hd in enumerate(headers):
+                shp.table.cell(0, j).text = str(hd)
+            for i, r in enumerate(rows, start=1):
+                for j, v in enumerate(r):
+                    shp.table.cell(i, j).text = str(v)
+            for row in shp.table.rows:
+                for c in row.cells:
+                    for p in c.text_frame.paragraphs:
+                        p.font.size = Pt(12)
+            top = top + Inches(0.42) * (len(rows) + 1) + Inches(0.25)
+        if bullets:
+            bf = s.shapes.add_textbox(Inches(0.9), top, Inches(11.6), Inches(7.0) - top).text_frame
+            bf.word_wrap = True
+            for i, b in enumerate(bullets):
+                p = bf.paragraphs[0] if i == 0 else bf.add_paragraph()
+                p.text = f"• {b}"
+                p.font.size, p.space_after = Pt(17 if not table else 15), Pt(8)
+                p.font.color.rgb = WHITE if dark else INK
+        s.notes_slide.notes_text_frame.text = note or subtitle
+        notes_md.append(f"### {len(prs.slides)}. {title}\n{note or subtitle}\n")
 
-        # Subtitle
-        p2 = tf.add_paragraph()
-        p2.text = s["subtitle"]
-        p2.font.size = Pt(18)
-        p2.font.color.rgb = GOLD if s["bg"] == NAVY else GRAY
+    opt_rows = [[f"{o['label']}{' ✔' if o['selected'] else ''}", o["name"][:44], cad(o["capex_CAD"]), f"{o['improvement_percent']:g}%",
+                 cad(o["npv_CAD"]), months(o["payback_months"]), o["weighted_total"]] for o in spec["options_evaluation"]["options"]]
+    bear = spec["scenarios"][0]
+    slide(ci["title"], f"{ci['id']} · {ci['discipline']} · Executive Case Simulation Team", dark=True,
+          bullets=[sol["value_proposition"]], note="Open with the answer, then prove it.")
+    slide("1. The answer", "Recommendation in one sentence", bullets=[
+        sol["value_proposition"], f"Benefit/cost {fs['benefit_cost_ratio']} · IRR {pct(fs['irr_percent'])}",
+        f"Delivered in {inp['timeline_months']} months through three gated horizons"], note="State the recommendation and the three numbers judges remember.")
+    slide("2. The problem, quantified", pdg["baseline_metric"], bullets=[pdg["core_bottleneck"],
+          f"Required change: {num(pdg['target_absolute_change'])} {pdg['baseline_unit']} ({pdg['target_improvement_percent']:g}%)"]
+          + inp["constraints"][:3])
+    slide("3. Root-cause hypotheses", "What we must prove before spending at scale", bullets=pdg["root_causes"])
+    slide("4. Three alternatives", "Costed and compared on the same basis",
+          table=(["Opt", "Alternative", "Capex", "Gain", "NPV", "Payback", "Score"], opt_rows))
+    slide("5. Decision logic", "Weighted criteria; budget is a hard gate", table=(
+        ["Criterion", "Weight"] + [f"Opt {o['label']}" for o in spec["options_evaluation"]["options"]],
+        [[c["name"], f"{c['weight']:.0%}"] + [o["scores"][c["name"]] for o in spec["options_evaluation"]["options"]]
+         for c in spec["options_evaluation"]["criteria"]]))
+    slide(f"6. Recommended: Option {sol['label']}", sol["name"], dark=True,
+          bullets=[f"{p['name']} — {p['impact']}" for p in sol["pillars"]])
+    slide("7. Five-year economics", f"NPV {cad(fs['npv_CAD'])} at {fs['wacc_percent']:.1f}% WACC", table=(
+        ["", "Year 0"] + [f"Year {y}" for y in range(1, HORIZON_YEARS + 1)],
+        [["Net cash flow"] + [cad(f) for f in fs["cash_flows_CAD"]]]), bullets=[
+        f"Run-rate benefit {cad(fs['annual_run_rate_benefit_CAD'])}/yr; O&M {cad(fs['annual_om_CAD'])}/yr",
+        f"Payback {months(fs['payback_period_months'])}; IRR {pct(fs['irr_percent'])}",
+        f"Cost-effectiveness: {fs['levelized_cost']} {fs['levelized_cost_unit']} ({fs['economic_case'].split(' (')[0]})"])
+    slide("8. Stress test", "Scenarios and the assumption that matters most", table=(
+        ["Scenario", "Gain", "NPV", "Payback", "Meets target"],
+        [[s["name"], f"{s['improvement']:g}%", cad(s["npv"]), months(s["payback_months"]), "yes" if s["meets_target"] else "no"]
+         for s in spec["scenarios"]]), bullets=[f"Most sensitive: {spec['sensitivity'][0]['driver']} "
+                                                f"(NPV {cad(spec['sensitivity'][0]['low_npv'])} to {cad(spec['sensitivity'][0]['high_npv'])})"])
+    slide("9. Implementation roadmap", f"{inp['timeline_months']} months, three gated horizons", table=(
+        ["Horizon", "Timing", "Workstream", "Budget", "Gate"],
+        [[h["horizon"], h["timeline"], h["name"][:40], cad(h["budget_CAD"]), h["gate"][:50]] for h in spec["implementation_horizons"]]))
+    slide("10. Risks and mitigations", "Pre-mortem with early-warning triggers", table=(
+        ["Risk", "L / I", "Mitigation"], [[r["risk"], f"{r['likelihood']} / {r['impact']}", r["mitigation"][:80]] for r in spec["risks"]]))
+    slide("11. Judge defence bank", "Prepared answers, computed from the model", dark=True,
+          bullets=[f"Q: {q['question']}  —  A: {q['rebuttal']}" for q in spec["red_team_defense"][:3]],
+          note=f"Bear case NPV {cad(bear['npv'])}. Lead with the number, then the mitigation.")
 
-        # Card Content Box
-        content_box = slide.shapes.add_textbox(Inches(1.0), Inches(2.8), Inches(11.333), Inches(4.0))
-        c_tf = content_box.text_frame
-        c_tf.word_wrap = True
-        
-        if s_idx == 1:
-            cp = c_tf.paragraphs[0]
-            cp.text = f"Case Challenge ID: {spec['case_identification']['id']}\nFocus Discipline: {spec['case_identification']['discipline']}\nStandard: 5-Stage Case Competition Architecture"
-            cp.font.size = Pt(18)
-            cp.font.color.rgb = WHITE
-        elif s_idx == 5:
-            cp = c_tf.paragraphs[0]
-            cp.text = "Key Strategic Pillars:"
-            cp.font.size = Pt(22)
-            cp.font.bold = True
-            cp.font.color.rgb = WHITE
-            for pillar in spec["approved_solution"]["pillars"]:
-                pp = c_tf.add_paragraph()
-                pp.text = f"• {pillar['name']} — Impact: {pillar['impact']}"
-                pp.font.size = Pt(18)
-                pp.font.color.rgb = GOLD
-        elif s_idx == 8:
-            cp = c_tf.paragraphs[0]
-            cp.text = f"• Initial CapEx Budget: CAD ${spec['financial_summary']['initial_investment_CAD']:,}\n• Year 1 Gross Revenue: CAD ${spec['financial_summary']['year_1_revenue_CAD']:,}\n• Year 2 Gross Revenue: CAD ${spec['financial_summary']['year_2_revenue_CAD']:,}\n• Year 3 Gross Revenue: CAD ${spec['financial_summary']['year_3_revenue_CAD']:,}\n• Net Present Value (NPV @ 10%): CAD ${spec['financial_summary']['npv_10yr_discount_CAD']:,}\n• Internal Rate of Return (IRR): {spec['financial_summary']['irr_percent']}%"
-            cp.font.size = Pt(18)
-            cp.font.color.rgb = NAVY
-        elif s_idx == 12:
-            cp = c_tf.paragraphs[0]
-            cp.text = "Top Adversarial Questions Anticipated:"
-            cp.font.size = Pt(20)
-            cp.font.bold = True
-            cp.font.color.rgb = WHITE
-            for qa in spec["red_team_defense"][:2]:
-                pp = c_tf.add_paragraph()
-                pp.text = f"Q: \"{qa['question']}\""
-                pp.font.size = Pt(15)
-                pp.font.color.rgb = GOLD
-                pp2 = c_tf.add_paragraph()
-                pp2.text = f"A: {qa['rebuttal']}"
-                pp2.font.size = Pt(14)
-                pp2.font.color.rgb = WHITE
-        else:
-            cp = c_tf.paragraphs[0]
-            cp.text = f"• Quantified baseline metric: {spec['problem_diagnosis']['baseline_value']:,} {spec['problem_diagnosis']['baseline_unit']}\n• Target improvement milestone: +{spec['problem_diagnosis']['target_improvement_percent']}%\n• Phased capital allocation: 3 Horizons with leading and lagging governance dashboards\n• Baby-step arithmetic validated against 3 sensitivity scenarios"
-            cp.font.size = Pt(18)
-            cp.font.color.rgb = NAVY
+    prs.save(str(OUTPUT_ROOT / "07_PowerPoint/Final_Presentation.pptx"))
+    write_text(OUTPUT_ROOT / "07_PowerPoint/speaker_notes.md", "\n".join(notes_md))
 
-    pptx_path = OUTPUT_ROOT / "07_PowerPoint/Final_Presentation.pptx"
-    prs.save(str(pptx_path))
-    print(f"[Agent 11 PowerPoint Presentation] Generated 12-slide editable deck: {pptx_path}")
 
-    # Generate Speaker Notes & Q&A Prep
-    with open(OUTPUT_ROOT / "07_PowerPoint/speaker_notes.md", "w", encoding="utf-8") as f:
-        f.write("# Executive Presentation Speaker Notes (Slide-by-Slide)\n\n")
-        for s in slides_data:
-            f.write(f"### Slide: {s['title']}\n")
-            f.write(f"**Key Talking Point**: Focus on the core trade-off. Reiterate that {s['subtitle']}.\n")
-            f.write("**Time Target**: 50 - 60 seconds. Address the judges directly with zero hedging.\n\n")
-
-    with open(OUTPUT_ROOT / "07_PowerPoint/judge_QA_preparation.md", "w", encoding="utf-8") as f:
-        f.write("# Adversarial Judge Q&A Preparation Bank\n\n")
-        for qa in spec["red_team_defense"]:
-            f.write(f"### Question: \"{qa['question']}\"\n")
-            f.write(f"**Immediate Answer**: {qa['rebuttal']}\n\n")
-
-def generate_video_assets(spec: dict):
-    """Generates the 2-minute video production script, subtitles, storyboard, and MP4 render."""
-    video_dir = OUTPUT_ROOT / "09_Video"
-
-    storyboard = """# Two-Minute Product Demonstration Video Storyboard (120 Seconds)
-
-| Time Range | Scene Name | Visual Presentation | Audio / Voiceover Narration |
-| :--- | :--- | :--- | :--- |
-| **0:00 - 0:15** | The Problem Hook | Split-screen showing factory floor bottleneck and red throughput warning (1,042 units/day). | "In industrial automation, when line dependencies are locked, a single delay starves the entire plant. At NextGen Automation, rigid cycle variances create costly daily throughput bottlenecks." |
-| **0:15 - 0:35** | Root Cause Diagnosis | Animated Five Whys issue tree identifying mechanical interlock starvation. | "Our diagnosis isolated the root cause: synchronous coupling. Machine variance exceeds 18%, causing staging bottlenecks and 42 minutes of daily idle time." |
-| **0:35 - 1:00** | The Winning Solution | 3D exploded diagram of Modular Micro-Cell Architecture with Edge Telemetry. | "The solution is MM-PEO: Modular Micro-Cells with Predictive Edge Orchestration. By decoupling operations into independent, buffered cells, each station operates at peak efficiency." |
-| **1:00 - 1:35** | Product Walkthrough | Live UI dashboard recording showing dynamic load balancing and real-time telemetry. | "On screen, the edge controller monitors cycle variance in real time. Work-in-progress congestion is down 22.5%, and effective line uptime rises to 96.8%." |
-| **1:35 - 1:50** | Business & Financial Impact | Clear animated proforma chart: 8.4-month payback and +24.5% output surge. | "The numbers are decisive: an 8.4-month capital payback, Year 3 EBITDA of 2.5 million dollars, and zero safety compromise." |
-| **1:50 - 2:00** | Conclusion & Call to Action | Executive title card with key metrics and final competition defense seal. | "Modular, predictive, and immediately accretive. This is how NextGen turns architectural bottlenecks into competitive advantage." |
-"""
-    with open(video_dir / "storyboard.md", "w", encoding="utf-8") as f:
-        f.write(storyboard)
-
-    narration = """In industrial automation, when line dependencies are locked, a single delay starves the entire plant. At NextGen Automation, rigid cycle variances create costly daily throughput bottlenecks.
-Our diagnosis isolated the root cause: synchronous coupling. Machine variance exceeds 18%, causing staging bottlenecks and 42 minutes of daily idle time.
-The solution is MM-PEO: Modular Micro-Cells with Predictive Edge Orchestration. By decoupling operations into independent, buffered cells, each station operates at peak efficiency.
-On screen, the edge controller monitors cycle variance in real time. Work-in-progress congestion is down 22.5%, and effective line uptime rises to 96.8%.
-The numbers are decisive: an 8.4-month capital payback, Year 3 EBITDA of 2.5 million dollars, and zero safety compromise.
-Modular, predictive, and immediately accretive. This is how NextGen turns architectural bottlenecks into competitive advantage."""
-
-    with open(video_dir / "narration_script.md", "w", encoding="utf-8") as f:
-        f.write(narration)
-
-    # Subtitles SRT
-    srt_content = """1
-00:00:01,000 --> 00:00:07,000
-In industrial automation, when line dependencies are locked, a single delay starves the entire plant.
-
-2
-00:00:07,500 --> 00:00:14,500
-At NextGen Automation, rigid cycle variances create costly daily throughput bottlenecks.
-
-3
-00:00:15,000 --> 00:00:22,000
-Our diagnosis isolated the root cause: synchronous coupling with machine variance exceeding 18%.
-
-4
-00:00:22,500 --> 00:00:34,000
-This causes severe staging bottlenecks and 42 minutes of preventable daily idle time.
-
-5
-00:00:35,000 --> 00:00:46,000
-The solution: Modular Micro-Cells with Predictive Edge Orchestration.
-
-6
-00:00:46,500 --> 00:01:00,000
-By decoupling operations into independent, buffered cells, each station operates at peak efficiency.
-
-7
-00:01:00,500 --> 00:01:15,000
-The edge controller monitors cycle variance in real time, reducing WIP congestion by 22.5%.
-
-8
-00:01:15,500 --> 00:01:34,000
-Effective uptime increases to 96.8% with dynamic workload re-routing.
-
-9
-00:01:35,000 --> 00:01:49,000
-The numbers are decisive: an 8.4-month capital payback and Year 3 EBITDA of $2.5M.
-
-10
-00:01:50,000 --> 00:02:00,000
-Modular, predictive, and immediately accretive. This is the championship turnaround.
-"""
-    with open(video_dir / "subtitles.srt", "w", encoding="utf-8") as f:
-        f.write(srt_content)
-
-    # Render a video file with ffmpeg (solid 1080p slide with audio/tone or visual card)
-    mp4_path = video_dir / "Final_Demo_120s.mp4"
-    print(f"[Agent 13 Video Production] Generating video presentation: {mp4_path}")
-    
-    # Generate 120s video with title card and subtle pulse using ffmpeg
-    cmd = [
-        "ffmpeg", "-y",
-        "-f", "lavfi", "-i", "color=c=0x0f172a:s=1920x1080:d=120:r=30",
-        "-f", "lavfi", "-i", "sine=f=440:b=4:d=120",
-        "-vf", "drawtext=text='NEXTGEN AUTOMATION TURNAROUND':fontcolor=white:fontsize=56:x=(w-text_w)/2:y=(h-text_h)/2-100,"
-               "drawtext=text='Modular Micro-Cell Architecture + Edge Telemetry':fontcolor=0xd97706:fontsize=36:x=(w-text_w)/2:y=(h-text_h)/2-20,"
-               "drawtext=text='2-Minute Case Solution Demonstration | Payback 8.4 Mo | EBITDA $2.5M':fontcolor=0x94a3b8:fontsize=28:x=(w-text_w)/2:y=(h-text_h)/2+60",
-        "-c:v", "libx264", "-pix_fmt", "yuv420p", "-c:a", "aac", "-shortest",
-        str(mp4_path)
+# --------------------------------------------------------------------------------------
+# Agent 13: video (beats -> storyboard, narration, SRT, 120 s MP4)
+# --------------------------------------------------------------------------------------
+def build_beats(spec: dict) -> list[dict]:
+    ci, fs, pdg, sol = spec["case_identification"], spec["financial_summary"], spec["problem_diagnosis"], spec["approved_solution"]
+    win = next(o for o in spec["options_evaluation"]["options"] if o["selected"])
+    return [
+        {"title": "The problem", "on_screen": f"{num(pdg['baseline_value'])} {pdg['baseline_unit']}",
+         "narration": f"{ci['title']}. {pdg['baseline_metric']} is {num(pdg['baseline_value'])} {pdg['baseline_unit']}, and it has to improve {pdg['target_improvement_percent']:g} percent."},
+        {"title": "The diagnosis", "on_screen": "Find the binding constraint",
+         "narration": "We treat the gap as a constraint problem: find the stage that limits performance, and prove it with a pilot before spending at scale."},
+        {"title": "Three options", "on_screen": " / ".join(f"{o['label']}: {o['improvement_percent']:g}%" for o in spec["options_evaluation"]["options"]),
+         "narration": "We costed three alternatives on the same basis and scored them on target attainment, return, payback, resilience and budget headroom."},
+        {"title": f"Option {win['label']} wins", "on_screen": textwrap.shorten(win["name"], 54, placeholder="…"),
+         "narration": f"Option {win['label']}, {win['name']}, delivers {win['improvement_percent']:g} percent for {cad(win['capex_CAD'])}."},
+        {"title": "The numbers", "on_screen": f"NPV {cad(fs['npv_CAD'])} · payback {months(fs['payback_period_months'])}",
+         "narration": f"Net present value is {cad(fs['npv_CAD'])}, with payback in {months(fs['payback_period_months'])}. Under a bear case, NPV is {cad(spec['scenarios'][0]['npv'])}."},
+        {"title": "The plan", "on_screen": " → ".join(h["horizon"] for h in spec["implementation_horizons"]),
+         "narration": f"Three gated horizons over {spec['case_inputs']['timeline_months']} months: pilot, scale, stabilise. Each gate protects the downside."},
     ]
+
+
+def _srt_time(t: float) -> str:
+    return f"{int(t // 3600):02}:{int(t % 3600 // 60):02}:{int(t % 60):02},{int(round((t % 1) * 1000)):03}"
+
+
+def generate_video_assets(spec: dict, render: bool = True) -> None:
+    vdir, beats, dur = OUTPUT_ROOT / "09_Video", build_beats(spec), 20
+    (vdir / "beats.json").write_text(json.dumps(beats, indent=2), encoding="utf-8")
+    write_text(vdir / "storyboard.md", "# Storyboard (120 s)\n\n" + md_table(
+        ["Time", "Beat", "On screen", "Narration"],
+        [[f"{_srt_time(i * dur)[3:8]}-{_srt_time((i + 1) * dur)[3:8]}", b["title"], b["on_screen"], b["narration"]] for i, b in enumerate(beats)]))
+    write_text(vdir / "narration_script.md", "\n\n".join(b["narration"] for b in beats))
+    write_text(vdir / "subtitles.srt", "\n".join(
+        f"{i + 1}\n{_srt_time(i * dur + 0.5)} --> {_srt_time((i + 1) * dur - 0.5)}\n{b['narration']}\n" for i, b in enumerate(beats)))
+
+    mp4 = vdir / "Final_Demo_120s.mp4"
+    mp4.unlink(missing_ok=True)  # never let a stale render satisfy the integrity gate
+    ffmpeg = shutil.which("ffmpeg")
+    if not render or not ffmpeg:
+        print("[Agent 13] Video render skipped" + ("" if render else " (--no-video)") + ("" if ffmpeg else " (ffmpeg not found)"))
+        return
+    src = vdir / "source_project"
+    font = Path("C:/Windows/Fonts/segoeui.ttf")
+    font_opt = f"fontfile='{font.as_posix().replace(':', chr(92) + ':')}':" if font.exists() else ""
+    filters = []
+    for i, b in enumerate(beats):
+        (src / f"title_{i}.txt").write_text(b["title"].upper(), encoding="utf-8")
+        (src / f"body_{i}.txt").write_text(b["on_screen"], encoding="utf-8")
+        en = f"enable='between(t,{i * dur},{(i + 1) * dur})'"
+        filters.append(f"drawtext={font_opt}expansion=none:textfile=source_project/title_{i}.txt:fontcolor=0xd97706:fontsize=44:x=(w-text_w)/2:y=h/2-110:{en}")
+        filters.append(f"drawtext={font_opt}expansion=none:textfile=source_project/body_{i}.txt:fontcolor=white:fontsize=60:x=(w-text_w)/2:y=h/2-10:{en}")
+    (src / "case.txt").write_text(f"{spec['case_identification']['id']}  ·  {spec['case_identification']['title'][:80]}", encoding="utf-8")
+    filters.append(f"drawtext={font_opt}expansion=none:textfile=source_project/case.txt:fontcolor=0x94a3b8:fontsize=26:x=60:y=h-80")
+    cmd = [ffmpeg, "-y", "-loglevel", "error", "-f", "lavfi", "-i", "color=c=0x0f172a:s=1920x1080:d=120:r=30",
+           "-f", "lavfi", "-i", "anullsrc=r=48000:cl=stereo", "-vf", ",".join(filters), "-t", "120",
+           "-c:v", "libx264", "-preset", "veryfast", "-crf", "28", "-pix_fmt", "yuv420p", "-c:a", "aac", "-shortest", mp4.name]
     try:
-        proc = subprocess.run(cmd, capture_output=True, text=True, timeout=30)
-        if proc.returncode == 0 and mp4_path.exists():
-            print(f"Rendered valid 120-second MP4 video: {mp4_path} ({mp4_path.stat().st_size:,} bytes)")
-        else:
-            print(f"FFmpeg notice: {proc.stderr[:200]}")
-    except Exception as e:
-        print(f"Notice: Video render fallback: {e}")
+        proc = subprocess.run(cmd, cwd=vdir, capture_output=True, text=True, timeout=600)
+        if proc.returncode != 0:
+            print(f"[Agent 13] ffmpeg failed: {proc.stderr.strip()[:300]}")
+            mp4.unlink(missing_ok=True)
+    except subprocess.TimeoutExpired:
+        print("[Agent 13] ffmpeg timed out")
+        mp4.unlink(missing_ok=True)
 
-def generate_qa_and_manifest(spec: dict):
-    """Agent 14: Quality Assurance and Cross-Deliverable Verification."""
-    qc_dir = OUTPUT_ROOT / "11_Final_Quality_Control"
 
-    checklist = """# Final Deliverable Compliance Checklist & Quality Gates
+def video_duration(path: Path) -> float:
+    probe = shutil.which("ffprobe")
+    if not probe or not path.exists():
+        return 0.0
+    out = subprocess.run([probe, "-v", "error", "-show_entries", "format=duration", "-of", "csv=p=0", str(path)],
+                         capture_output=True, text=True)
+    try:
+        return float(out.stdout.strip())
+    except ValueError:
+        return 0.0
 
-| Quality Gate | Description | Status | Verification Detail |
-| :--- | :--- | :---: | :--- |
-| **Gate 1: Case Comprehension** | Case extracted and core bottleneck framed. | **PASSED** | Baseline 1,042 units/day and budget constraints isolated. |
-| **Gate 2: Evidence & Sourcing** | Claims linked to primary facts and registers. | **PASSED** | 4 verified primary claims logged in `source_register.csv`. |
-| **Gate 3: Strategy Comparison** | Multi-option decision model executed. | **PASSED** | 3 options evaluated; Option B wins with 9.2/10 score in `evaluation_matrix.xlsx`. |
-| **Gate 4: Feasibility & Financials** | Full 3-year proforma & scenario testing. | **PASSED** | Proforma, cost breakdown, and sensitivity verified across Bear/Base/Bull. |
-| **Gate 5: Adversarial Review** | Top judge questions prepared with rebuttals. | **PASSED** | 3 critical judge challenges answered in Q&A bank. |
-| **Gate 6: Deliverable Integrity** | PDFs, PPTX, XLSX, and MP4 artifacts created. | **PASSED** | All 10 core deliverable files exist and are verified. |
-| **Gate 7: Cross-Artifact Consistency** | Numbers match identically across all outputs. | **PASSED** | 8.4 mo payback, $2.5M EBITDA, +24.5% output consistent across all files. |
-"""
-    with open(qc_dir / "compliance_checklist.md", "w", encoding="utf-8") as f:
-        f.write(checklist)
 
+# --------------------------------------------------------------------------------------
+# Agent 12 + 14: frontend sync, quality gates, manifest
+# --------------------------------------------------------------------------------------
+def sync_frontend(spec: dict) -> None:
+    web = REPO_ROOT / "src/data"
+    web.mkdir(parents=True, exist_ok=True)
+    (web / "current_case_solution.json").write_text(json.dumps(spec, indent=2), encoding="utf-8")
+
+
+DELIVERABLES = {
+    "solution_spec_json": "solution_spec.json",
+    "strategic_blueprint_pdf": "06_PDF_Deliverables/Strategic_Blueprint.pdf",
+    "final_solution_pdf": "06_PDF_Deliverables/Final_Case_Solution.pdf",
+    "presentation_pptx": "07_PowerPoint/Final_Presentation.pptx",
+    "financial_model_xlsx": "05_Financial_Models/financial_model.xlsx",
+    "cost_breakdown_xlsx": "05_Financial_Models/cost_breakdown.xlsx",
+    "evaluation_matrix_xlsx": "03_Brainstorming/evaluation_matrix.xlsx",
+    "executive_summary_md": "04_Final_Strategy/executive_summary.md",
+    "judge_qa_md": "07_PowerPoint/judge_QA_preparation.md",
+    "video_subtitles_srt": "09_Video/subtitles.srt",
+    "video_demo_mp4": "09_Video/Final_Demo_120s.mp4",
+}
+
+
+def _artifact_text() -> dict[str, str]:
+    import pymupdf
+    from pptx import Presentation
+    out = {}
+    for key in ("strategic_blueprint_pdf", "final_solution_pdf"):
+        p = OUTPUT_ROOT / DELIVERABLES[key]
+        if p.exists():
+            with pymupdf.open(str(p)) as d:
+                out[key] = " ".join(pg.get_text() for pg in d)
+    p = OUTPUT_ROOT / DELIVERABLES["presentation_pptx"]
+    if p.exists():
+        out["presentation_pptx"] = " ".join(sh.text_frame.text for s in Presentation(str(p)).slides
+                                            for sh in s.shapes if sh.has_text_frame)
+    p = OUTPUT_ROOT / DELIVERABLES["executive_summary_md"]
+    if p.exists():
+        out["executive_summary_md"] = p.read_text(encoding="utf-8")
+    return {k: unicodedata.normalize("NFKC", v) for k, v in out.items()}
+
+
+def run_quality_gates(spec: dict, video_expected: bool, run_started: float = 0.0) -> list[dict]:
+    fs, inp = spec["financial_summary"], spec["case_inputs"]
+    win = next(o for o in spec["options_evaluation"]["options"] if o["selected"])
+    gates = []
+
+    def gate(name, status, detail):
+        gates.append({"gate": name, "status": status, "detail": detail})
+
+    ok_inputs = all(inp[k] and inp[k] > 0 for k in ("baseline_value", "target_pct", "budget", "timeline_months"))
+    gate("1. Case comprehension", "PASS" if ok_inputs else "FAIL",
+         f"baseline {num(inp['baseline_value'])} {inp['baseline_unit']}, target {inp['target_pct']:g}%, budget {cad(inp['budget'])}, {inp['timeline_months']} months")
+    weak = spec["weak_assumptions"]
+    gate("2. Evidence & assumptions", "WARN" if any("Option" in w or "Monetisation" in w for w in weak) else "PASS",
+         f"{len(spec['assumptions'])} parameters logged; validate: {', '.join(weak)}")
+    gate("3. Strategy comparison", "PASS" if win["within_budget"] and len(spec["options_evaluation"]["options"]) >= 3 else "FAIL",
+         f"Option {win['label']} selected at {win['weighted_total']}/10, capex {cad(win['capex_CAD'])} vs budget {cad(inp['budget'])}")
+    gate("4. Target attainment", "PASS" if win["meets_target"] else "FAIL",
+         f"{win['improvement_percent']:g}% vs target {inp['target_pct']:g}%")
+    bear = spec["scenarios"][0]
+    mandate = fs["economic_case"].startswith("mandate")
+    status5 = "PASS" if fs["npv_CAD"] > 0 and bear["npv"] > 0 else "WARN" if fs["npv_CAD"] > 0 or mandate else "FAIL"
+    gate("5. Financial viability", status5,
+         f"base NPV {cad(fs['npv_CAD'])}, bear NPV {cad(bear['npv'])}, payback {months(fs['payback_period_months'])}; "
+         f"{fs['levelized_cost']} {fs['levelized_cost_unit']} ({fs['economic_case'].split(' (')[0]})")
+    missing = [v for k, v in DELIVERABLES.items() if (k != "video_demo_mp4" or video_expected)
+               and not ((OUTPUT_ROOT / v).exists() and (OUTPUT_ROOT / v).stat().st_size > 0)]
+    if video_expected and "09_Video/Final_Demo_120s.mp4" not in missing:
+        dur = video_duration(OUTPUT_ROOT / DELIVERABLES["video_demo_mp4"])
+        if shutil.which("ffprobe") and dur < 119:
+            missing.append(f"Final_Demo_120s.mp4 ({dur:.0f}s, expected 120s)")
+    gate("6. Deliverable integrity", "FAIL" if missing else "PASS", f"missing/empty: {', '.join(missing)}" if missing else f"{len(DELIVERABLES) - (0 if video_expected else 1)} core files present")
+    texts = _artifact_text()
+    needles = {"winner": win["name"][:30], "capex": cad(fs["initial_investment_CAD"]), "NPV": cad(fs["npv_CAD"]),
+               "payback": months(fs["payback_period_months"])}
+    gaps = [f"{n} not in {k}" for k, t in texts.items() for n, v in needles.items() if v not in " ".join(t.split())]
+    gate("7. Cross-artifact consistency", "FAIL" if gaps else "PASS",
+         "; ".join(gaps[:6]) if gaps else f"winner, capex, NPV and payback identical across {len(texts)} artifacts")
+    leak_patterns = [r"[A-Za-z]:[\\/](?:Users|Documents)", r"file:///", r"/Users/[A-Za-z]"]
+    user = getpass.getuser()
+    leaks = []
+    for p in OUTPUT_ROOT.rglob("*"):
+        if p.suffix.lower() in {".md", ".json", ".csv", ".srt", ".txt"} and p.is_file():
+            t = p.read_text(encoding="utf-8", errors="ignore")
+            if any(re.search(pat, t) for pat in leak_patterns) or (len(user) > 3 and user.lower() in t.lower()):
+                leaks.append(p.relative_to(OUTPUT_ROOT).as_posix())
+    leaks += [k for k, t in texts.items() if any(re.search(pat, t) for pat in leak_patterns)]
+    gate("8. Anonymity (Law 1)", "FAIL" if leaks else "PASS", f"leaks in: {', '.join(leaks[:5])}" if leaks else "no local paths or user names in outputs")
+    qc_outputs = {"11_Final_Quality_Control", "00_Project_Overview/project_status.json", "00_Project_Overview/project_manifest.json"}
+    stale = sorted(p.relative_to(OUTPUT_ROOT).as_posix() for p in OUTPUT_ROOT.rglob("*")
+                   if p.is_file() and p.stat().st_mtime < run_started - 1
+                   and not any(p.relative_to(OUTPUT_ROOT).as_posix().startswith(q) for q in qc_outputs))
+    gate("9. Stale artifacts", "WARN" if stale else "PASS",
+         f"{len(stale)} file(s) not produced by this run (may describe another case): {', '.join(stale[:6])}{' …' if len(stale) > 6 else ''}"
+         if stale else "every file in the output folder comes from this run")
+    return gates
+
+
+def write_qc(spec: dict, gates: list[dict], video_expected: bool) -> dict:
+    qc = OUTPUT_ROOT / "11_Final_Quality_Control"
+    icon = {"PASS": "✅ PASS", "WARN": "⚠️ WARN", "FAIL": "❌ FAIL"}
+    write_text(qc / "compliance_checklist.md", "# Quality Gates (computed by Agent 14)\n\n" + md_table(
+        ["Gate", "Status", "Evidence"], [[g["gate"], icon[g["status"]], g["detail"]] for g in gates]))
+    write_text(qc / "unresolved_issues.md", "# Unresolved Issues\n\n" + ("\n".join(
+        f"- **{g['gate']}** ({g['status']}): {g['detail']}" for g in gates if g["status"] != "PASS") or "None.")
+        + "\n\n## Assumptions to replace with real data\n" + "\n".join(f"- {w}" for w in spec["weak_assumptions"]))
+    write_text(qc / "verified_claims.md", "# Verified Claims\n\n" + md_table(
+        ["Claim", "Value", "Check"], [
+            ["Selected option", f"Option {spec['approved_solution']['label']}", "highest weighted score within budget"],
+            ["Capex", cad(spec["financial_summary"]["initial_investment_CAD"]), "<= budget"],
+            ["NPV", cad(spec["financial_summary"]["npv_CAD"]), "Excel NPV formula reproduces value"],
+            ["Payback", months(spec["financial_summary"]["payback_period_months"]), "monthly cash model"]]))
+    write_text(qc / "consistency_report.md", "# Consistency Report\n\n" + next(g["detail"] for g in gates if g["gate"].startswith("7")))
+    counts = {s: sum(g["status"] == s for g in gates) for s in ("PASS", "WARN", "FAIL")}
     manifest = {
-        "status": "COMPLETED",
-        "timestamp": datetime.now(timezone.utc).isoformat(),
-        "case_id": spec["case_identification"]["id"],
-        "deliverables": {
-            "strategic_blueprint_pdf": str(OUTPUT_ROOT / "06_PDF_Deliverables/Strategic_Blueprint.pdf"),
-            "final_solution_pdf": str(OUTPUT_ROOT / "06_PDF_Deliverables/Final_Case_Solution.pdf"),
-            "presentation_pptx": str(OUTPUT_ROOT / "07_PowerPoint/Final_Presentation.pptx"),
-            "financial_model_xlsx": str(OUTPUT_ROOT / "05_Financial_Models/financial_model.xlsx"),
-            "evaluation_matrix_xlsx": str(OUTPUT_ROOT / "03_Brainstorming/evaluation_matrix.xlsx"),
-            "video_demo_mp4": str(OUTPUT_ROOT / "09_Video/Final_Demo_120s.mp4"),
-            "solution_spec_json": str(OUTPUT_ROOT / "solution_spec.json")
-        },
-        "gates_passed": 7,
-        "gates_failed": 0
+        "status": "COMPLETED" if counts["FAIL"] == 0 else "COMPLETED_WITH_FAILURES",
+        "timestamp": spec["generated_at"], "case_id": spec["case_identification"]["id"],
+        "output_root": "Finished Resources" if OUTPUT_ROOT.name == "Finished Resources" else OUTPUT_ROOT.name,
+        "deliverables": {k: v for k, v in DELIVERABLES.items()
+                         if k != "video_demo_mp4" or video_expected},
+        "gates": gates, "gates_passed": counts["PASS"], "gates_warn": counts["WARN"], "gates_failed": counts["FAIL"],
     }
-    with open(qc_dir / "final_delivery_manifest.json", "w", encoding="utf-8") as f:
-        json.dump(manifest, f, indent=2)
+    for target in (qc / "final_delivery_manifest.json", OUTPUT_ROOT / "00_Project_Overview/project_status.json",
+                   OUTPUT_ROOT / "00_Project_Overview/project_manifest.json"):
+        target.write_text(json.dumps(manifest, indent=2), encoding="utf-8")
+    return manifest
 
-    with open(OUTPUT_ROOT / "00_Project_Overview/project_status.json", "w", encoding="utf-8") as f:
-        json.dump(manifest, f, indent=2)
 
-    # Sync to web app data directory for interactive frontend display
-    web_data_dir = Path("src/data")
-    web_data_dir.mkdir(parents=True, exist_ok=True)
-    with open(web_data_dir / "current_case_solution.json", "w", encoding="utf-8") as f:
-        json.dump(spec, f, indent=2)
-    print(f"[Agent 12 Website Development] Synced solution specification to frontend: {web_data_dir / 'current_case_solution.json'}")
+# --------------------------------------------------------------------------------------
+# Orchestration
+# --------------------------------------------------------------------------------------
+def run_agent_pipeline(case_info: dict, render_video: bool = True, unit_value_override: float | None = None) -> dict:
+    print("=" * 80)
+    print(f"CASE [{case_info['id']}] {case_info['title']}")
+    print("=" * 80)
+    run_started = datetime.now().timestamp()
+    spec = build_solution_spec(case_info, unit_value_override)
+    (OUTPUT_ROOT / "solution_spec.json").write_text(json.dumps(spec, indent=2), encoding="utf-8")
+    sol, fs = spec["approved_solution"], spec["financial_summary"]
+    print(f"[00] Option {sol['label']} selected: {sol['name']}")
+    print(f"     capex {cad(fs['initial_investment_CAD'])} | NPV {cad(fs['npv_CAD'])} | IRR {pct(fs['irr_percent'])} | payback {months(fs['payback_period_months'])}")
+
+    steps = [
+        ("01-09 Strategy documents", lambda: write_markdown_set(spec)),
+        ("05 Evaluation matrix", lambda: write_evaluation_matrix(spec)),
+        ("06 Financial workbooks", lambda: write_financial_workbooks(spec)),
+        ("10 PDF deliverables", lambda: generate_pdf_deliverables(spec)),
+        ("11 PowerPoint deck", lambda: generate_powerpoint_deck(spec)),
+        ("13 Video assets", lambda: generate_video_assets(spec, render_video)),
+    ]
+    if OUTPUT_ROOT.resolve() == (REPO_ROOT / "Finished Resources").resolve():  # scratch --out runs never touch the website
+        steps.append(("12 Frontend sync", lambda: sync_frontend(spec)))
+    for label, fn in steps:
+        fn()
+        print(f"[{label}] done")
+
+    video_expected = render_video and shutil.which("ffmpeg") is not None
+    gates = run_quality_gates(spec, video_expected, run_started)
+    manifest = write_qc(spec, gates, video_expected)
+    for g in gates:
+        print(f"  {g['status']:<4}  {g['gate']}: {g['detail']}")
+    print("=" * 80)
+    print(f"{manifest['status']}: {manifest['gates_passed']} pass / {manifest['gates_warn']} warn / {manifest['gates_failed']} fail -> {OUTPUT_ROOT.as_posix()}/")
+    return manifest
+
+
+def main() -> int:
+    global OUTPUT_ROOT
+    ap = argparse.ArgumentParser(description="Case Competition Intelligence System Orchestrator")
+    ap.add_argument("case_pos", nargs="?", help="Case ID (ENG-0001, ENG100K-000001, ENG1M-0000001) or path")
+    ap.add_argument("--case-id", "-c", dest="case_id")
+    ap.add_argument("--input", "-i", dest="input_path", help="PDF/MD/TXT/JSON brief or case directory")
+    ap.add_argument("--out", "-o", default=str(OUTPUT_ROOT), help="Output directory (default: Finished Resources)")
+    ap.add_argument("--unit-value", type=float, help="CAD value of one unit of improvement (overrides default monetisation)")
+    ap.add_argument("--no-video", action="store_true", help="Skip MP4 rendering (fast mode)")
+    ap.add_argument("--spec-only", action="store_true", help="Print the computed solution spec and exit")
+    args = ap.parse_args()
+    if hasattr(sys.stdout, "reconfigure"):
+        sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+
+    case_info = load_case_data(args.case_id or args.input_path or args.case_pos or "ENG-0001")
+    if args.spec_only:
+        print(json.dumps(build_solution_spec(case_info, args.unit_value), indent=2))
+        return 0
+    OUTPUT_ROOT = Path(args.out)
+    create_directory_structure()
+    manifest = run_agent_pipeline(case_info, render_video=not args.no_video, unit_value_override=args.unit_value)
+    return 0 if manifest["gates_failed"] == 0 else 2
+
 
 if __name__ == "__main__":
-    import argparse
-    parser = argparse.ArgumentParser(description="Autonomous Case Competition Intelligence System Orchestrator")
-    parser.add_argument("case_pos", nargs="?", default=None, help="Positional case identifier or path")
-    parser.add_argument("--case-id", "-c", dest="case_id", default=None, help="Case identifier (e.g. ENG1M-0000001, ENG100K-000003, ENG-0001)")
-    parser.add_argument("--input", "-i", dest="input_path", default=None, help="Path to custom PDF, Markdown, or directory")
-    args = parser.parse_args()
-
-    chosen_case = args.case_id or args.input_path or args.case_pos or "ENG-0001"
-    create_directory_structure()
-    case_info = load_case_data(chosen_case)
-    run_agent_pipeline(case_info)
-
+    raise SystemExit(main())

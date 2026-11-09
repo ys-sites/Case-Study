@@ -1,89 +1,69 @@
 {
-  "version": "1.0.0",
-  "generated_at": "2026-11-09T01:57:23.788873Z",
-  "case_identification": {
-    "id": "ENG-0001",
-    "title": "Factory bottleneck redesign \u2014 Baseline improvement",
-    "discipline": "Industrial Engineering",
-    "difficulty": "Beginner"
+  "status": "COMPLETED",
+  "timestamp": "2026-11-09T05:05:34+00:00",
+  "case_id": "ENG1M-0000001",
+  "output_root": "Finished Resources",
+  "deliverables": {
+    "solution_spec_json": "solution_spec.json",
+    "strategic_blueprint_pdf": "06_PDF_Deliverables/Strategic_Blueprint.pdf",
+    "final_solution_pdf": "06_PDF_Deliverables/Final_Case_Solution.pdf",
+    "presentation_pptx": "07_PowerPoint/Final_Presentation.pptx",
+    "financial_model_xlsx": "05_Financial_Models/financial_model.xlsx",
+    "cost_breakdown_xlsx": "05_Financial_Models/cost_breakdown.xlsx",
+    "evaluation_matrix_xlsx": "03_Brainstorming/evaluation_matrix.xlsx",
+    "executive_summary_md": "04_Final_Strategy/executive_summary.md",
+    "judge_qa_md": "07_PowerPoint/judge_QA_preparation.md",
+    "video_subtitles_srt": "09_Video/subtitles.srt",
+    "video_demo_mp4": "09_Video/Final_Demo_120s.mp4"
   },
-  "problem_diagnosis": {
-    "core_bottleneck": "Unsynchronized batch processing and legacy mechanical interlocks creating throughput starvation.",
-    "baseline_value": 1042.83,
-    "baseline_unit": "units/day",
-    "target_improvement_percent": 20.7,
-    "root_causes": [
-      "Fixed cycle time variance exceeding tolerance thresholds (+/- 18%).",
-      "Sub-optimal material buffering between staging and assembly.",
-      "Lack of closed-loop telemetry and dynamic load balancing."
-    ]
-  },
-  "approved_solution": {
-    "name": "Modular Micro-Cell Architecture with Predictive Edge Orchestration (MM-PEO)",
-    "value_proposition": "Decouples monolithic throughput dependencies into self-balancing autonomous cells, delivering +24.5% net output with 8.4-month capital payback.",
-    "pillars": [
-      {
-        "name": "Dynamic Load Decoupling",
-        "impact": "+14.2% Effective Uptime"
-      },
-      {
-        "name": "Predictive Edge Telemetry",
-        "impact": "-38.0% Unplanned Stoppages"
-      },
-      {
-        "name": "Synchronized Buffer Flow",
-        "impact": "-22.5% Work-in-Progress Congestion"
-      }
-    ]
-  },
-  "financial_summary": {
-    "initial_investment_CAD": 1625000,
-    "year_1_revenue_CAD": 3450000,
-    "year_2_revenue_CAD": 5200000,
-    "year_3_revenue_CAD": 7800000,
-    "year_3_ebitda_CAD": 2496000,
-    "gross_margin_percent": 68.5,
-    "ebitda_margin_percent": 32.0,
-    "payback_period_months": 8.4,
-    "irr_percent": 44.2,
-    "npv_10yr_discount_CAD": 3840000,
-    "ltv_to_cac_ratio": 3.8
-  },
-  "implementation_horizons": [
+  "gates": [
     {
-      "horizon": "Horizon 1",
-      "timeline": "Months 1-3",
-      "name": "Telemetry Pilot & Cell Standardization",
-      "budget_CAD": 420000,
-      "kpi": "Pilot cell uptime >= 96%"
+      "gate": "1. Case comprehension",
+      "status": "PASS",
+      "detail": "baseline 1,190 units/day, target 8.5%, budget CAD $866,000, 3 months"
     },
     {
-      "horizon": "Horizon 2",
-      "timeline": "Months 4-8",
-      "name": "Facility-Wide Micro-Cell Deployment",
-      "budget_CAD": 890000,
-      "kpi": "Throughput increase >= +18%"
+      "gate": "2. Evidence & assumptions",
+      "status": "WARN",
+      "detail": "10 parameters logged; validate: Monetisation, Discount rate (WACC), Appraisal horizon, Annual O&M, Benefit during implementation"
     },
     {
-      "horizon": "Horizon 3",
-      "timeline": "Months 9-12",
-      "name": "Predictive Optimization & Autonomous Scaling",
-      "budget_CAD": 315000,
-      "kpi": "Target output reached (1,298 units/day)"
+      "gate": "3. Strategy comparison",
+      "status": "PASS",
+      "detail": "Option C selected at 8.55/10, capex CAD $676,000 vs budget CAD $866,000"
+    },
+    {
+      "gate": "4. Target attainment",
+      "status": "PASS",
+      "detail": "13% vs target 8.5%"
+    },
+    {
+      "gate": "5. Financial viability",
+      "status": "PASS",
+      "detail": "base NPV CAD $2,681,053, bear NPV CAD $1,996,871, payback 11.1 months; 5.43 CAD per added unit (profit-driven)"
+    },
+    {
+      "gate": "6. Deliverable integrity",
+      "status": "PASS",
+      "detail": "11 core files present"
+    },
+    {
+      "gate": "7. Cross-artifact consistency",
+      "status": "PASS",
+      "detail": "winner, capex, NPV and payback identical across 4 artifacts"
+    },
+    {
+      "gate": "8. Anonymity (Law 1)",
+      "status": "PASS",
+      "detail": "no local paths or user names in outputs"
+    },
+    {
+      "gate": "9. Stale artifacts",
+      "status": "WARN",
+      "detail": "27 file(s) not produced by this run (may describe another case): 06_PDF_Deliverables/Final_Case_Solution_Deck.pdf, 08_Website/README.md, 08_Website/deployment_instructions.md, 08_Website/website_validation.md, 09_Video/System_Architecture_Explainer.mp4, 09_Video/assets/ambient_bed.wav \u2026"
     }
   ],
-  "red_team_defense": [
-    {
-      "question": "What happens if vendor lead times for the micro-cell modules slip by 8 weeks?",
-      "rebuttal": "Dual-sourcing agreements are established for all critical mechanical actuators. Horizon 1 deploys software telemetry onto existing machinery first, unlocking +10% gain before physical hardware arrives."
-    },
-    {
-      "question": "How do you defend the 68.5% gross margin when industry median sits at 54%?",
-      "rebuttal": "Our model incorporates modular field-replaceable units (FRUs) which reduce on-site engineering labor hours by 42% compared to bespoke installations."
-    },
-    {
-      "question": "What is the primary risk of catastrophic failure during Horizon 2 rollout?",
-      "rebuttal": "Line integration collision. Mitigated by digital twin hardware-in-the-loop (HIL) simulation preceding each physical cell commissioning."
-    }
-  ]
+  "gates_passed": 7,
+  "gates_warn": 2,
+  "gates_failed": 0
 }
