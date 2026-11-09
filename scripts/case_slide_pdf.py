@@ -558,99 +558,235 @@ def generate_slide_pdf(spec: dict, out_path: Path, first_number: int = 2) -> Pat
     return out_path
 
 
-def generate_finance_detail_pdf(spec: dict, out_path: Path) -> Path | None:
-    """Two presenter pages for the financial case (booklet style): every number traced to the case formula."""
+def _m2(x):
+    """Two-decimal millions so bridge lines add up exactly on screen."""
+    return f"${x / 1e6:.2f}M" if abs(x) >= 1e6 else _m(x)
+
+
+CAT_COL = {"Methods": "emerald", "Technology": "navy", "People": "amber", "External coordination": "mint",
+           "Outside our control": "red", "Risk reserve": "muted"}
+
+
+def _cat_pill(sl, x, y, cat, size=6.6):
+    col = C.get(CAT_COL.get(cat, "muted"), C["muted"])
+    w = sl.width(cat.upper(), size, "bold") + 12
+    sl.rect((x, y, x + w, y + 12), fill=col, radius=0.5)
+    sl.text(x + 6, y + 8.6, cat.upper(), size, "bold", C["white"])
+    return x + w
+
+
+def generate_financial_case_pdf(spec: dict, out_path: Path) -> Path | None:
+    """Financial case tied to the team's problem framing (targets, VSM stages, fishbone causes): presentable
+    slide, savings bridge, investment build-up, robustness, and a presenter card. Booklet style, 16:9."""
     out_path = Path(out_path)
     pk = spec.get("case_pack")
-    if not pk or not pk.get("savings"):
+    if not pk or not pk.get("savings_bridge"):
         out_path.unlink(missing_ok=True)
         return None
-    FOOTER["text"] = "Strategy Consulting Hub · Executive Case Simulation Team · presenter notes for the financial case"
+    FOOTER["text"] = "Strategy Consulting Hub · Executive Case Simulation Team · financial case; estimates are stated assumptions"
     F, fs = _fin(spec), spec["financial_summary"]
-    doc, cid = pymupdf.open(), spec["case_identification"]["id"]
-    # page 1: where every number comes from
-    sl = Slide(doc, 1, 2, cid, "Financial case · presenter detail", "Where every number comes from", "The financial case, line by line")
-    sl.kick(M, TOP + 2, "1. Investment (upfront) vs the $10M budget")
-    cols = [(M, "INITIATIVE"), (M + 240, "UPFRONT"), (M + 300, "PER YEAR"), (M + 362, "OWNER")]
-    for x, h in cols:
-        sl.text(x, TOP + 16, h, 6.5, "bold", C["mint"])
-    y = TOP + 20
-    for p in pk.get("package", []):
-        sl.p.draw_line((M, y), (520, y), color=C["border"], width=0.5)
-        sl.box((M, y + 2, M + 236, y + 17), p["initiative"], 8, "reg", C["body"], min_size=6)
-        sl.text(M + 240, y + 12, _m(p["capex"]), 8.5, "bold", C["ink"])
-        sl.text(M + 300, y + 12, _m(p["annual_opex"]), 8.5, "bold", C["amber"])
-        sl.box((M + 362, y + 2, 520, y + 17), p["owner"], 7.2, "reg", C["muted"], min_size=5.5)
-        y += 18
-    sl.p.draw_line((M, y), (520, y), color=C["pine"], width=0.9)
-    sl.text(M, y + 13, "Total", 9, "bold", C["ink"])
-    sl.text(M + 240, y + 13, _m(F["inv"]), 9, "bold", C["emerald"])
-    sl.text(M + 300, y + 13, _m(F["opex"]), 9, "bold", C["amber"])
-    sl.text(M + 362, y + 13, f"{_m(F['bud'] - F['inv'])} under budget", 8.5, "bold", C["emerald"])
-    y += 30
-    sl.kick(M, y, "2. Annual savings: how they are achieved and who owns them")
-    y += 6
-    for s in F["sav"]:
-        sl.card((M, y, 520, y + 52), stripe=C["mint"])
-        sl.box((M + 10, y + 4, 380, y + 18), f"{s['label']}: {_m(s.get('base', 0))} x {s.get('pct', 0)}% = {_m(s['value'])}", 9.5, "bold", C["ink"], min_size=7)
-        sl.text_r(512, y + 15, f"owner: {s['owner']}", 7.6, "semi", C["emerald"])
-        sl.box((M + 10, y + 20, 512, y + 50), s.get("mechanism", ""), 8, "reg", C["body"], min_size=6)
-        y += 58
-    nt = pk.get("finance_notes", {})
-    if nt.get("not_counted"):
-        sl.box((M, y, 520, BOT), "Not counted (upside): " + "; ".join(nt["not_counted"]) + ".", 8.4, "semi", C["muted"], min_size=6)
-    # right: the formula, step by step
-    R0 = 540
-    sl.card((R0, TOP - 4, W - M, BOT), fill=C["pine"], border=C["pine"])
-    sl.kick(R0 + 16, TOP + 14, "3. The case formula, step by step", C["mint_l"])
-    steps = [("Formula", "Investment + 5 x (added annual costs - annual savings)"),
-             ("Investment", _m(F["inv"])),
-             ("Added annual costs", _m(F["opex"])),
-             ("Annual savings", f"{' + '.join(_m(s['value']) for s in F['sav'])} = {_m(F['ben'])}"),
-             ("Net per year", f"{_m(F['opex'])} - {_m(F['ben'])} = {_m(F['opex'] - F['ben'])}"),
-             ("Five years", f"5 x {_m(F['opex'] - F['ben'])} = {_m(5 * (F['opex'] - F['ben']))}"),
-             ("Add investment", f"{_m(F['inv'])} + {_m(5 * (F['opex'] - F['ben']))}")]
+    inv, opex, ben, net5, bud = F["inv"], F["opex"], F["ben"], F["net5"], F["bud"]
+    bridge, items, nt = pk["savings_bridge"], pk.get("package", []), pk.get("finance_notes", {})
+    doc, cid, T = pymupdf.open(), spec["case_identification"]["id"], 5
+    over50 = inv * 1.5 + 5 * (opex - ben)
+    base = inv - sum(p["capex"] for p in items if "ontingency" in p["initiative"])
+
+    # ---------------------------------------------------------------- 1. the slide
+    sl = Slide(doc, 1, T, cid, "Financial case", "Finance · case formula", "The financial case: $14M a year of problems, fixed for $9.4M")
+    sl.card((M, TOP - 4, W - M, 146), fill=C["pine"], border=C["pine"])
+    sl.kick(M + 16, TOP + 12, "Five-year net impact = investment + 5 x (additional annual costs - annual savings)", C["mint_l"])
+    sl.box((M + 16, TOP + 17, W - M - 16, 144), f"{_m(inv)} + 5 x ({_m(opex)} - {_m(ben)}) = {_m(net5)}   net savings",
+           23, "bold", C["white"], min_size=13)
+    sl.kick(M, 166, "What the money fixes (targets from our problem statement)")
+    lk = pk.get("fin_link", [])
+    cw = (W - 2 * M - 10 * (len(lk) - 1)) / max(len(lk), 1)
+    for i, k in enumerate(lk):
+        x0 = M + i * (cw + 10)
+        sl.card((x0, 172, x0 + cw, 222))
+        sl.rect((x0, 172, x0 + cw, 175), fill=C["mint"])
+        sl.box((x0 + 9, 178, x0 + cw - 6, 190), k["label"].upper(), 6.6, "bold", C["emerald"], min_size=5)
+        sl.box((x0 + 9, 190, x0 + cw - 6, 206), f"{k['now']}  ->  {k['plan']}", 9.2, "bold", C["ink"], min_size=6.5)
+        sl.box((x0 + 9, 207, x0 + cw - 6, 220), f"target {k['target']}", 7.4, "semi", C["mint"], min_size=5.5)
+    # left: investment by root cause
+    L1 = 468
+    sl.kick(M, 240, f"Investment {_m(inv)} of {_m(bud)}, by root cause it fixes")
+    y = 248
+    for it in items:
+        sl.p.draw_line((M, y), (L1, y), color=C["border"], width=0.5)
+        _cat_pill(sl, M, y + 4, it.get("category", ""), 5.8)
+        sl.box((M + 118, y + 3, L1 - 92, y + 18), it["initiative"], 7.8, "reg", C["body"], min_size=5.8)
+        sl.text_r(L1 - 46, y + 12.5, _m(it["capex"]), 8.6, "bold", C["ink"])
+        sl.text_r(L1, y + 12.5, f"{_m(it['annual_opex'])}/yr", 7.4, "reg", C["amber"])
+        y += 19
+    sl.p.draw_line((M, y), (L1, y), color=C["pine"], width=0.8)
+    sl.text(M, y + 13, f"Total {_m(inv)} · {_m(bud - inv)} unspent", 8.8, "bold", C["emerald"])
+    sl.text_r(L1, y + 13, f"{_m(opex)}/yr", 8.8, "bold", C["amber"])
+    sl.box((M, y + 18, L1, BOT), nt.get("cost_note", ""), 6.8, "reg", C["muted"], min_size=5.5)
+    # right: savings by root cause
+    R0 = 488
+    sl.kick(R0, 240, f"Annual savings {_m(ben)}, by root cause removed")
+    y = 248
+    for pool, val in (("Overtime", 6000000), ("Penalties", 8000000)):
+        rows = [b for b in bridge if b["pool"] == pool]
+        tot = sum(b["saving"] for b in rows)
+        sl.text(R0, y + 10, f"{pool.upper()}  {_m(tot)} of {_m(val)} ({tot / val:.0%})", 7.6, "bold", C["ink"])
+        y += 14
+        for b in rows:
+            _cat_pill(sl, R0, y + 2, b["category"], 5.6)
+            sl.box((R0 + 112, y + 1, W - M - 50, y + 15), b["driver"], 7.4, "reg", C["body"] if b["saving"] else C["muted"], min_size=5.5)
+            sl.text_r(W - M, y + 10.5, _m2(b["saving"]) if b["saving"] else "not counted", 8.2, "bold", C["emerald"] if b["saving"] else C["muted"])
+            y += 16
+        y += 4
+    sl.card((R0, y + 2, W - M, BOT), fill=C["mint_bg"], border=C["mint_bd"])
+    sl.box((R0 + 10, y + 7, W - M - 8, BOT - 3), f"Net {_m(ben - opex)} a year. Payback in about {F['payback_yrs'] * 12:.0f} months; "
+           f"break-even needs only {_m(F['breakeven'])} a year.", 12, "semi", C["emerald"], min_size=6.5, lh=1.3)
+
+    # ---------------------------------------------------------------- 2. savings bridge
+    sl = Slide(doc, 2, T, cid, "Financial case · savings bridge", "How each saving is estimated",
+               "From root cause to dollars: the savings bridge")
+    sl.box((M, TOP - 4, W - M, TOP + 12), "Saving = cost pool x share caused by the driver x share our lever removes. Shares and cuts are "
+           "stated assumptions, checked against Phase 1 data before the main spend.", 8.6, "reg", C["muted"], min_size=6.5)
+    cols = [(M, "FISHBONE CAUSE"), (M + 112, "VSM STAGE"), (M + 206, "DRIVER"), (M + 420, "SHARE OF POOL"),
+            (M + 500, "OUR LEVER"), (M + 700, "CUT"), (M + 748, "SAVING"), (M + 808, "OWNER")]
     y = TOP + 24
-    for k, v in steps:
-        sl.text(R0 + 16, y + 11, k.upper(), 7, "bold", C["mint_l"])
-        sl.box((R0 + 130, y, W - M - 14, y + 30), v, 11 if k != "Formula" else 9, "semi", C["white"], min_size=7)
-        y += 34
-    sl.p.draw_line((R0 + 16, y + 2), (W - M - 16, y + 2), color=C["mint"], width=1)
-    sl.box((R0 + 16, y + 8, W - M - 14, y + 52), f"= {_m(F['net5'])}" + ("  (net savings)" if F["net5"] < 0 else ""), 26, "bold", C["mint_l"], min_size=14)
-    sl.box((R0 + 16, y + 58, W - M - 14, BOT - 6), "Rules from the brief: five full operating years, constant annual costs and savings, "
-           "no taxes, inflation, discounting or residual value. A negative result means net savings.", 8.4, "reg", C["mint_bd"], min_size=6)
-    # page 2: stress test, uncertainty, script
-    sl = Slide(doc, 2, 2, cid, "Financial case · presenter detail", "How robust is it?", "Stress test, uncertainty and what to say")
-    sl.kick(M, TOP + 2, "Sensitivity: same formula, one assumption changed at a time")
-    span = max(abs(v) for _, v in F["scen"]) or 1
-    y, bx0, bx1 = TOP + 10, M + 170, 500
-    for n, v in F["scen"]:
-        sl.box((M, y + 2, bx0 - 8, y + 20), n, 9.5, "semi" if n == "Plan" else "reg", C["ink"], min_size=7)
+    for pool, val in (("Overtime", 6000000), ("Penalties", 8000000)):
+        rows = [b for b in bridge if b["pool"] == pool]
+        tot = sum(b["saving"] for b in rows)
+        sl.rect((M, y, W - M, y + 20), fill=C["pine"], radius=0.1)
+        sl.text(M + 10, y + 13.5, f"{pool.upper()} · {_m(val)} a year today", 8.4, "bold", C["white"])
+        sl.text_r(W - M - 10, y + 13.5, f"saved {_m(tot)} ({tot / val:.0%})", 8.4, "bold", C["mint_l"])
+        y += 24
+        for x, h in cols:
+            sl.text(x, y + 7, h, 6, "bold", C["mint"])
+        y += 10
+        for b in rows:
+            share_val = val * b["share"] / 100
+            cut = b["saving"] / share_val if share_val else 0
+            sl.card((M, y, W - M, y + 30), fill=C["white"] if b["saving"] else C["muted_bg"])
+            _cat_pill(sl, M + 4, y + 9, b["category"], 5.6)
+            sl.box((M + 112, y + 4, M + 202, y + 29), b["vsm"], 7.4, "reg", C["body"], min_size=5.5)
+            sl.box((M + 206, y + 4, M + 416, y + 29), b["driver"], 7.8, "semi", C["ink"], min_size=5.5)
+            sl.box((M + 420, y + 4, M + 496, y + 29), f"{b['share']}% = {_m(share_val)}", 8, "reg", C["body"], min_size=5.5)
+            sl.box((M + 500, y + 4, M + 696, y + 29), b["lever"], 7.6, "reg", C["body"], min_size=5.5)
+            sl.text(M + 700, y + 18, f"{cut:.0%}" if b["saving"] else "-", 8.6, "bold", C["ink"])
+            sl.text(M + 748, y + 18, _m2(b["saving"]) if b["saving"] else "$0", 9, "bold", C["emerald"] if b["saving"] else C["muted"])
+            sl.box((M + 808, y + 4, W - M - 4, y + 29), b["owner"], 7, "reg", C["muted"], min_size=5.2)
+            y += 33
+        y += 6
+    sl.box((M, y, W - M, BOT), f"Total {_m(ben)} a year = overtime {_m(sum(b['saving'] for b in bridge if b['pool'] == 'Overtime'))} + "
+           f"penalties {_m(sum(b['saving'] for b in bridge if b['pool'] == 'Penalties'))}. Customs holds (40% of penalties) are left out "
+           "on purpose because PortFlow cannot override them.", 9, "semi", C["emerald"], min_size=6.5)
+
+    # ---------------------------------------------------------------- 3. investment build-up
+    sl = Slide(doc, 3, T, cid, "Financial case · investment", "Upfront cost and running cost",
+               "Investment build-up: every dollar aimed at a root cause")
+    cols = [(M, "INITIATIVE"), (M + 228, "ROOT CAUSE IT FIXES"), (M + 430, "VSM STAGE"), (M + 552, "UPFRONT"),
+            (M + 606, "PER YEAR"), (M + 662, "BASIS OF THE NUMBER")]
+    for x, h in cols:
+        sl.text(x, TOP + 4, h, 6.4, "bold", C["mint"])
+    y = TOP + 10
+    for it in items:
+        sl.card((M, y, W - M, y + 32))
+        sl.box((M + 8, y + 4, M + 224, y + 30), it["initiative"], 8.2, "semi", C["ink"], min_size=6)
+        _cat_pill(sl, M + 228, y + 4, it.get("category", ""), 5.6)
+        sl.box((M + 228, y + 17, M + 426, y + 31), it.get("fixes", ""), 7.2, "reg", C["body"], min_size=5.5)
+        sl.box((M + 430, y + 4, M + 548, y + 30), it.get("vsm", ""), 7.4, "reg", C["body"], min_size=5.5)
+        sl.text(M + 552, y + 19, _m(it["capex"]), 9, "bold", C["ink"])
+        sl.text(M + 606, y + 19, _m(it["annual_opex"]), 9, "bold", C["amber"])
+        sl.box((M + 662, y + 4, W - M - 6, y + 30), it.get("basis", ""), 7.4, "reg", C["muted"], min_size=5.5)
+        y += 35
+    sl.rect((M, y + 2, W - M, y + 24), fill=C["pine"], radius=0.1)
+    sl.text(M + 10, y + 16.5, "TOTAL", 8.6, "bold", C["white"])
+    sl.text(M + 552, y + 16.5, _m(inv), 9.5, "bold", C["mint_l"])
+    sl.text(M + 606, y + 16.5, _m(opex), 9.5, "bold", C["amber"])
+    sl.text(M + 662, y + 16.5, f"{_m(bud - inv)} under the {_m(bud)} budget", 8.6, "bold", C["white"])
+    y += 34
+    half = (W - 2 * M - 12) / 2
+    sl.card((M, y, M + half, BOT), fill=C["mint_bg"], border=C["mint_bd"])
+    sl.kick(M + 12, y + 15, "Budget room for cost overruns")
+    sl.box((M + 12, y + 20, M + half - 10, BOT - 4), f"Without contingency the package is {_m(base)}. Costs can overrun by "
+           f"{_m(bud - base)} ({(bud - base) / base:.0%}) before reaching {_m(bud)}. Phase 1 gets fixed-price vendor quotes first.",
+           12, "semi", C["emerald"], min_size=6.5)
+    sl.card((M + half + 12, y, W - M, BOT), fill=C["amber_bg"], border=C["amber"])
+    sl.kick(M + half + 24, y + 15, "If our cost estimates are wrong", C["amber"])
+    sl.box((M + half + 24, y + 20, W - M - 10, BOT - 4), f"Even 50% higher investment ({_m(inv * 1.5)}) still gives {_m(over50)} over "
+           "five years: savings drive the result far more than costs do.", 12, "semi", C["ink"], min_size=6.5)
+
+    # ---------------------------------------------------------------- 4. robustness
+    sl = Slide(doc, 4, T, cid, "Financial case · robustness", "Stress test", "How robust is the result?")
+    scen = F["scen"] + [("Investment +50%", over50)]
+    sl.kick(M, TOP + 2, "Same formula, one assumption changed at a time")
+    span = max(abs(v) for _, v in scen) or 1
+    y, bx0, bx1 = TOP + 10, M + 170, 520
+    for n, v in scen:
+        sl.box((M, y + 2, bx0 - 8, y + 20), n, 9.4, "semi" if n == "Plan" else "reg", C["ink"], min_size=7)
         w = abs(v) / span * (bx1 - bx0 - 70)
         sl.rect((bx0, y + 3, bx0 + w, y + 19), fill=C["pine"] if n == "Plan" else C["mint"] if v < 0 else C["red"], radius=0.2)
         sl.text(bx0 + w + 6, y + 15, _m(v), 10, "bold", C["ink"])
         y += 26
-    sl.card((M, y + 8, 500, y + 66), fill=C["mint_bg"], border=C["mint_bd"])
-    sl.box((M + 12, y + 14, 490, y + 62), f"Break-even: the plan pays for itself if savings reach {_m(F['breakeven'])} a year, "
-           f"{F['breakeven'] / F['ben']:.0%} of the {_m(F['ben'])} planned. Payback on the case basis: about "
-           f"{F['payback_yrs'] * 12:.0f} months of operation." if F["payback_yrs"] else "", 10, "semi", C["emerald"], min_size=7)
-    y += 78
-    sl.kick(M, y, "Alternatives on the same formula (brief comparison)")
-    for o in spec["options_evaluation"]["options"]:
-        y += 18
-        sl.text(M, y, f"Option {o['label']}: {o['name'][:62]}", 8.4, "semi" if o["selected"] else "reg", C["ink"])
-        sl.text_r(500, y, _m(o["five_year_net_impact_CAD"]) + ("" if o["within_budget"] else "  (over budget)"), 9, "bold",
-                  C["emerald"] if o["five_year_net_impact_CAD"] < 0 else C["red"])
-    R0 = 520
-    sl.card((R0, TOP - 4, W - M, 252), fill=C["amber_bg"], border=C["amber"])
-    sl.kick(R0 + 14, TOP + 14, "The one financial uncertainty to name", C["amber"])
-    sl.box((R0 + 14, TOP + 20, W - M - 12, 248), nt.get("uncertainty", "") + f" Even then the five-year impact is "
-           f"{_m(next(v for n, v in F['scen'] if n.startswith('Penalties')))}, still a net saving.", 10.5, "semi", C["ink"], min_size=7, lh=1.3)
-    sl.card((R0, 262, W - M, BOT), fill=C["pine"], border=C["pine"])
-    sl.kick(R0 + 14, 280, "What to say (about 75 seconds)", C["mint_l"])
-    sl.box((R0 + 14, 286, W - M - 12, BOT - 6), "\n".join(f"{i}. {t}" for i, t in enumerate(nt.get("script", []), 1)), 10, "reg", C["white"],
-           min_size=6.5, lh=1.35)
-    doc.set_metadata({"title": f"{spec['case_identification']['title']} — financial case detail", "author": "Strategy Consulting Hub",
+    sl.card((M, y + 8, 520, BOT), fill=C["mint_bg"], border=C["mint_bd"])
+    sl.box((M + 12, y + 14, 510, BOT - 4), f"Every test stays a net saving. Break-even is {_m(F['breakeven'])} of savings a year "
+           f"({F['breakeven'] / ben:.0%} of plan). Payback on the case basis is about {F['payback_yrs'] * 12:.0f} months.",
+           13, "semi", C["emerald"], min_size=7)
+    R0 = 540
+    cum = [-inv] + [-inv + (ben - opex) * k for k in range(1, 6)]
+    sl.card((R0, TOP - 4, W - M, 300))
+    sl.kick(R0 + 12, TOP + 12, "Cumulative position, undiscounted")
+    lo, hi = min(cum + [0]), max(cum + [0])
+    cy0, cy1, cx0, cx1 = TOP + 20, 280, R0 + 14, W - M - 12
+    sc2 = (cy1 - cy0 - 40) / (hi - lo)
+    zero = cy1 - 30 - (0 - lo) * sc2
+    sl.p.draw_line((cx0, zero), (cx1, zero), color=C["muted"], width=0.7)
+    bw = (cx1 - cx0) / len(cum)
+    for k, v in enumerate(cum):
+        x = cx0 + k * bw + bw * 0.18
+        yv = zero - v * sc2
+        sl.rect((x, min(yv, zero), x + bw * 0.64, max(yv, zero)), fill=C["mint"] if v >= 0 else C["red"], radius=0.08)
+        sl.text_c(x + bw * 0.32, (yv - 4) if v >= 0 else (yv + 10), _m(v), 7.6, "bold", C["ink"])
+        sl.text_c(x + bw * 0.32, cy1 + 4, "Invest" if k == 0 else f"Year {k}", 7, "reg", C["muted"])
+    sl.card((R0, 310, W - M, BOT), fill=C["amber_bg"], border=C["amber"])
+    sl.kick(R0 + 12, 326, "The one financial uncertainty", C["amber"])
+    pen_half = next((v for n, v in F["scen"] if n.startswith("Penalties")), None)
+    sl.box((R0 + 12, 332, W - M - 10, BOT - 4), nt.get("uncertainty", "") + (f" Even then the result is {_m(pen_half)}." if pen_half else "")
+           + " Phase 1 splits the penalty data by cause to confirm it.", 12, "semi", C["ink"], min_size=6.5, lh=1.3)
+
+    # ---------------------------------------------------------------- 5. presenter card
+    sl = Slide(doc, 5, T, cid, "Financial case · presenter card", "Get ready to present", "Your 90 seconds, numbers and answers")
+    L1 = 470
+    sl.card((M, TOP - 4, L1, BOT), fill=C["pine"], border=C["pine"])
+    sl.kick(M + 14, TOP + 12, "Script with cues (about 90 seconds)", C["mint_l"])
+    cues = ["[point at the formula bar]", "[point at the investment list]", "[point at the savings list]", "[point at the formula bar again]",
+            "[close on the robustness line]"]
+    lines = [f"{cues[i] if i < len(cues) else ''}\n{t}" for i, t in enumerate(nt.get("script", []))]
+    sl.box((M + 14, TOP + 18, L1 - 12, BOT - 6), "\n\n".join(lines), 9.6, "reg", C["white"], min_size=6.5, lh=1.25)
+    R0 = L1 + 16
+    sl.kick(R0, TOP + 4, "Numbers to know by heart")
+    nums = [("Investment", f"{_m(inv)} of {_m(bud)}"), ("Running cost", f"{_m(opex)} a year"),
+            ("Savings", f"{_m(ben)} a year"), ("Result", f"{_m(net5)} (net savings)"),
+            ("Payback", f"about {F['payback_yrs'] * 12:.0f} months"), ("Break-even", f"{_m(F['breakeven'])} a year")]
+    y = TOP + 10
+    for i, (k, v) in enumerate(nums):
+        x0, yy = R0 + (i % 2) * ((W - M - R0) / 2), y + (i // 2) * 34
+        sl.card((x0, yy, x0 + (W - M - R0) / 2 - 6, yy + 30))
+        sl.text(x0 + 8, yy + 11, k.upper(), 6.4, "bold", C["mint"])
+        sl.text(x0 + 8, yy + 24, v, 9.6, "bold", C["ink"])
+    y += 3 * 34 + 8
+    sl.kick(R0, y, "Likely judge questions")
+    qa = [("Where do the costs come from?", "Our estimates; the case gives none. Phase 1 gets fixed-price quotes, and even +50% costs still save "
+           f"{_m(-over50)}."),
+          ("Why 40% and 50%?", "Each comes from the savings bridge: cost pool x share caused by a fishbone driver x share our lever removes."),
+          ("Why leave customs out?", "PortFlow cannot override customs holds, so we do not claim those savings."),
+          ("Why not discount?", "The brief says to ignore discounting; the discounted check is still positive."),
+          ("Did you count AGV labour savings?", "No. It is a 2-unit pilot with no layoffs, so any AGV saving is upside.")]
+    y += 6
+    qh = (BOT - y) / len(qa)
+    for q, a in qa:
+        sl.card((R0, y, W - M, y + qh - 4), stripe=C["mint"])
+        sl.box((R0 + 10, y + 3, W - M - 6, y + 16), q, 9.2, "bold", C["ink"], min_size=6)
+        sl.box((R0 + 10, y + 16, W - M - 6, y + qh - 6), a, 9.2, "reg", C["body"], min_size=5.5)
+        y += qh
+
+    doc.set_metadata({"title": f"{spec['case_identification']['title']} — financial case", "author": "Strategy Consulting Hub",
                       "creator": "case_orchestrator"})
     doc.subset_fonts()
     doc.save(str(out_path), garbage=3, deflate=True)

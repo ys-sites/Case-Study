@@ -163,7 +163,11 @@
       "capex": 1200000,
       "annual_opex": 100000,
       "owner": "Yard Planning Manager",
-      "pillar": 0
+      "pillar": 0,
+      "category": "Methods",
+      "fixes": "Fixed placement rules",
+      "vsm": "Yard allocation",
+      "basis": "Estimate"
     },
     {
       "initiative": "Dynamic slotting engine with demand forecasting",
@@ -171,7 +175,11 @@
       "capex": 1600000,
       "annual_opex": 300000,
       "owner": "Yard Planning Manager",
-      "pillar": 1
+      "pillar": 1,
+      "category": "Methods",
+      "fixes": "Inefficient stacking, rehandling",
+      "vsm": "Container retrieval",
+      "basis": "Estimate"
     },
     {
       "initiative": "Tracking and yard database (digital twin)",
@@ -179,7 +187,11 @@
       "capex": 2200000,
       "annual_opex": 350000,
       "owner": "IT and Operations Manager",
-      "pillar": 2
+      "pillar": 2,
+      "category": "Technology",
+      "fixes": "Limited tracking, fragmented systems",
+      "vsm": "All stages (information gaps)",
+      "basis": "Estimate"
     },
     {
       "initiative": "Release visibility and truck pickup windows",
@@ -187,7 +199,11 @@
       "capex": 1400000,
       "annual_opex": 250000,
       "owner": "Commercial Director",
-      "pillar": 2
+      "pillar": 2,
+      "category": "External coordination",
+      "fixes": "Poor information sharing, unpredictable trucks",
+      "vsm": "Yard storage, gate processing",
+      "basis": "Estimate"
     },
     {
       "initiative": "AI AGV pilot: 2 units in a fenced lane",
@@ -195,7 +211,11 @@
       "capex": 1600000,
       "annual_opex": 150000,
       "owner": "Engineering and Maintenance Manager",
-      "pillar": 3
+      "pillar": 3,
+      "category": "Methods",
+      "fixes": "Manual horizontal transport",
+      "vsm": "Ship unloading to yard",
+      "basis": "Vehicles sourced (~EUR 150k/unit, 2021); rest estimate"
     },
     {
       "initiative": "Change management and paid training",
@@ -203,7 +223,11 @@
       "capex": 600000,
       "annual_opex": 150000,
       "owner": "HR Director with the Employee Representative",
-      "pillar": -1
+      "pillar": -1,
+      "category": "People",
+      "fixes": "Manual coordination, reactive decisions",
+      "vsm": "All stages",
+      "basis": "Estimate"
     },
     {
       "initiative": "Contingency (about 9%)",
@@ -211,7 +235,11 @@
       "capex": 800000,
       "annual_opex": 0,
       "owner": "Finance Director",
-      "pillar": -1
+      "pillar": -1,
+      "category": "Risk reserve",
+      "fixes": "Cost overruns",
+      "vsm": "-",
+      "basis": "About 9% of the rest"
     }
   ],
   "horizons": [
@@ -1112,10 +1140,117 @@
     ],
     "uncertainty": "How much of the $8M penalty bill comes from customs or documentation holds that PortFlow cannot override. If only a quarter of penalties disappear instead of half, savings drop to $4.4M a year.",
     "script": [
-      "Start with the budget: $9.4M of the $10M, with $0.6M left unspent and $0.8M contingency inside.",
-      "Each year the package costs $1.3M to run and saves $6.4M: $2.4M of overtime and $4.0M of penalties, each with a named owner.",
-      "Plug it into the case formula: $9.4M plus 5 times ($1.3M minus $6.4M) gives minus $16.1M, a net saving.",
-      "Even if savings were cut in half, the plan still breaks even; it needs only $3.2M a year."
-    ]
-  }
+      "Our problem costs $14M a year: $6M of overtime and $8M of penalties, driven by the root causes on our fishbone.",
+      "We invest $9.4M of the $10M, and every dollar is aimed at one root cause: methods, technology, people or external coordination.",
+      "That saves $6.4M a year: $2.4M of overtime from less rehandling, travel and re-planning, and $4.0M of penalties from better information, truck windows and ready boxes. Customs holds are not counted.",
+      "Using the case formula: $9.4M plus 5 times ($1.3M minus $6.4M) equals minus $16.1M, a net saving.",
+      "It breaks even at $3.2M of savings a year, and even if costs ran 50% over we would still save $11.4M."
+    ],
+    "cost_note": "Initiative costs are our estimates (the case gives none); only the AGV vehicle price is anchored on a published figure. Phase 1 replaces them with fixed-price vendor quotes before the main spend."
+  },
+  "fin_link": [
+    {
+      "label": "Yard utilization",
+      "now": "88%",
+      "plan": "about 83% at +20% volume",
+      "target": "<= 85%"
+    },
+    {
+      "label": "Average yard inventory",
+      "now": "21,120 TEU",
+      "plan": "about 19,850 TEU in year 5",
+      "target": "<= 20,400 TEU"
+    },
+    {
+      "label": "Container dwell time",
+      "now": "6 days",
+      "plan": "4.7 days",
+      "target": "<= 4.83 days"
+    },
+    {
+      "label": "Truck turn time",
+      "now": "72 min (40 queue)",
+      "plan": "about 37 min",
+      "target": "< 45 min"
+    }
+  ],
+  "savings_bridge": [
+    {
+      "pool": "Overtime",
+      "pool_value": 6000000,
+      "category": "Methods",
+      "vsm": "Container retrieval",
+      "driver": "Unnecessary rehandling, inefficient stacking",
+      "share": 40,
+      "lever": "Dynamic slotting (stack by pickup order)",
+      "saving": 1200000,
+      "owner": "Yard Planning Manager"
+    },
+    {
+      "pool": "Overtime",
+      "pool_value": 6000000,
+      "category": "Methods",
+      "vsm": "Yard allocation",
+      "driver": "Fixed placement rules: long travel",
+      "share": 30,
+      "lever": "MIP + CRAFT zoning (fast movers near exits)",
+      "saving": 600000,
+      "owner": "Yard Planning Manager"
+    },
+    {
+      "pool": "Overtime",
+      "pool_value": 6000000,
+      "category": "People",
+      "vsm": "Yard allocation",
+      "driver": "Manual coordination, reactive re-planning",
+      "share": 30,
+      "lever": "One yard database, one shared plan",
+      "saving": 600000,
+      "owner": "Operations Manager"
+    },
+    {
+      "pool": "Penalties",
+      "pool_value": 8000000,
+      "category": "External coordination",
+      "vsm": "Yard storage",
+      "driver": "Poor information sharing: late release status",
+      "share": 30,
+      "lever": "Release visibility on the database",
+      "saving": 2040000,
+      "owner": "Commercial Director"
+    },
+    {
+      "pool": "Penalties",
+      "pool_value": 8000000,
+      "category": "External coordination",
+      "vsm": "Gate processing",
+      "driver": "Unpredictable truck arrivals: 40-min queue",
+      "share": 20,
+      "lever": "Truck pickup windows for ready boxes",
+      "saving": 1280000,
+      "owner": "Gate & Landside Manager"
+    },
+    {
+      "pool": "Penalties",
+      "pool_value": 8000000,
+      "category": "Technology",
+      "vsm": "Container retrieval",
+      "driver": "Limited tracking: boxes not ready on time",
+      "share": 10,
+      "lever": "Tracking + slotting (exact slot, staged boxes)",
+      "saving": 680000,
+      "owner": "Yard Planning Manager"
+    },
+    {
+      "pool": "Penalties",
+      "pool_value": 8000000,
+      "category": "Outside our control",
+      "vsm": "Yard storage",
+      "driver": "Customs holds and missing documents",
+      "share": 40,
+      "lever": "Flagged early to customers; not counted",
+      "saving": 0,
+      "owner": "Commercial Director"
+    }
+  ]
 }

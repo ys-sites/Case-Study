@@ -52,7 +52,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 from case_intelligence import build_intelligence  # noqa: E402
 import case_videos  # noqa: E402
 from case_visual_pdf import generate_case_study_booklet  # noqa: E402
-from case_slide_pdf import generate_finance_detail_pdf, generate_slide_pdf  # noqa: E402
+from case_slide_pdf import generate_financial_case_pdf, generate_slide_pdf  # noqa: E402
 DATA_DIR = REPO_ROOT / "data"
 
 # --------------------------------------------------------------------------------------
@@ -191,7 +191,7 @@ def _from_json_case(c: dict, source: str) -> dict:
 
 
 PACK_KEYS = ("package", "analysis_sections", "deck", "secondary_targets", "problem_statement", "kpi_bars", "gantt",
-             "problem", "causes", "savings", "not_chosen", "market", "agv_plan", "finance_notes")  # carried into spec["case_pack"]
+             "problem", "causes", "savings", "not_chosen", "market", "agv_plan", "finance_notes", "fin_link", "savings_bridge")  # carried into spec["case_pack"]
 
 
 def _from_structured(c: dict) -> dict:
@@ -1486,7 +1486,7 @@ def run_agent_pipeline(case_info: dict, render_video: bool = True, unit_value_ov
         ("10 PDF deliverables", lambda: generate_pdf_deliverables(spec)),
         ("10 Case study booklet", lambda: generate_case_study_booklet(spec, OUTPUT_ROOT / DELIVERABLES["case_study_booklet_pdf"])),
         ("10 Presentation slides PDF", lambda: generate_slide_pdf(spec, OUTPUT_ROOT / "06_PDF_Deliverables/Presentation_Slides.pdf")),
-        ("10 Financial case detail PDF", lambda: generate_finance_detail_pdf(spec, OUTPUT_ROOT / "06_PDF_Deliverables/Financial_Case_Detail.pdf")),
+        ("10 Financial case PDF", lambda: generate_financial_case_pdf(spec, OUTPUT_ROOT / "06_PDF_Deliverables/Financial_Case.pdf")),
         ("11 PowerPoint deck", lambda: generate_powerpoint_deck(spec)),
         ("13 Video suite", lambda: generate_video_assets(spec, render_video, tts)),
     ]
